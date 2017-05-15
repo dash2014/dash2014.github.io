@@ -95,7 +95,7 @@
 <meta property="og:site_name" content="秋知轩">
 <meta property="og:description" content="React Native页面渲染主要依赖于state的变化，如何维护state保证页面逻辑性及可读性更强，我简单的说一下一般的逻辑和Redux的思想。  组件思想什么是组件思想，和模块化有什么共通和区别，我的解释是：  模块和组件一样封装了某些职责 模块暴露出来的接口可能较多也比较宽泛，而组件则指定有限的接口 模块主要根据业务做功能拆分封装，组件则主要强调功能的复用  State在ReactNa">
 <meta property="og:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/137.pic.jpg">
-<meta property="og:updated_time" content="2017-05-15T01:52:12.000Z">
+<meta property="og:updated_time" content="2017-05-15T02:46:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ReactNative State管理的粗见">
 <meta name="twitter:description" content="React Native页面渲染主要依赖于state的变化，如何维护state保证页面逻辑性及可读性更强，我简单的说一下一般的逻辑和Redux的思想。  组件思想什么是组件思想，和模块化有什么共通和区别，我的解释是：  模块和组件一样封装了某些职责 模块暴露出来的接口可能较多也比较宽泛，而组件则指定有限的接口 模块主要根据业务做功能拆分封装，组件则主要强调功能的复用  State在ReactNa">
@@ -377,7 +377,8 @@
 </ul>
 <h2 id="State"><a href="#State" class="headerlink" title="State"></a>State</h2><p>在ReactNative中，组件的思想贯穿于整个设计，你可以把每一个页面看成一个组件，组件的布局和样式写好之后，通过props和state来控制这个页面的状态，其中props通常为父级传递过来的属性，state则用来指示本页面中各种状态的变化。</p>
 <p><strong>初始化state</strong></p>
-<p>state需要在ReactNative页面的初始构造函数中配置，具体写法如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">constructor(props) &#123;</div><div class="line">    super(props);</div><div class="line">    this.state = &#123;shouldDisplay:<span class="literal">true</span>&#125;;</div><div class="line">  &#125;</div></pre></td></tr></table></figure></p>
+<p>state需要在ReactNative页面的初始构造函数中配置，具体写法如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">constructor(props) &#123;</div><div class="line">    super(props);</div><div class="line">    this.state = &#123;shouldDisplay:<span class="literal">true</span>&#125;;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
 <p><strong>读取和更改state</strong></p>
 <ul>
 <li><strong>读取state</strong>，ReactNative中读取state直接使用<em>this.state.shouldDisplay</em>即可</li>
@@ -417,7 +418,7 @@
 <li>用户发出Action，Action是一个对象，类似于iOS里面的Notification</li>
 <li>用户增加MiddleWare用于做其他操作，比如打log等对状态和流程无侵入的操作</li>
 <li>Store自动调用Reducer，接收当前的State和Action，返回新的State</li>
-<li>State发生变化之后Store调用监听函数，触发重新渲染View<br><img src="http://7xsw5d.com1.z0.glb.clouddn.com/137.pic.jpg" alt=" |center | 200X200"></li>
+<li>State发生变化之后Store调用监听函数，触发重新渲染View<br><img src="http://7xsw5d.com1.z0.glb.clouddn.com/137.pic.jpg" alt=" |center | 300X120"></li>
 </ul>
 <p>整体来看，Redux解决了state反复传递和过于分散的问题，并且提供了一种很好的状态和组件分类的思路，middleWare思想灵活且内聚，但有先进性一定有潜在的问题，先说明我的几点考虑Redux的问题，思考一下~</p>
 <ol>

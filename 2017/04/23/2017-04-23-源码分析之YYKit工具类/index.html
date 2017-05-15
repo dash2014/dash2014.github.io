@@ -87,17 +87,17 @@
 
 
 
-<meta name="description" content="源码拆解之YYKit系列四（工具类）  接前文，继续分析YYKit，YYKit提供了大量的工具类，整体存放在Utility目录下，本篇幅继续拆解一下这些工具类的写法。  YYReachablity：用于检测网络状态的一个工具，创建一个后台线程，用于可以用来检测网络是否可达，也可以实时检测网络状态，也采用notifyBlock进行回调。  YYGestureRecognizer：继承自UIGest">
+<meta name="description" content="接前文，继续分析YYKit，YYKit提供了大量的工具类，整体存放在Utility目录下，本篇幅继续拆解一下这些工具类的写法。  YYReachablity：用于检测网络状态的一个工具，创建一个后台线程，用于可以用来检测网络是否可达，也可以实时检测网络状态，也采用notifyBlock进行回调。  YYGestureRecognizer：继承自UIGesture，主要目的是可以通过block来实时">
 <meta name="keywords" content="源码，YYKit">
 <meta property="og:type" content="article">
 <meta property="og:title" content="源码拆解之YYKit系列四">
 <meta property="og:url" content="http://yoursite.com/2017/04/23/2017-04-23-源码分析之YYKit工具类/index.html">
 <meta property="og:site_name" content="秋知轩">
-<meta property="og:description" content="源码拆解之YYKit系列四（工具类）  接前文，继续分析YYKit，YYKit提供了大量的工具类，整体存放在Utility目录下，本篇幅继续拆解一下这些工具类的写法。  YYReachablity：用于检测网络状态的一个工具，创建一个后台线程，用于可以用来检测网络是否可达，也可以实时检测网络状态，也采用notifyBlock进行回调。  YYGestureRecognizer：继承自UIGest">
-<meta property="og:updated_time" content="2017-05-15T01:52:13.000Z">
+<meta property="og:description" content="接前文，继续分析YYKit，YYKit提供了大量的工具类，整体存放在Utility目录下，本篇幅继续拆解一下这些工具类的写法。  YYReachablity：用于检测网络状态的一个工具，创建一个后台线程，用于可以用来检测网络是否可达，也可以实时检测网络状态，也采用notifyBlock进行回调。  YYGestureRecognizer：继承自UIGesture，主要目的是可以通过block来实时">
+<meta property="og:updated_time" content="2017-05-15T02:42:15.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="源码拆解之YYKit系列四">
-<meta name="twitter:description" content="源码拆解之YYKit系列四（工具类）  接前文，继续分析YYKit，YYKit提供了大量的工具类，整体存放在Utility目录下，本篇幅继续拆解一下这些工具类的写法。  YYReachablity：用于检测网络状态的一个工具，创建一个后台线程，用于可以用来检测网络是否可达，也可以实时检测网络状态，也采用notifyBlock进行回调。  YYGestureRecognizer：继承自UIGest">
+<meta name="twitter:description" content="接前文，继续分析YYKit，YYKit提供了大量的工具类，整体存放在Utility目录下，本篇幅继续拆解一下这些工具类的写法。  YYReachablity：用于检测网络状态的一个工具，创建一个后台线程，用于可以用来检测网络是否可达，也可以实时检测网络状态，也采用notifyBlock进行回调。  YYGestureRecognizer：继承自UIGesture，主要目的是可以通过block来实时">
 
 
 
@@ -364,10 +364,7 @@
       
 
       
-        <blockquote>
-<p>源码拆解之YYKit系列四（工具类）</p>
-</blockquote>
-<p>接前文，继续分析YYKit，YYKit提供了大量的工具类，整体存放在Utility目录下，本篇幅继续拆解一下这些工具类的写法。</p>
+        <p>接前文，继续分析YYKit，YYKit提供了大量的工具类，整体存放在Utility目录下，本篇幅继续拆解一下这些工具类的写法。</p>
 <ul>
 <li><p><strong>YYReachablity：</strong>用于检测网络状态的一个工具，创建一个后台线程，用于可以用来检测网络是否可达，也可以实时检测网络状态，也采用notifyBlock进行回调。</p>
 </li>

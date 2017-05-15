@@ -87,17 +87,17 @@
 
 
 
-<meta name="description" content="源码拆解之YYKit系列二（分类）  上篇对YYKit中宏文件的拆解，本篇决定对Base目录下Foundation，UIKit，Quarz目录进行拆解。由于涉及到的文件比较多，本篇幅只记录个人认为那些比较优秀的或者在OC编程中不是很常用的实现方式。  通过block的形式使用KVO，block的代码集中式管理优点想必大家也都清晰  大量的c方法调用，可以看到作者在封装各种category的时候很">
+<meta name="description" content="上篇对YYKit中宏文件的拆解，本篇决定对Base目录下Foundation，UIKit，Quarz目录进行拆解。由于涉及到的文件比较多，本篇幅只记录个人认为那些比较优秀的或者在OC编程中不是很常用的实现方式。  通过block的形式使用KVO，block的代码集中式管理优点想必大家也都清晰  大量的c方法调用，可以看到作者在封装各种category的时候很多地方直接采用了c方法调用，这样做会比直">
 <meta name="keywords" content="源码，YYKit">
 <meta property="og:type" content="article">
 <meta property="og:title" content="源码拆解之YYKit系列二">
 <meta property="og:url" content="http://yoursite.com/2017/04/21/2017-04-21-源码分析之YYKit分类/index.html">
 <meta property="og:site_name" content="秋知轩">
-<meta property="og:description" content="源码拆解之YYKit系列二（分类）  上篇对YYKit中宏文件的拆解，本篇决定对Base目录下Foundation，UIKit，Quarz目录进行拆解。由于涉及到的文件比较多，本篇幅只记录个人认为那些比较优秀的或者在OC编程中不是很常用的实现方式。  通过block的形式使用KVO，block的代码集中式管理优点想必大家也都清晰  大量的c方法调用，可以看到作者在封装各种category的时候很">
-<meta property="og:updated_time" content="2017-05-15T01:54:25.000Z">
+<meta property="og:description" content="上篇对YYKit中宏文件的拆解，本篇决定对Base目录下Foundation，UIKit，Quarz目录进行拆解。由于涉及到的文件比较多，本篇幅只记录个人认为那些比较优秀的或者在OC编程中不是很常用的实现方式。  通过block的形式使用KVO，block的代码集中式管理优点想必大家也都清晰  大量的c方法调用，可以看到作者在封装各种category的时候很多地方直接采用了c方法调用，这样做会比直">
+<meta property="og:updated_time" content="2017-05-15T02:43:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="源码拆解之YYKit系列二">
-<meta name="twitter:description" content="源码拆解之YYKit系列二（分类）  上篇对YYKit中宏文件的拆解，本篇决定对Base目录下Foundation，UIKit，Quarz目录进行拆解。由于涉及到的文件比较多，本篇幅只记录个人认为那些比较优秀的或者在OC编程中不是很常用的实现方式。  通过block的形式使用KVO，block的代码集中式管理优点想必大家也都清晰  大量的c方法调用，可以看到作者在封装各种category的时候很">
+<meta name="twitter:description" content="上篇对YYKit中宏文件的拆解，本篇决定对Base目录下Foundation，UIKit，Quarz目录进行拆解。由于涉及到的文件比较多，本篇幅只记录个人认为那些比较优秀的或者在OC编程中不是很常用的实现方式。  通过block的形式使用KVO，block的代码集中式管理优点想必大家也都清晰  大量的c方法调用，可以看到作者在封装各种category的时候很多地方直接采用了c方法调用，这样做会比直">
 
 
 
@@ -364,10 +364,7 @@
       
 
       
-        <blockquote>
-<p>源码拆解之YYKit系列二（分类）</p>
-</blockquote>
-<p>上篇对YYKit中宏文件的拆解，本篇决定对Base目录下Foundation，UIKit，Quarz目录进行拆解。由于涉及到的文件比较多，本篇幅只记录个人认为那些比较优秀的或者在OC编程中不是很常用的实现方式。</p>
+        <p>上篇对YYKit中宏文件的拆解，本篇决定对Base目录下Foundation，UIKit，Quarz目录进行拆解。由于涉及到的文件比较多，本篇幅只记录个人认为那些比较优秀的或者在OC编程中不是很常用的实现方式。</p>
 <ul>
 <li><p>通过block的形式使用KVO，block的代码集中式管理优点想必大家也都清晰</p>
 </li>
@@ -378,10 +375,10 @@
 <li><p>oneway, 允许oc的对象在不同的线程中使用，不会阻塞调用线程。</p>
 </li>
 <li><p>可变参数列表，采用va_list声明一个可变参数列表args，之后采用va_start将可变参数赋值给args，利用va_end释放临时参数，具体代码如下：</p>
-<pre><code class="bash">va_list args; va_start(args, _last_arg_); [NSObject <span class="built_in">set</span>Inv:inv withSig:sig andArgs:args]; va_end(args);
-</code></pre>
 </li>
 </ul>
+<pre><code class="bash">va_list args; va_start(args, _last_arg_); [NSObject <span class="built_in">set</span>Inv:inv withSig:sig andArgs:args]; va_end(args);
+</code></pre>
 <p>本篇幅较短，作者在封装扩展的时候，封装了非常巨量的便捷方法，下一篇分析一下YYCache，还要说一句，大赞开源~</p>
 <p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
 

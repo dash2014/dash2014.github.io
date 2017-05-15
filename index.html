@@ -1108,10 +1108,7 @@ pthread_detach(thread);//设置线程状态为detached
       
         
           
-            <blockquote>
-<p>源码拆解之YYKit系列五（YYImage）</p>
-</blockquote>
-<p>本篇幅继续描述YYKit，主要拆解YYImage目录，YYImage提供了不同种类的图片加载，包括单张图片，多张图片，gif图等，为此其设计了几个类来包括这些内容，主要为YYImage，YYFrameImage，YYSpriteSheetImage等，它们均实现了YYAnimatedImage协议，这个协议提供了一些方法，统一了单张图片，动图与静态图片的处理方式，同时也提供了YYAnimatedImageView用来承载Image，YYImageCoder用作不同格式的图片的编解码工作。这部分内容由于个人对涉及图片格式的编解码等操作不是很熟悉，不做拆解，下面主要拆解网络图片部分。</p>
+            <p>本篇幅继续描述YYKit，主要拆解YYImage目录，YYImage提供了不同种类的图片加载，包括单张图片，多张图片，gif图等，为此其设计了几个类来包括这些内容，主要为YYImage，YYFrameImage，YYSpriteSheetImage等，它们均实现了YYAnimatedImage协议，这个协议提供了一些方法，统一了单张图片，动图与静态图片的处理方式，同时也提供了YYAnimatedImageView用来承载Image，YYImageCoder用作不同格式的图片的编解码工作。这部分内容由于个人对涉及图片格式的编解码等操作不是很熟悉，不做拆解，下面主要拆解网络图片部分。</p>
 <ul>
 <li><p><strong>Categories：</strong>这部分工作主要是提供了一些分类，用于ImageView以及Button、Layer等图片的渲染及加载，大致流程如下：</p>
 <ul>
@@ -1124,13 +1121,22 @@ pthread_detach(thread);//设置线程状态为detached
 </ul>
 </li>
 <li><p><strong>_YYWebImageSetter：</strong>私有类，主要的作用就是通过信号量以及哨兵来控制operation的操作，确保在进行网络请求以及获取imageURL时的线程安全，其内部直接调用YYWebImageManager的方法生成operation，具体代码如下：</p>
-  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">	NSOperation *operation = [manager requestImageWithURL:imageURL options:options progress:progress transform:transform completion:completion];</div><div class="line">	``` </div><div class="line"></div><div class="line">- **YYWebImageManager：**通过配置Http的各种参数生成request，后用request   等信息生成operation，同时将operation加入到operationQueue中，代码较少，核心代码很容易读懂，此处就不再贴了。</div><div class="line"></div><div class="line">- **YYWebImageOperation：**网络图片请求的核心类，继承自NSOperation类，重写了operation的各种方法，包括start，cancel等，在**_startOperation**中，先从内存缓存中读取图片信息，如果内存缓存中没有，则从磁盘缓存中读取图片信息，如果磁盘缓存中有，则将其设置到内存缓存中，如果磁盘缓存中没有，则执行网络请求，同时控制网络活跃数量。请求成功后完成回调及缓存设置等操作。</div><div class="line"></div><div class="line">- **YYImageCache：**引用了YYCache来进行图片的存储。</div><div class="line"></div><div class="line">**YYWebImageOperation**线程分析：这里面一共涉及两个线程操作，分别叫做_imageQueue和_networkThread，此处其在从内存缓存中获取采用了同步的方式，而从磁盘中获取的时候将其异步到_imageQueue去获取，而从磁盘获取到图片或者发送网络请求，图片处理统一在_imageQueue处理，而网络回调则统一在_networkThread中进行。具体代码如下：</div><div class="line">* **_startOperation内存缓存图片直接获取**</div><div class="line">	``` bash</div><div class="line">	UIImage *image = [_cache getImageForKey:_cacheKey withType:YYImageCacheTypeMemory];</div><div class="line">	  <span class="keyword">if</span> (image) &#123;</div><div class="line">	      [_lock lock];</div><div class="line">	      <span class="keyword">if</span> (![self isCancelled]) &#123;</div><div class="line">	          <span class="keyword">if</span> (_completion) _completion(image, _request.URL, YYWebImageFromMemoryCache, YYWebImageStageFinished, nil);</div><div class="line">	      &#125;</div><div class="line">	      [self _finish];</div><div class="line">	      [_lock unlock];</div><div class="line">	      <span class="built_in">return</span>;</div><div class="line">	  &#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
 </li>
 </ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">NSOperation *operation = [manager requestImageWithURL:imageURL options:options progress:progress transform:transform completion:completion];</div></pre></td></tr></table></figure>
 <ul>
-<li><strong>异步到imageQueue中获取图片，同时将图片回调处理放在_networkThread中进行</strong>  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">	dispatch_async([self.class _imageQueue], ^&#123;</div><div class="line">	     __strong typeof(_self) self = _self;</div><div class="line">	     <span class="keyword">if</span> (!self || [self isCancelled]) <span class="built_in">return</span>;</div><div class="line">	     UIImage *image = [self.cache getImageForKey:self.cacheKey withType:YYImageCacheTypeDisk];</div><div class="line">	     <span class="keyword">if</span> (image) &#123;</div><div class="line">	         [self.cache <span class="built_in">set</span>Image:image imageData:nil <span class="keyword">for</span>Key:self.cacheKey withType:YYImageCacheTypeMemory];</div><div class="line">	         [self performSelector:@selector(_didReceiveImageFromDiskCache:) onThread:[self.class _networkThread] withObject:image <span class="built_in">wait</span>UntilDone:NO];</div><div class="line">	     &#125; <span class="keyword">else</span> &#123;</div><div class="line">	         [self performSelector:@selector(_startRequest:) onThread:[self.class _networkThread] withObject:nil <span class="built_in">wait</span>UntilDone:NO];</div><div class="line">	     &#125;</div><div class="line">	 &#125;);</div><div class="line">	``` </div><div class="line">* **收到网络请求完成回调，异步到imageQueue进行图片处理，同时异步到网络线程进行网络回调**</div><div class="line">	``` bash</div><div class="line">	(void)connectionDidFinishLoading:(NSURLConnection *)connection &#123;</div><div class="line">	       dispatch_async([self.class _imageQueue], ^&#123;</div><div class="line">	                      [self performSelector:@selector(_didReceiveImageFromWeb:) onThread:[self.class _networkThread] withObject:image <span class="built_in">wait</span>UntilDone:NO];</div><div class="line">	       &#125;&#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<li><p><strong>YYWebImageManager：</strong>通过配置Http的各种参数生成request，后用request   等信息生成operation，同时将operation加入到operationQueue中，代码较少，核心代码很容易读懂，此处就不再贴了。</p>
+</li>
+<li><p><strong>YYWebImageOperation：</strong>网络图片请求的核心类，继承自NSOperation类，重写了operation的各种方法，包括start，cancel等，在<strong>_startOperation</strong>中，先从内存缓存中读取图片信息，如果内存缓存中没有，则从磁盘缓存中读取图片信息，如果磁盘缓存中有，则将其设置到内存缓存中，如果磁盘缓存中没有，则执行网络请求，同时控制网络活跃数量。请求成功后完成回调及缓存设置等操作。</p>
+</li>
+<li><p><strong>YYImageCache：</strong>引用了YYCache来进行图片的存储。</p>
 </li>
 </ul>
+<p><strong>YYWebImageOperation</strong>线程分析：这里面一共涉及两个线程操作，分别叫做_imageQueue和_networkThread，此处其在从内存缓存中获取采用了同步的方式，而从磁盘中获取的时候将其异步到_imageQueue去获取，而从磁盘获取到图片或者发送网络请求，图片处理统一在_imageQueue处理，而网络回调则统一在_networkThread中进行。具体代码如下：</p>
+<ul>
+<li><strong>_startOperation内存缓存图片直接获取</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">UIImage *image = [_cache getImageForKey:_cacheKey withType:YYImageCacheTypeMemory];</div><div class="line">  <span class="keyword">if</span> (image) &#123;</div><div class="line">      [_lock lock];</div><div class="line">      <span class="keyword">if</span> (![self isCancelled]) &#123;</div><div class="line">          <span class="keyword">if</span> (_completion) _completion(image, _request.URL, YYWebImageFromMemoryCache, YYWebImageStageFinished, nil);</div><div class="line">      &#125;</div><div class="line">      [self _finish];</div><div class="line">      [_lock unlock];</div><div class="line">      <span class="built_in">return</span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">``` </div><div class="line"></div><div class="line">* **异步到imageQueue中获取图片，同时将图片回调处理放在_networkThread中进行**</div><div class="line"></div><div class="line">``` bash</div><div class="line">dispatch_async([self.class _imageQueue], ^&#123;</div><div class="line">     __strong typeof(_self) self = _self;</div><div class="line">     <span class="keyword">if</span> (!self || [self isCancelled]) <span class="built_in">return</span>;</div><div class="line">     UIImage *image = [self.cache getImageForKey:self.cacheKey withType:YYImageCacheTypeDisk];</div><div class="line">     <span class="keyword">if</span> (image) &#123;</div><div class="line">         [self.cache <span class="built_in">set</span>Image:image imageData:nil <span class="keyword">for</span>Key:self.cacheKey withType:YYImageCacheTypeMemory];</div><div class="line">         [self performSelector:@selector(_didReceiveImageFromDiskCache:) onThread:[self.class _networkThread] withObject:image <span class="built_in">wait</span>UntilDone:NO];</div><div class="line">     &#125; <span class="keyword">else</span> &#123;</div><div class="line">         [self performSelector:@selector(_startRequest:) onThread:[self.class _networkThread] withObject:nil <span class="built_in">wait</span>UntilDone:NO];</div><div class="line">     &#125;</div><div class="line"> &#125;);</div><div class="line">``` </div><div class="line"></div><div class="line">* **收到网络请求完成回调，异步到imageQueue进行图片处理，同时异步到网络线程进行网络回调**</div><div class="line"></div><div class="line">``` bash</div><div class="line">(void)connectionDidFinishLoading:(NSURLConnection *)connection &#123;</div><div class="line">       dispatch_async([self.class _imageQueue], ^&#123;</div><div class="line">                      [self performSelector:@selector(_didReceiveImageFromWeb:) onThread:[self.class _networkThread] withObject:image <span class="built_in">wait</span>UntilDone:NO];</div><div class="line">       &#125;&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>本篇幅分析至此，其中涉及到的图片格式编解码没做具体展开，侧重点主要分析了作者对网络图片的处理，以及一些线程管理操作，强烈建议可以看下YYWebImageOperation，就是自己定制operation的典型案例。下一篇将继续分析YYKit的YYModel。</p>
 <p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
 
@@ -1424,10 +1430,7 @@ pthread_detach(thread);//设置线程状态为detached
       
         
           
-            <blockquote>
-<p>源码拆解之YYKit系列四（工具类）</p>
-</blockquote>
-<p>接前文，继续分析YYKit，YYKit提供了大量的工具类，整体存放在Utility目录下，本篇幅继续拆解一下这些工具类的写法。</p>
+            <p>接前文，继续分析YYKit，YYKit提供了大量的工具类，整体存放在Utility目录下，本篇幅继续拆解一下这些工具类的写法。</p>
 <ul>
 <li><p><strong>YYReachablity：</strong>用于检测网络状态的一个工具，创建一个后台线程，用于可以用来检测网络是否可达，也可以实时检测网络状态，也采用notifyBlock进行回调。</p>
 </li>
@@ -1596,19 +1599,16 @@ pthread_detach(thread);//设置线程状态为detached
       
         
           
-            <blockquote>
-<p>源码拆解之YYKit系列三（YYCache）</p>
-</blockquote>
-<p>YYCache是一个线程安全的KV缓存类，里面主要包含了四个类，YYCache，YYMemoryCache，YYDiskCache以及YYKVStorage，下面我们就逐一进行拆解：</p>
+            <p>YYCache是一个线程安全的KV缓存类，里面主要包含了四个类，YYCache，YYMemoryCache，YYDiskCache以及YYKVStorage，下面我们就逐一进行拆解：</p>
 <ul>
 <li><p><strong>YYCache：</strong>YYCache封装了YYMemoryCache和YYDiskCache，里面封装了很多的类NSCache接口，回调的接口数据均异步到后台线程进行回调，这个类比较简单，主要起封装的作用，最重点的步骤就是在获取object的时候，如果memoryCache中不存在，而diskCache中存在，则将其设置一份，通用的二级缓存设置策略。</p>
 </li>
 <li><p><strong>YYDiskCache：</strong>该类应该与YYKVStorageItem一起来讨论，YYKVStorageItem封装了文件类型存储，SQlite存储，以及文件与SQLite混合存储三种方式，同时暴露出一些接口供YYDiskCache交互，大致就是不同类型的增、删、改、查，不细分析了，而YYDiskCache则封装了类似YYMemeoryCache的API，提供给YYCache调用。而其中的数据操作都采用了dispatch_semaphore_wait来保证数据一致性。</p>
 </li>
 <li><p><strong>YYMemeoryCache：</strong>通过_YYLinkedMapNode来存储key-value，通过_YYLinkedMap来管理node，提供了几个limit，分别为countLimit， costLimit， 以及ageLimit来决定何时删除，采用LRU的方式做数据的删除和插入，教科书般的单链表操作，通过pthread_mutex_lock来保持数据一致性，甚至提供了releaseOnMainThread以及releaseAsynchronously来决定是否要在主线程清理和是否异步清理，特别是在异步清理的时候用了一个非常讨巧的方式，直接异步调用一个无用的方法，代码如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dispatch_async(queue, ^&#123;[holder count]; // release <span class="keyword">in</span> queue&#125;);</div></pre></td></tr></table></figure>
 </li>
 </ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dispatch_async(queue, ^&#123;[holder count]; // release <span class="keyword">in</span> queue&#125;);</div></pre></td></tr></table></figure>
 <p>整体来看，作者在cache的数据一致性上，以及存储及删除算法上面做了很多的事情，另外无论增删改查均异步到后台线程处理，保证了主线程的流畅。</p>
 <p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
 
@@ -1753,10 +1753,7 @@ pthread_detach(thread);//设置线程状态为detached
       
         
           
-            <blockquote>
-<p>源码拆解之YYKit系列二（分类）</p>
-</blockquote>
-<p>上篇对YYKit中宏文件的拆解，本篇决定对Base目录下Foundation，UIKit，Quarz目录进行拆解。由于涉及到的文件比较多，本篇幅只记录个人认为那些比较优秀的或者在OC编程中不是很常用的实现方式。</p>
+            <p>上篇对YYKit中宏文件的拆解，本篇决定对Base目录下Foundation，UIKit，Quarz目录进行拆解。由于涉及到的文件比较多，本篇幅只记录个人认为那些比较优秀的或者在OC编程中不是很常用的实现方式。</p>
 <ul>
 <li><p>通过block的形式使用KVO，block的代码集中式管理优点想必大家也都清晰</p>
 </li>
@@ -1767,10 +1764,10 @@ pthread_detach(thread);//设置线程状态为detached
 <li><p>oneway, 允许oc的对象在不同的线程中使用，不会阻塞调用线程。</p>
 </li>
 <li><p>可变参数列表，采用va_list声明一个可变参数列表args，之后采用va_start将可变参数赋值给args，利用va_end释放临时参数，具体代码如下：</p>
-<pre><code class="bash">va_list args; va_start(args, _last_arg_); [NSObject <span class="built_in">set</span>Inv:inv withSig:sig andArgs:args]; va_end(args);
-</code></pre>
 </li>
 </ul>
+<pre><code class="bash">va_list args; va_start(args, _last_arg_); [NSObject <span class="built_in">set</span>Inv:inv withSig:sig andArgs:args]; va_end(args);
+</code></pre>
 <p>本篇幅较短，作者在封装扩展的时候，封装了非常巨量的便捷方法，下一篇分析一下YYCache，还要说一句，大赞开源~</p>
 <p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
 
@@ -1915,10 +1912,7 @@ pthread_detach(thread);//设置线程状态为detached
       
         
           
-            <blockquote>
-<p>源码拆解之YYKit系列一（宏定义）</p>
-</blockquote>
-<p>YYKit是国内开发者贡献的一个非常优秀的开源库，里面封装了很多category以及很多工具类，目前在github上一共有9.8k个star，github地址为：<a href="https://github.com/ibireme/YYKit，鉴于其贡献的内容较多，这个库的拆解也会分几个部分来逐一拆解。" target="_blank" rel="external">https://github.com/ibireme/YYKit，鉴于其贡献的内容较多，这个库的拆解也会分几个部分来逐一拆解。</a></p>
+            <p>YYKit是国内开发者贡献的一个非常优秀的开源库，里面封装了很多category以及很多工具类，目前在github上一共有9.8k个star，github地址为：<a href="https://github.com/ibireme/YYKit" target="_blank" rel="external">YYKit</a>，鉴于其贡献的内容较多，这个库的拆解也会分几个部分来逐一拆解。</p>
 <p>本篇文章就先简单的说一下YYKitMacro这个宏定义文件，包括里面的一些用法</p>
 <ul>
 <li><p><strong>YY_CLAMP：</strong>这个宏定义主要描述了某个值x在low和high范围之内的约束，个人觉得，其应该判断一下low和high的大小，不然传值反了，会得到错误的结果。</p>
@@ -1928,14 +1922,16 @@ pthread_detach(thread);//设置线程状态为detached
 <li><p><strong>YYAssertNil系列：</strong>这个宏定义主要封装了系统的NSAssert以及NSCAssert，前者适用于OC，后者适用于C</p>
 </li>
 <li><p><strong>YYSYNTH_DUMMY_CLASS：</strong>这个文件中的小亮点之一，我们都知道在加载静态库的分类时候找不到分类中的方法，进而发生崩溃，解决的办法通常都是在info.plist配置-all_load或者-force_load，但作者采用了另一种解决办法，使得在加载这个库的时候对工程无侵入，具体如下：</p>
+</li>
+</ul>
 <pre><code class="bash">ifndef YYSYNTH_DUMMY_CLASS
 define YYSYNTH_DUMMY_CLASS(_name_) 
 @interface YYSYNTH_DUMMY_CLASS_ <span class="comment">## _name_ : NSObject @end </span>
 @implementation YYSYNTH_DUMMY_CLASS_ <span class="comment">## _name_ @end</span>
 endif
 </code></pre>
-<p><strong>为什么这段代码可以避免这个问题？</strong>，OC的链接器只会为类建立一个符号表，而并不会为每个方法建立符号表，因此如果静态库中如果定义了已存在的一个类的分类的话，链接器并不能将分类的代码和核心代码合并，因此最后的可执行文件中就会缺少分类的代码，因此函数的调用就会失败，这段宏定义呢，会虚拟建一个与category相同的定义和空实现，这样在链接的时候就可以找到该方法了，具体的OC中category的底层实现和加载方式可以参考这篇文章<a href="category">http://ios.jobbole.com/84341/</a>，个人觉得写得不错。</p>
-</li>
+<p><strong>为什么这段代码可以避免这个问题？</strong>，OC的链接器只会为类建立一个符号表，而并不会为每个方法建立符号表，因此如果静态库中如果定义了已存在的一个类的分类的话，链接器并不能将分类的代码和核心代码合并，因此最后的可执行文件中就会缺少分类的代码，因此函数的调用就会失败，这段宏定义呢，会虚拟建一个与category相同的定义和空实现，这样在链接的时候就可以找到该方法了，具体的OC中category的底层实现和加载方式可以参考这篇文章<a href="http://ios.jobbole.com/84341/" target="_blank" rel="external">Category</a>，个人觉得写得不错。</p>
+<ul>
 <li><p><strong>YYSYNTH_DYNAMIC_PROPERTY_OBJECT：</strong>利用关联对象动态添加属性</p>
 </li>
 <li><p><strong>weakify，strongify：</strong>这是一个很亮眼的写法，我们都知道block与self导致的循环引用需要weak和strong来解决循环引用的问题，这里作者声明了两个宏weakify，strongify，其中debug模式下autoreleasepool{}和release模式下try@finally的作用仅仅是为了在weakify和strongify前面写上@符号，区别于普通的源码，nice。当然RAC中也有类似的写法。现有的工程均可以借鉴。</p>

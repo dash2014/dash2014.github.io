@@ -87,17 +87,17 @@
 
 
 
-<meta name="description" content="AFNetworking的源码拆解  所有使用Object-C开发的iOS程序员接触到的网络库一定会有AFNetworking的身影，目前这个开源库大概有29k个star，具体的github地址为：https://github.com/AFNetworking/AFNetworking。 下面具体拆解一下：  AFURLSessionManager: 该类作为整个网络库中最重要的类，也是AFHT">
+<meta name="description" content="所有使用Object-C开发的iOS程序员接触到的网络库一定会有AFNetworking的身影，目前这个开源库大概有29k个star，具体的github地址为：AFNetWorking。 下面具体拆解一下：  AFURLSessionManager: 该类作为整个网络库中最重要的类，也是AFHTTPSessionManager的基类，其主要做了下面这些事情。  承载了整个Session的创建  t">
 <meta name="keywords" content="源码，AFNetworking">
 <meta property="og:type" content="article">
 <meta property="og:title" content="源码拆解之AFNetworking">
 <meta property="og:url" content="http://yoursite.com/2017/04/19/2017-04-19-源码分析之AFNetworking/index.html">
 <meta property="og:site_name" content="秋知轩">
-<meta property="og:description" content="AFNetworking的源码拆解  所有使用Object-C开发的iOS程序员接触到的网络库一定会有AFNetworking的身影，目前这个开源库大概有29k个star，具体的github地址为：https://github.com/AFNetworking/AFNetworking。 下面具体拆解一下：  AFURLSessionManager: 该类作为整个网络库中最重要的类，也是AFHT">
-<meta property="og:updated_time" content="2017-05-15T01:52:13.000Z">
+<meta property="og:description" content="所有使用Object-C开发的iOS程序员接触到的网络库一定会有AFNetworking的身影，目前这个开源库大概有29k个star，具体的github地址为：AFNetWorking。 下面具体拆解一下：  AFURLSessionManager: 该类作为整个网络库中最重要的类，也是AFHTTPSessionManager的基类，其主要做了下面这些事情。  承载了整个Session的创建  t">
+<meta property="og:updated_time" content="2017-05-15T02:45:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="源码拆解之AFNetworking">
-<meta name="twitter:description" content="AFNetworking的源码拆解  所有使用Object-C开发的iOS程序员接触到的网络库一定会有AFNetworking的身影，目前这个开源库大概有29k个star，具体的github地址为：https://github.com/AFNetworking/AFNetworking。 下面具体拆解一下：  AFURLSessionManager: 该类作为整个网络库中最重要的类，也是AFHT">
+<meta name="twitter:description" content="所有使用Object-C开发的iOS程序员接触到的网络库一定会有AFNetworking的身影，目前这个开源库大概有29k个star，具体的github地址为：AFNetWorking。 下面具体拆解一下：  AFURLSessionManager: 该类作为整个网络库中最重要的类，也是AFHTTPSessionManager的基类，其主要做了下面这些事情。  承载了整个Session的创建  t">
 
 
 
@@ -364,10 +364,7 @@
       
 
       
-        <blockquote>
-<p>AFNetworking的源码拆解</p>
-</blockquote>
-<p>所有使用Object-C开发的iOS程序员接触到的网络库一定会有AFNetworking的身影，目前这个开源库大概有29k个star，具体的github地址为：<a href="https://github.com/AFNetworking/AFNetworking。" target="_blank" rel="external">https://github.com/AFNetworking/AFNetworking。</a></p>
+        <p>所有使用Object-C开发的iOS程序员接触到的网络库一定会有AFNetworking的身影，目前这个开源库大概有29k个star，具体的github地址为：<a href="https://github.com/AFNetworking/AFNetworking" target="_blank" rel="external">AFNetWorking</a>。</p>
 <p>下面具体拆解一下：</p>
 <ul>
 <li><p><strong>AFURLSessionManager:</strong> 该类作为整个网络库中最重要的类，也是AFHTTPSessionManager的基类，其主要做了下面这些事情。</p>
