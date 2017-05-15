@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="源码，RZTransitions," />
 
 
 
@@ -87,15 +87,17 @@
 
 
 
-<meta name="description" content="莫谈人间几寒暑，静观弯月荡秋风~">
-<meta property="og:type" content="website">
-<meta property="og:title" content="秋知轩">
-<meta property="og:url" content="http://yoursite.com/archives/2017/index.html">
+<meta name="description" content="RZTransitions的源码拆解  RZTransitions 用作iOS VC切换动画的一个开源库，目前拥有1600多star，github地址为：https://github.com/Raizlabs/RZTransitions 具体拆解一下：  RZTransitionsNavigationController，整个工程的入口NavigationController，没什么额外的代码，">
+<meta name="keywords" content="源码，RZTransitions">
+<meta property="og:type" content="article">
+<meta property="og:title" content="源码拆解之RZTransitions">
+<meta property="og:url" content="http://yoursite.com/2017/04/17/2017-04-17-源码分析之RZAnimations/index.html">
 <meta property="og:site_name" content="秋知轩">
-<meta property="og:description" content="莫谈人间几寒暑，静观弯月荡秋风~">
+<meta property="og:description" content="RZTransitions的源码拆解  RZTransitions 用作iOS VC切换动画的一个开源库，目前拥有1600多star，github地址为：https://github.com/Raizlabs/RZTransitions 具体拆解一下：  RZTransitionsNavigationController，整个工程的入口NavigationController，没什么额外的代码，">
+<meta property="og:updated_time" content="2017-05-15T01:52:13.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="秋知轩">
-<meta name="twitter:description" content="莫谈人间几寒暑，静观弯月荡秋风~">
+<meta name="twitter:title" content="源码拆解之RZTransitions">
+<meta name="twitter:description" content="RZTransitions的源码拆解  RZTransitions 用作iOS VC切换动画的一个开源库，目前拥有1600多star，github地址为：https://github.com/Raizlabs/RZTransitions 具体拆解一下：  RZTransitionsNavigationController，整个工程的入口NavigationController，没什么额外的代码，">
 
 
 
@@ -123,13 +125,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/archives/2017/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/04/17/2017-04-17-源码分析之RZAnimations/"/>
 
 
 
 
 
-  <title> 归档 | 秋知轩 </title>
+  <title> 源码拆解之RZTransitions | 秋知轩 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -154,7 +156,7 @@
     
   
 
-  <div class="container sidebar-position-right  page-archive  ">
+  <div class="container sidebar-position-right page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -258,403 +260,203 @@
           <div id="content" class="content">
             
 
-  <section id="posts" class="posts-collapse">
-    <span class="archive-move-on"></span>
+  <div id="posts" class="posts-expand">
+    
 
-    <span class="archive-page-counter">
-      
-      
-      
-        
-      
-      嗯..! 目前共计 17 篇日志。 继续努力。
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/17/2017-04-17-源码分析之RZAnimations/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
     </span>
 
     
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                源码拆解之RZTransitions
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-17T18:54:01+08:00">
+                2017-04-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
 
       
       
-      
 
+      
+        <blockquote>
+<p>RZTransitions的源码拆解</p>
+</blockquote>
+<p>RZTransitions</p>
+<p>用作iOS VC切换动画的一个开源库，目前拥有1600多star，github地址为：<a href="https://github.com/Raizlabs/RZTransitions" target="_blank" rel="external">https://github.com/Raizlabs/RZTransitions</a></p>
+<p>具体拆解一下：</p>
+<ul>
+<li><p><strong>RZTransitionsNavigationController</strong>，整个工程的入口NavigationController，没什么额外的代码，个人觉得目录层级放在RZTranstions下面不是很合适，即使RZTranstionsManager作为它的代理。</p>
+</li>
+<li><p><strong>RZTransitionAction</strong>，定义了动画的方式枚举</p>
+</li>
+<li><p><strong>RZUniqueTransition</strong>，完整的定义了一个Transition的描述概念，主要包括，transitionAction，fromViewControllerClass，toViewControllerClass三个基本要素。</p>
+</li>
+<li><p><strong>Interactors</strong>，定义了一组动画，主要用来处理不同手势产生的动画效果。</p>
+</li>
+<li><p><strong>RZTransitionsManager</strong>，核心模块，其实现了UINavigationControllerDelegate,                                      UIViewControllerTransitioningDelegate,                                             UITabBarControllerDelegate三个协议，在其代理方法中定义不同的动画效果。</p>
+</li>
+<li><p><strong>Transitions</strong>， 这个目录中的文件主要实现了UIViewControllerAnimatedTransitioning的方法，用来完成整个动画。</p>
+</li>
+</ul>
+<p>整体来看这个开源库，其封装了独立的Transition描述类，以及单独抽象了不同的手势触发的动画，以及不同的动画实现方式，整体结构可以参考~</p>
+<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
+
+      
+    </div>
+
+    <div>
       
         
-        <div class="collection-title">
-          <h2 class="archive-year motion-element" id="archive-year-2017">2017</h2>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/源码，RZTransitions/" rel="tag"># 源码，RZTransitions</a>
+          
         </div>
       
+
+      
+        
       
 
       
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/14/2017-04-14-源码分析之INTUAnimationEngine/" rel="next" title="源码拆解之INTUAnimationEngine">
+                <i class="fa fa-chevron-left"></i> 源码拆解之INTUAnimationEngine
+              </a>
+            
+          </div>
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+          <span class="post-nav-divider"></span>
 
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2017/05/11/2017-05-11-源码分析之Masonry/" itemprop="url">
-              
-                <span itemprop="name">源码分析之Masonry</span>
-              
-            </a>
-        
-      </h1>
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/19/2017-04-19-源码分析之AFNetworking/" rel="prev" title="源码拆解之AFNetworking">
+                源码拆解之AFNetworking <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-05-11T11:50:01+08:00"
-              content="2017-05-11" >
-          05-11
-        </time>
-      </div>
-
-    </header>
+      
+      
+    </footer>
   </article>
 
 
 
-    
-
+    <div class="post-spread">
       
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2017/05/09/2017-05-09-源码分析之SDWebImage/" itemprop="url">
-              
-                <span itemprop="name">源码分析之SDWebImage</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-05-09T12:50:01+08:00"
-              content="2017-05-09" >
-          05-09
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2017/05/05/2017-05-05-iOS多线程编程总结/" itemprop="url">
-              
-                <span itemprop="name">iOS多线程编程总结</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-05-05T19:50:01+08:00"
-              content="2017-05-05" >
-          05-05
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2017/04/27/2017-04-27-源码分析之YYModel/" itemprop="url">
-              
-                <span itemprop="name">源码拆解之YYKit系列六</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-04-27T19:50:01+08:00"
-              content="2017-04-27" >
-          04-27
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2017/04/25/2017-04-25-源码分析之YYImage/" itemprop="url">
-              
-                <span itemprop="name">源码拆解之YYKit系列五</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-04-25T17:54:01+08:00"
-              content="2017-04-25" >
-          04-25
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2017/04/24/2017-04-24-我的骄傲/" itemprop="url">
-              
-                <span itemprop="name">那些骄傲的事</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-04-24T12:54:01+08:00"
-              content="2017-04-24" >
-          04-24
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2017/04/23/2017-04-23-源码分析之YYKit工具类/" itemprop="url">
-              
-                <span itemprop="name">源码拆解之YYKit系列四</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-04-23T11:54:01+08:00"
-              content="2017-04-23" >
-          04-23
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2017/04/21/2017-04-21-源码分析之YYCache/" itemprop="url">
-              
-                <span itemprop="name">源码拆解之YYKit系列三</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-04-21T18:54:01+08:00"
-              content="2017-04-21" >
-          04-21
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2017/04/21/2017-04-21-源码分析之YYKit分类/" itemprop="url">
-              
-                <span itemprop="name">源码拆解之YYKit系列二</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-04-21T11:54:01+08:00"
-              content="2017-04-21" >
-          04-21
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2017/04/20/2017-04-20-源码分析之YYKit宏定义/" itemprop="url">
-              
-                <span itemprop="name">源码拆解之YYKit系列一</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-04-20T20:54:01+08:00"
-              content="2017-04-20" >
-          04-20
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-  </section>
-
-  
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/archives/2017/page/2/">2</a><a class="extend next" rel="next" href="/archives/2017/page/2/"><i class="fa fa-angle-right"></i></a>
-  </nav>
-
-
+    </div>
+  </div>
 
 
           </div>
@@ -662,6 +464,10 @@
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -851,11 +657,9 @@
   
 
   
-  
-    <script type="text/javascript" id="motion.page.archive">
-      $('.archive-year').velocity('transition.slideLeftIn');
-    </script>
-  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
 
 
   

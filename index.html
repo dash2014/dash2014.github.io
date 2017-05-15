@@ -87,12 +87,15 @@
 
 
 
+<meta name="description" content="莫谈人间几寒暑，静观弯月荡秋风~">
 <meta property="og:type" content="website">
 <meta property="og:title" content="秋知轩">
 <meta property="og:url" content="http://yoursite.com/index.html">
 <meta property="og:site_name" content="秋知轩">
+<meta property="og:description" content="莫谈人间几寒暑，静观弯月荡秋风~">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="秋知轩">
+<meta name="twitter:description" content="莫谈人间几寒暑，静观弯月荡秋风~">
 
 
 
@@ -267,7 +270,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/12/hello-world/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/11/2017-05-11-源码分析之Masonry/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Selector">
@@ -289,8 +292,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/05/12/hello-world/" itemprop="url">
-                  Hello World
+                <a class="post-title-link" href="/2017/05/11/2017-05-11-源码分析之Masonry/" itemprop="url">
+                  源码分析之Masonry
                 </a>
               
             
@@ -306,8 +309,921 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-12T17:13:33+08:00">
-                2017-05-12
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-11T11:50:01+08:00">
+                2017-05-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>源码分析之Masonry</p>
+</blockquote>
+<p>Masonry，用于简化页面布局的第三方开源库，当前github上面14.7k个star，具体的地址为：<a href="https://github.com/SnapKit/Masonry。Masonry，主要采用链式编程的方式，简化了苹果原生AutoLayout大量的代码布局。下面逐步了解一下Masonry。" target="_blank" rel="external">https://github.com/SnapKit/Masonry。Masonry，主要采用链式编程的方式，简化了苹果原生AutoLayout大量的代码布局。下面逐步了解一下Masonry。</a></p>
+<h2 id="链式编程："><a href="#链式编程：" class="headerlink" title="链式编程："></a>链式编程：</h2><p>什么是链式编程？简单的说就是通过点语法将某个流程的代码块一直写下去。具体到Objective-C中，则可以采用两种方式书写。</p>
+<ul>
+<li><p>需要处于链条上的方法必须返回一个block</p>
+</li>
+<li><p>block必须存在参数，及返回值，而这个返回值必须是对象本身。具体的定义方式类似这样：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">@interface People : NSObject   </div><div class="line">//- (People *(^)(NSString*))eat;  </div><div class="line">//- (People *(^)(NSString*))work;   </div><div class="line">@end  </div><div class="line">@implementation People  </div><div class="line">//- (People *(^)(NSString*))eat &#123;  </div><div class="line">    <span class="built_in">return</span> ^(NSString* food)&#123;  </div><div class="line">        []self eatFood:food];</div><div class="line">        <span class="built_in">return</span> self;  </div><div class="line">    &#125;;  </div><div class="line">&#125;  </div><div class="line">//- (People *(^)(NSString*))work &#123;  </div><div class="line">    <span class="built_in">return</span> ^(NSString* time)&#123;  </div><div class="line">        []self workTime:time];</div><div class="line">        <span class="built_in">return</span> self;  </div><div class="line">    &#125;;  </div><div class="line">&#125;  </div><div class="line">``` </div><div class="line"></div><div class="line">- 在需要用到的地方就可以通过点语法来进行调用。这样这一个流程就会按照顺序执行，看上去简单而清晰，类似这样。</div><div class="line">``` bash</div><div class="line">People *people = [People new];</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>那总结一下链式编程巧妙的利用了语法糖的概念，使得整个流程通过点语法巧妙的写在了一条语句上，看上去直观清晰，因此在一些将过程颗粒化之后重新进行组装的业务上面可以使用。</p>
+<h2 id="语法糖"><a href="#语法糖" class="headerlink" title="语法糖"></a>语法糖</h2><p>Syntactic sugar，通常泛指某些语法，让程序员更便捷的使用，来增加程序的可读性，对语言的功能没有什么影响。在OC中包括枚举值的绑定，字面量赋值取值，当然也包括上面提到的点语法，等等。</p>
+<h2 id="Masonry"><a href="#Masonry" class="headerlink" title="Masonry"></a>Masonry</h2><p>本篇幅均以添加约束为例进行拆分，移除及更新逻辑与此类似，不再赘述。具体的代码调用方式类似这样：</p>
+<pre><code class="bash">[view1 mas_makeConstraints:^(MASConstraintMaker *make) {
+ make.top.equalTo(superview.mas_top).with.offset(padding.top); //with is an optional semantic filler
+ make.left.equalTo(superview.mas_left).with.offset(padding.left);
+ make.bottom.equalTo(superview.mas_bottom).with.offset(-padding.bottom);
+ make.right.equalTo(superview.mas_right).with.offset(-padding.right);
+}];
+</code></pre>
+<ul>
+<li><p><strong>Categories:</strong>，UIView+MASAdditions &amp; ViewController+MASAdditions，里面封装了mas_makeConstraints的方法，该方法入参是一个block，返回一个数组，block的入参是一个<em>MASConstraintMaker</em>对象，返回void类型。这个方法主要做了以下几件事情：</p>
+<ul>
+<li><p>禁止将Autoresizing转成Autolayout的约束</p>
+</li>
+<li><p>创建一个constraintMaker， 并作为block的入参，供用户使用，类似上述代码的<strong>make</strong>变量。</p>
+</li>
+<li><p>调用constraintMaker的install方法，返回当前View的所有约束，当然是MASConstraint类型的。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>MASConstraintMaker：</strong>核心工厂类，其定义了一些MASConstraint类型的属性，当前的视图View，以及相应的attributes。该类在执行make.top或者其他属性的时候，均会先调用<em>addConstraintWithLayoutAttribute：</em>方法建立MASConstraint类型的约束，并将其放入数组中，之后执行<em>install</em>方法，<em>install</em>方法会调用MASConstraint的<em>install</em>方法添加约束。在MASConstraint中<em>install</em>是一个虚方法，需要其子类实现。</p>
+</li>
+<li><p><strong>MASConstraint：</strong>继承自NSLayoutConstraint，抽象了一些属性比如top等，以及一些方法，比如上述代码中的<em>equalTo</em>等，主要通过语法糖的方式来保证链式调用，其具体的方法由其子类实现。</p>
+</li>
+<li><p><strong>MASViewConstraint：</strong>MASConstraint的子类，根据约束的优先级，属性等，将约束添加到指定的位置。<em>install</em>方法的具体实现就在这里。</p>
+</li>
+<li><p><strong>MASCompositeConstraint：</strong>同样也是MASConstraint的子类，主要用于同时建立多个constraint。</p>
+</li>
+<li><p><strong>MASViewAttribute：</strong>某个view的某个attribute，其主要封装了一个UIView以及NSLayoutAttribute。</p>
+</li>
+</ul>
+<p>至此Masonry就已经拆解结束了，其作为iOS开发中标志性的采用链式语法进行方法调用的仓库之一，还是很值得学习和参考的，很好的简化了苹果原生的NSLayoutConstraint带来的冗长代码，当然苹果的IB布局玩转约束也是可以值得一试的。</p>
+<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/09/2017-05-09-源码分析之SDWebImage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/05/09/2017-05-09-源码分析之SDWebImage/" itemprop="url">
+                  源码分析之SDWebImage
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-09T12:50:01+08:00">
+                2017-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>源码分析之SDWebImage</p>
+</blockquote>
+<p><strong>SDWebImage</strong>，iOS开发者必然会接触到的一个关于图片的开源库，其github地址：<a href="https://github.com/rs/SDWebImage，目前有17k+个star，下面对这个库进行简单的拆解。后面简称为SD。" target="_blank" rel="external">https://github.com/rs/SDWebImage，目前有17k+个star，下面对这个库进行简单的拆解。后面简称为SD。</a></p>
+<ul>
+<li><p>SD提供了一些UI的分类，用于简化组件上图片的配置。无论UIImageView，UIButton等最后都会统一调用<em>UIView+WebCache.m</em>这个类中的这个方法。</p>
+<pre><code class="bash">//- (void)sd_internalSetImageWithURL:(nullable NSURL *)url
+                placeholderImage:(nullable UIImage *)placeholder
+                         options:(SDWebImageOptions)options
+                    operationKey:(nullable NSString *)operationKey
+                   <span class="built_in">set</span>ImageBlock:(nullable SDSetImageBlock)<span class="built_in">set</span>ImageBlock
+                        progress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
+                       completed:(nullable SDExternalCompletionBlock)completedBlock;
+</code></pre>
+</li>
+<li><p>上述方法内部会调用<em>SDWebImageManager</em>的loadImage方法，如下</p>
+<pre><code class="bash">//- (id &lt;SDWebImageOperation&gt;)loadImageWithURL:(nullable NSURL *)url
+                                   options:(SDWebImageOptions)options
+                                  progress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
+                                 completed:(nullable SDInternalCompletionBlock)completedBlock
+</code></pre>
+<p>该方法会返回一个遵循SDWebImageOperation的协议，之后会将该operation加入字典进行缓存。</p>
+</li>
+<li><p>继续解析上述loadImage的方法，该方法会首先判断是否这个url是否包含在失败的url中，如果是则直接进行失败回调，反之，从imageCache中获取图片信息，如果不存在，则通过imageDownloader尝试去下载图片，下载成功，则将其缓存，下载失败，则将url存入失败的url列表中。方法代码略长，就不粘贴了。</p>
+</li>
+<li><p>此处作者会将operation加到一个runningOperation的列表中，目的是为了方便对正在进行的operation操作，主要是cancel操作。</p>
+</li>
+<li><p>在对图片进行处理的时候都会异步到后台线程进行操作，避免阻塞主线程。</p>
+</li>
+<li><p><strong>SDWebImageDownloader：</strong>这个类主要执行图片的下载，建立一个SDWebImageDownloaderOperation，将其加入operationQueue中，同时也通过operation的依赖关系完成LIFO操作。</p>
+</li>
+<li><p><strong>SDWebImageDownloaderOperation：</strong>自定义的operation，用于完成网络请求及之后的图片处理，同时通过barrierQueue来确保多线程操作时候的执行顺序，通过GCD将通知都异步到主线程进行发送，确保监听者可以直接在主线程进行操作。</p>
+</li>
+</ul>
+<p>SDWebImage的拆解就这样，其具体的使用方式或者一些支持的额外的功能，比如Gif等均可参考其说明文档即可。</p>
+<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/05/2017-05-05-iOS多线程编程总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/05/05/2017-05-05-iOS多线程编程总结/" itemprop="url">
+                  iOS多线程编程总结
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-05T19:50:01+08:00">
+                2017-05-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>iOS多线程编程总结</p>
+</blockquote>
+<p>现有的项目开发过程中，为了追求效率与速度，都会使用多线程编程，什么任务放在主线程，什么任务放在后台，什么任务只能串行执行，什么任务可以并发执行，接下来本篇从一些基本概念出发，算是留一个案底给自己备份。</p>
+<h2 id="串行-amp-并发-amp-并行"><a href="#串行-amp-并发-amp-并行" class="headerlink" title="串行 &amp; 并发 &amp; 并行"></a>串行 &amp; 并发 &amp; 并行</h2><ul>
+<li><p><strong>串行：</strong>一次只执行一个任务，后续任务只能等待前一个任务执行完成。<strong>就比如你在写代码，突然产品经理来了一个需求，让他在那等着，等你写完了在处理他的需求</strong>。</p>
+</li>
+<li><p><strong>并发：</strong>拥有同时处理多个任务的能力，交替处理不同任务。<strong>就比如你在写代码，产品经理来了一个需求，你停下写代码，和他讨论需求，时而讨论需求，时而写代码。</strong></p>
+</li>
+<li><p><strong>并行：</strong>多个任务同时执行。<strong>就比如你在写代码，产品经理来了一个需求，你一边写代码，一边和他讨论需求</strong></p>
+</li>
+</ul>
+<h2 id="同步-amp-异步"><a href="#同步-amp-异步" class="headerlink" title="同步 &amp; 异步"></a>同步 &amp; 异步</h2><ul>
+<li><p><strong>同步：</strong>阻塞当前线程，等待操作完成之后才会继续执行后续的逻辑代码。</p>
+</li>
+<li><p><strong>异步：</strong>不等待操作的结果，直接执行后续代码。</p>
+</li>
+</ul>
+<h2 id="pthread-amp-NSThread-amp-NSOperationQueue-amp-GCD"><a href="#pthread-amp-NSThread-amp-NSOperationQueue-amp-GCD" class="headerlink" title="pthread &amp; NSThread &amp; NSOperationQueue &amp; GCD"></a>pthread &amp; NSThread &amp; NSOperationQueue &amp; GCD</h2><ul>
+<li><p><strong>pthread：</strong>POSIX thread，在iOS开发中很少用到，其是一套C语言的框架，具体方法可以查询<pthread.h>，比较简单的用法为：</pthread.h></p>
+<pre><code class="bash">NSString *<span class="built_in">test</span> = @<span class="string">"test"</span>;
+pthread_t thread;//创建线程对象
+int result = pthread_create(&amp;thread, NULL, task,(__bridge void *)(<span class="built_in">test</span>));//创建线程
+pthread_detach(thread);//设置线程状态为detached
+</code></pre>
+</li>
+<li><p><strong>NSThread：</strong> 需要自己处理线程的生命周期，同步，以及枷锁等问题，导致额外的性能开销。NSThread有三种初始化方法：</p>
+<ul>
+<li><p><strong><em>initWithTarget:selector:object</em></strong>或者<strong><em>initWithBlock:</em></strong>来完成初始化，后者iOS10.0之后支持，之后调用start来启动线程。</p>
+</li>
+<li><p><strong><em>detachNewThreadSelector:toTarget:withObject</em></strong>或<strong><em>detachNewThreadWithBlock:toTarget:withObject</em></strong>来完成初始化，同时启动线程。</p>
+</li>
+<li><p><strong><em>performSelector:onThread:withObject:waitUntilDone:mode系列：</em></strong>被动的使用主线程，后台线程或者创建线程。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>NSThread也可以通过isMainThread来查询当前是否在主线程，可以通过threadPriority来控制线程优先级，这个之后会被QoS替代掉。</p>
+<ul>
+<li><p><strong>NSOperationQueue：</strong> operationQueue可以配置operation的依赖关系，也可以单独自定义operation，同时也可以取消正在pending的任务，比较好一点，全面一点的用法可以参考这篇文章<a href="operation">http://blog.leichunfeng.com/blog/2015/07/29/ios-concurrency-programming-operation-queues/</a>。写的非常完整，就不再额外赘述了，另外也可以参考学习之前YYKit中对Operation的自定义。</p>
+</li>
+<li><p><strong>GCD：</strong> GCD是苹果的一项技术，可以让开发者不用去具体的关注底层线程的实现和控制细节，而只关注本身要实现的任务，其封装并提供了很多API，内容较多，后面单独来写一篇关于GCD的内容，它通过FIFO来保证任务的先到先执行，GCD的任务相对来说比较独立，取消或者暂停一个正在执行的任务会比较难处理。</p>
+</li>
+</ul>
+<p>iOS开发过程中所用到的多线程操作大致就这几种，优势劣势都很明显，苹果的建议是直接采用GCD和NSOperationQueue，但有些第三方库的开发者为了追求性能的提高，采用NSThread或者pthread来达成目的。下一篇来总结一下GCD。</p>
+<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/27/2017-04-27-源码分析之YYModel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/27/2017-04-27-源码分析之YYModel/" itemprop="url">
+                  源码拆解之YYKit系列六
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-27T19:50:01+08:00">
+                2017-04-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>源码拆解之YYKit系列六（YYModel）</p>
+</blockquote>
+<p>本篇幅来拆解YYModel，YYModel主要提供了一些模型转换的能力，包括model转换成JSON，以及JSON转换成model等，具体可以看下图：<br><img src="http://7xsw5d.com1.z0.glb.clouddn.com/a.png" alt="Alt text"><br>下面根据其提供的整个功能进行拆解：</p>
+<ul>
+<li><p><strong>json转字典：</strong>简单的利用OC的NSJSONSerialization进行转换。</p>
+</li>
+<li><p><strong>json转model：</strong>调用上述方法，现将json转成字典，后调用下面将字典转成model。</p>
+</li>
+<li><p><strong>字典转model：</strong>首先创建一个<strong>_YYModelMeta</strong>，之后实例化一个cls对应的对象，之后调用通过字典配置模型的方法modelSetWithDictionary进行配置。</p>
+<ul>
+<li><strong>_YYModelMeta</strong> 首先从缓存中读取model class meta，如果没有则根据cls生成_YYModelMeta对象，<strong>此处用到自选锁</strong>，看了下作者用了很多种锁的写法，后面单独开一篇整理一下各种锁的使用。_YYModelMeta持有了_classInfo对象，YYClassInfo里面就是典型的runtime应用，包括method，property，ivar的操作，同时也写了两个cache，metaCache和classCache用来设置和读取YYClassInfo对象。</li>
+</ul>
+</li>
+<li><p><strong>model转JSON：</strong>通过_YYModelMeta读取model对象，之后对其进行递归映射。</p>
+</li>
+<li><p><strong>model copy：</strong>通过消息发送机制objc_msgSend，将_YYModelMeta的内容set到新的对象中。</p>
+</li>
+<li><p><strong>model encode：</strong>逐一对对象的每一个属性值进行encode。</p>
+</li>
+<li><p><strong>model hash：</strong>需要对对象的每一个属性值进行hash，之后进行异或操作。</p>
+</li>
+<li><p><strong>model equal：</strong>通过几个方面判定两个model是否相同：</p>
+<ul>
+<li><p>类型是否相同</p>
+</li>
+<li><p>是否属于OC基础类型，直接调用isEqual方法判断</p>
+</li>
+<li><p>hash值是否相同</p>
+</li>
+<li><p>属性值逐一判断</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>YYModel里面用了大量的runtime操作，一些具体的内容，包括方法，属性，变量的增删改查等之后有时间整理一下，作者对YYModel的性能做了实验和分析，具体可以参照他的博客<a href="http://blog.ibireme.com，个人觉得这个性能之所以好，应该主要从下面几个方面入手。" target="_blank" rel="external">http://blog.ibireme.com，个人觉得这个性能之所以好，应该主要从下面几个方面入手。</a></p>
+<ul>
+<li><p>大量的C方法调用</p>
+</li>
+<li><p>内联函数的大量使用</p>
+</li>
+<li><p>CoreFoundation层次API的大量使用而不是Foundation，包括在一些容器的遍历及字典、数组的取值和赋值等操作上面</p>
+</li>
+<li><p>runtime的使用，能使用ivar就不用property，能使用property就不用KVC</p>
+</li>
+<li><p>缓存机制的使用，包括metaCache和classCache</p>
+</li>
+</ul>
+<p>本篇就写到这里，这部分内容可以好好的学一下runtime的使用。</p>
+<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/25/2017-04-25-源码分析之YYImage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/25/2017-04-25-源码分析之YYImage/" itemprop="url">
+                  源码拆解之YYKit系列五
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-25T17:54:01+08:00">
+                2017-04-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>源码拆解之YYKit系列五（YYImage）</p>
+</blockquote>
+<p>本篇幅继续描述YYKit，主要拆解YYImage目录，YYImage提供了不同种类的图片加载，包括单张图片，多张图片，gif图等，为此其设计了几个类来包括这些内容，主要为YYImage，YYFrameImage，YYSpriteSheetImage等，它们均实现了YYAnimatedImage协议，这个协议提供了一些方法，统一了单张图片，动图与静态图片的处理方式，同时也提供了YYAnimatedImageView用来承载Image，YYImageCoder用作不同格式的图片的编解码工作。这部分内容由于个人对涉及图片格式的编解码等操作不是很熟悉，不做拆解，下面主要拆解网络图片部分。</p>
+<ul>
+<li><p><strong>Categories：</strong>这部分工作主要是提供了一些分类，用于ImageView以及Button、Layer等图片的渲染及加载，大致流程如下：</p>
+<ul>
+<li><p>首先cancel当前的operation，同时获取当前的哨兵，哨兵的值采用原子操作增加。</p>
+</li>
+<li><p>异步到主线程，先判断是否传输过来的imageURL正常，以及决定是否设定placeHolder。</p>
+</li>
+<li><p>从cache里面获取图片信息，如果存在直接加载，则进行渲染，同时回调完成，如果不存在，则异步到后台线程，配置progress和completion两个Block，通过setter配置operation，进行网络请求，成功后回调，接下来我们开始拆分setter。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>_YYWebImageSetter：</strong>私有类，主要的作用就是通过信号量以及哨兵来控制operation的操作，确保在进行网络请求以及获取imageURL时的线程安全，其内部直接调用YYWebImageManager的方法生成operation，具体代码如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"> NSOperation *operation = [manager requestImageWithURL:imageURL options:options progress:progress transform:transform completion:completion];</div><div class="line">``` </div><div class="line"></div><div class="line">- **YYWebImageManager：**通过配置Http的各种参数生成request，后用request   等信息生成operation，同时将operation加入到operationQueue中，代码较少，核心代码很容易读懂，此处就不再贴了。</div><div class="line"></div><div class="line">- **YYWebImageOperation：**网络图片请求的核心类，继承自NSOperation类，重写了operation的各种方法，包括start，cancel等，在**_startOperation**中，先从内存缓存中读取图片信息，如果内存缓存中没有，则从磁盘缓存中读取图片信息，如果磁盘缓存中有，则将其设置到内存缓存中，如果磁盘缓存中没有，则执行网络请求，同时控制网络活跃数量。请求成功后完成回调及缓存设置等操作。</div><div class="line"></div><div class="line">- **YYImageCache：**引用了YYCache来进行图片的存储。</div><div class="line"></div><div class="line">**YYWebImageOperation**线程分析：这里面一共涉及两个线程操作，分别叫做_imageQueue和_networkThread，此处其在从内存缓存中获取采用了同步的方式，而从磁盘中获取的时候将其异步到_imageQueue去获取，而从磁盘获取到图片或者发送网络请求，图片处理统一在_imageQueue处理，而网络回调则统一在_networkThread中进行。具体代码如下：</div><div class="line">* **_startOperation内存缓存图片直接获取**</div><div class="line">``` bash</div><div class="line">UIImage *image = [_cache getImageForKey:_cacheKey withType:YYImageCacheTypeMemory];</div><div class="line">  <span class="keyword">if</span> (image) &#123;</div><div class="line">      [_lock lock];</div><div class="line">      <span class="keyword">if</span> (![self isCancelled]) &#123;</div><div class="line">          <span class="keyword">if</span> (_completion) _completion(image, _request.URL, YYWebImageFromMemoryCache, YYWebImageStageFinished, nil);</div><div class="line">      &#125;</div><div class="line">      [self _finish];</div><div class="line">      [_lock unlock];</div><div class="line">      <span class="built_in">return</span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><strong>异步到imageQueue中获取图片，同时将图片回调处理放在_networkThread中进行</strong><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">dispatch_async([self.class _imageQueue], ^&#123;</div><div class="line">     __strong typeof(_self) self = _self;</div><div class="line">     <span class="keyword">if</span> (!self || [self isCancelled]) <span class="built_in">return</span>;</div><div class="line">     UIImage *image = [self.cache getImageForKey:self.cacheKey withType:YYImageCacheTypeDisk];</div><div class="line">     <span class="keyword">if</span> (image) &#123;</div><div class="line">         [self.cache <span class="built_in">set</span>Image:image imageData:nil <span class="keyword">for</span>Key:self.cacheKey withType:YYImageCacheTypeMemory];</div><div class="line">         [self performSelector:@selector(_didReceiveImageFromDiskCache:) onThread:[self.class _networkThread] withObject:image <span class="built_in">wait</span>UntilDone:NO];</div><div class="line">     &#125; <span class="keyword">else</span> &#123;</div><div class="line">         [self performSelector:@selector(_startRequest:) onThread:[self.class _networkThread] withObject:nil <span class="built_in">wait</span>UntilDone:NO];</div><div class="line">     &#125;</div><div class="line"> &#125;);</div><div class="line">``` </div><div class="line">* **收到网络请求完成回调，异步到imageQueue进行图片处理，同时异步到网络线程进行网络回调**</div><div class="line">``` bash</div><div class="line">(void)connectionDidFinishLoading:(NSURLConnection *)connection &#123;</div><div class="line">       dispatch_async([self.class _imageQueue], ^&#123;</div><div class="line">                      [self performSelector:@selector(_didReceiveImageFromWeb:) onThread:[self.class _networkThread] withObject:image <span class="built_in">wait</span>UntilDone:NO];</div><div class="line">       &#125;&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>本篇幅分析至此，其中涉及到的图片格式编解码没做具体展开，侧重点主要分析了作者对网络图片的处理，以及一些线程管理操作，强烈建议可以看下YYWebImageOperation，就是自己定制operation的典型案例。下一篇将继续分析YYKit的YYModel。</p>
+<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/24/2017-04-24-我的骄傲/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/24/2017-04-24-我的骄傲/" itemprop="url">
+                  那些骄傲的事
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-24T12:54:01+08:00">
+                2017-04-24
               </time>
             
 
@@ -366,15 +1282,676 @@
       
         
           
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+            <p>不记得从何时起，让人骄傲的事陡然发生改变。</p>
+<p>犹记得小时候家里长辈们总是习惯问我，“长大后想做什么？”，我懵懵懂懂，脸红害羞的语塞好久，说不出个所以然，记得那时候家里有一定破旧的“大盖帽”，我觉得帅气的不得了，也许我将来会是一名军人，保家卫国，荣誉满身，我觉得那也许会是值得骄傲一辈子的事。</p>
+<p>后来大了些，孩童的天性慢慢放飞，我想做什么，突然变得模糊起来，从初中，到高中，似乎总有一种声音告诉我，不可以输，不记得熬过多少个凌晨和黄昏，送走迎来了多少日月星辰，读遍了书桌里的课本，翻烂了背包里的教材，也许我将来会是一名科学家，致力科研，燃烧生命，我觉得那也许会是值得骄傲一辈子的事。</p>
+<p>再后来，青春时代的冲动与迷茫，困惑了我太久，我不知道要做什么，也不去想将来要做什么，就这样日复一日的走完每天必走的路，过完每天要过的日子，心中想着，反正人生还长，就这样散漫的从阳光道走上独木桥，反省通常来自于一些事件的发生，能自省的人向来很强大，可是我不是。直到意识到人生的荒芜，以及责任的凸显，也希望别人不要重复我的路，也许我会成为一名辅导员，蜡炬成灰，桃李天下，我觉得那也许会是值得骄傲一辈子的事。</p>
+<p>毕业之后，成了家，生了子，熟悉的人渐渐走远，慢慢发现人都变了，变的没有激情，麻木，甚至充满了利益的味道，永远不苟言笑的脸，以及阴险诡谲的声调，每个人都在谈论着股市，房市，办公室，地铁，甚至街边的大爷大妈都在高声阔论着，有房一族脸上幸福洋溢，踌躇满志的计划着下一套房子是选学区还是选郊区，途中一族面色焦急，内心忐忑的期待着卖家不要在签约时候临时提价，无房一族大喊阶级固化，无感的看着曲线上上下下，让人充满骄傲的事变了，变的不再因为你的付出多少而得到内心的满足，变的不再因为你的贡献多少而得到精神的充盈。内心强大顾然敢于直面梦想的背影，可将其置于历史的车轮下又显得多么风雨飘零。不再有梦想，甚至幻想，那我的骄傲在哪？</p>
+<p>我很好，会更好，也许生活本就这样，只是我们在成长。<br>无论如何，也会一直坚持的走下去，只因心有执念，肩担责任。</p>
+<p><strong>多期待一下生活中那些美好，虽然这生活也并不富饶。</strong></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/23/2017-04-23-源码分析之YYKit工具类/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/23/2017-04-23-源码分析之YYKit工具类/" itemprop="url">
+                  源码拆解之YYKit系列四
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-23T11:54:01+08:00">
+                2017-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>源码拆解之YYKit系列四（工具类）</p>
+</blockquote>
+<p>接前文，继续分析YYKit，YYKit提供了大量的工具类，整体存放在Utility目录下，本篇幅继续拆解一下这些工具类的写法。</p>
+<ul>
+<li><p><strong>YYReachablity：</strong>用于检测网络状态的一个工具，创建一个后台线程，用于可以用来检测网络是否可达，也可以实时检测网络状态，也采用notifyBlock进行回调。</p>
+</li>
+<li><p><strong>YYGestureRecognizer：</strong>继承自UIGesture，主要目的是可以通过block来实时获取任意时刻的移动的point。</p>
+</li>
+<li><p><strong>YYFileHash：</strong>列举了大量的文件hash算法，同时采用一些c方法来加快处理速度。</p>
+</li>
+<li><p><strong>YYKeyChain：</strong>封装了一个Item用来处理数据，同时封装了YYKeyChain暴露增删改查的接口。</p>
+</li>
+<li><p><strong>YYWeakProxy：</strong>持有weak对象，防止循环引用，继承自NSProxy，通过将target设置成weak，来达到破坏循环引用的目的，比如NSTimer与self。</p>
+</li>
+<li><p><strong>YYTimer：</strong>利用Dispatch Source Timer封装成类似NSTimer的接口，更加高效和接近系统使用方式。</p>
+</li>
+<li><p><strong>YYTransaction：</strong>创建一个Transaction对象，并在主线程休眠或者退出之前，使其target执行对应的selector方法。</p>
+</li>
+<li><p><strong>YYAsyncLayer：</strong>将图形的绘制放在后台线程操作，在绘制完成之后将其异步会主线程显示，通过设定willDisplay，display，didDisplay三个block来完成特定步骤的回调设置。</p>
+</li>
+<li><p><strong>YYSentinel：</strong>通过原子操作，保证数据的线程安全。</p>
+</li>
+<li><p><strong>YYDispatchQueuePool：</strong>，在iOS8.0之后，GCD提供了可以通过根据不同的QOS，配置不同的queue_attr，进而生成不同状态的queue，作者通过配置不同的QOS，生成不同的queue，并将其提供出去。</p>
+</li>
+<li><p><strong>YYThreadSafeArray，YYThreadSafeDictionary：</strong>利用GCD对资源进行上锁操作，以达到线程安全的效果。</p>
+</li>
+</ul>
+<p>本篇幅简要的分析了作者提供的开源工具类，在质量和数量上都相当可观，其中很多工具都已经在工程项目中使用，很多值得借鉴、参考和学习的地方。</p>
+<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/21/2017-04-21-源码分析之YYCache/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/21/2017-04-21-源码分析之YYCache/" itemprop="url">
+                  源码拆解之YYKit系列三
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-21T18:54:01+08:00">
+                2017-04-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>源码拆解之YYKit系列三（YYCache）</p>
+</blockquote>
+<p>YYCache是一个线程安全的KV缓存类，里面主要包含了四个类，YYCache，YYMemoryCache，YYDiskCache以及YYKVStorage，下面我们就逐一进行拆解：</p>
+<ul>
+<li><p><strong>YYCache：</strong>YYCache封装了YYMemoryCache和YYDiskCache，里面封装了很多的类NSCache接口，回调的接口数据均异步到后台线程进行回调，这个类比较简单，主要起封装的作用，最重点的步骤就是在获取object的时候，如果memoryCache中不存在，而diskCache中存在，则将其设置一份，通用的二级缓存设置策略。</p>
+</li>
+<li><p><strong>YYDiskCache：</strong>该类应该与YYKVStorageItem一起来讨论，YYKVStorageItem封装了文件类型存储，SQlite存储，以及文件与SQLite混合存储三种方式，同时暴露出一些接口供YYDiskCache交互，大致就是不同类型的增、删、改、查，不细分析了，而YYDiskCache则封装了类似YYMemeoryCache的API，提供给YYCache调用。而其中的数据操作都采用了dispatch_semaphore_wait来保证数据一致性。</p>
+</li>
+<li><p><strong>YYMemeoryCache：</strong>通过_YYLinkedMapNode来存储key-value，通过_YYLinkedMap来管理node，提供了几个limit，分别为countLimit， costLimit， 以及ageLimit来决定何时删除，采用LRU的方式做数据的删除和插入，教科书般的单链表操作，通过pthread_mutex_lock来保持数据一致性，甚至提供了releaseOnMainThread以及releaseAsynchronously来决定是否要在主线程清理和是否异步清理，特别是在异步清理的时候用了一个非常讨巧的方式，直接异步调用一个无用的方法，代码如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dispatch_async(queue, ^&#123;[holder count]; // release <span class="keyword">in</span> queue&#125;);</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>整体来看，作者在cache的数据一致性上，以及存储及删除算法上面做了很多的事情，另外无论增删改查均异步到后台线程处理，保证了主线程的流畅。</p>
+<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/21/2017-04-21-源码分析之YYKit分类/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/21/2017-04-21-源码分析之YYKit分类/" itemprop="url">
+                  源码拆解之YYKit系列二
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-21T11:54:01+08:00">
+                2017-04-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>源码拆解之YYKit系列二（分类）</p>
+</blockquote>
+<p>上篇对YYKit中宏文件的拆解，本篇决定对Base目录下Foundation，UIKit，Quarz目录进行拆解。由于涉及到的文件比较多，本篇幅只记录个人认为那些比较优秀的或者在OC编程中不是很常用的实现方式。</p>
+<ul>
+<li><p>通过block的形式使用KVO，block的代码集中式管理优点想必大家也都清晰</p>
+</li>
+<li><p>大量的c方法调用，可以看到作者在封装各种category的时候很多地方直接采用了c方法调用，这样做会比直接使用OC的代码效率高一些</p>
+</li>
+<li><p>NSThread中runloop的操作，具体runloop的细节可以参考这篇文章：<a href="runloop">http://www.cocoachina.com/ios/20150601/11970.html</a></p>
+</li>
+<li><p>oneway, 允许oc的对象在不同的线程中使用，不会阻塞调用线程。</p>
+</li>
+<li><p>可变参数列表，采用va_list声明一个可变参数列表args，之后采用va_start将可变参数赋值给args，利用va_end释放临时参数，具体代码如下：</p>
+<pre><code class="bash">va_list args; va_start(args, _last_arg_); [NSObject <span class="built_in">set</span>Inv:inv withSig:sig andArgs:args]; va_end(args);
+</code></pre>
+</li>
+</ul>
+<p>本篇幅较短，作者在封装扩展的时候，封装了非常巨量的便捷方法，下一篇分析一下YYCache，还要说一句，大赞开源~</p>
+<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/20/2017-04-20-源码分析之YYKit宏定义/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/20/2017-04-20-源码分析之YYKit宏定义/" itemprop="url">
+                  源码拆解之YYKit系列一
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-20T20:54:01+08:00">
+                2017-04-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>源码拆解之YYKit系列一（宏定义）</p>
+</blockquote>
+<p>YYKit是国内开发者贡献的一个非常优秀的开源库，里面封装了很多category以及很多工具类，目前在github上一共有9.8k个star，github地址为：<a href="https://github.com/ibireme/YYKit，鉴于其贡献的内容较多，这个库的拆解也会分几个部分来逐一拆解。" target="_blank" rel="external">https://github.com/ibireme/YYKit，鉴于其贡献的内容较多，这个库的拆解也会分几个部分来逐一拆解。</a></p>
+<p>本篇文章就先简单的说一下YYKitMacro这个宏定义文件，包括里面的一些用法</p>
+<ul>
+<li><p><strong>YY_CLAMP：</strong>这个宏定义主要描述了某个值x在low和high范围之内的约束，个人觉得，其应该判断一下low和high的大小，不然传值反了，会得到错误的结果。</p>
+</li>
+<li><p><strong>YY_SWAP：</strong>这个宏定义主要是用来进行值交换，为了确保精度不丢失以及类型一致，作者采用了读取参数 <em>a</em> 的类型</p>
+</li>
+<li><p><strong>YYAssertNil系列：</strong>这个宏定义主要封装了系统的NSAssert以及NSCAssert，前者适用于OC，后者适用于C</p>
+</li>
+<li><p><strong>YYSYNTH_DUMMY_CLASS：</strong>这个文件中的小亮点之一，我们都知道在加载静态库的分类时候找不到分类中的方法，进而发生崩溃，解决的办法通常都是在info.plist配置-all_load或者-force_load，但作者采用了另一种解决办法，使得在加载这个库的时候对工程无侵入，具体如下：</p>
+<pre><code class="bash">ifndef YYSYNTH_DUMMY_CLASS
+define YYSYNTH_DUMMY_CLASS(_name_) 
+@interface YYSYNTH_DUMMY_CLASS_ <span class="comment">## _name_ : NSObject @end </span>
+@implementation YYSYNTH_DUMMY_CLASS_ <span class="comment">## _name_ @end</span>
+endif
+</code></pre>
+<p><strong>为什么这段代码可以避免这个问题？</strong>，OC的链接器只会为类建立一个符号表，而并不会为每个方法建立符号表，因此如果静态库中如果定义了已存在的一个类的分类的话，链接器并不能将分类的代码和核心代码合并，因此最后的可执行文件中就会缺少分类的代码，因此函数的调用就会失败，这段宏定义呢，会虚拟建一个与category相同的定义和空实现，这样在链接的时候就可以找到该方法了，具体的OC中category的底层实现和加载方式可以参考这篇文章<a href="category">http://ios.jobbole.com/84341/</a>，个人觉得写得不错。</p>
+</li>
+<li><p><strong>YYSYNTH_DYNAMIC_PROPERTY_OBJECT：</strong>利用关联对象动态添加属性</p>
+</li>
+<li><p><strong>weakify，strongify：</strong>这是一个很亮眼的写法，我们都知道block与self导致的循环引用需要weak和strong来解决循环引用的问题，这里作者声明了两个宏weakify，strongify，其中debug模式下autoreleasepool{}和release模式下try@finally的作用仅仅是为了在weakify和strongify前面写上@符号，区别于普通的源码，nice。当然RAC中也有类似的写法。现有的工程均可以借鉴。</p>
+</li>
+<li><p><strong>static inline：</strong>采用内联函数的方式，在编译的时候，会把代码直接嵌入调用代码中，提高函数调用效率。</p>
+</li>
+</ul>
+<p>仔细分析YYKitMacro这个宏定义的文件，其中的亮点还是很值得学习和参考的，后面会继续拆解。</p>
+<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
 
           
         
@@ -412,6 +1989,10 @@
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
 
 
           </div>
@@ -446,7 +2027,7 @@
                alt="Selector" />
           <p class="site-author-name" itemprop="name">Selector</p>
            
-              <p class="site-description motion-element" itemprop="description"></p>
+              <p class="site-description motion-element" itemprop="description">莫谈人间几寒暑，静观弯月荡秋风~</p>
           
         </div>
         <nav class="site-state motion-element">
@@ -454,7 +2035,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">17</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -465,7 +2046,7 @@
             
             <div class="site-state-item site-state-categories">
               
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">2</span>
                 <span class="site-state-item-name">分类</span>
               
             </div>
@@ -476,7 +2057,7 @@
             
             <div class="site-state-item site-state-tags">
               
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">标签</span>
               
             </div>

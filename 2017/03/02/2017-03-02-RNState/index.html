@@ -1,0 +1,787 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ReactNative," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="React Native页面渲染主要依赖于state的变化，如何维护state保证页面逻辑性及可读性更强，我简单的说一下一般的逻辑和Redux的思想。  组件思想什么是组件思想，和模块化有什么共通和区别，我的解释是：  模块和组件一样封装了某些职责 模块暴露出来的接口可能较多也比较宽泛，而组件则指定有限的接口 模块主要根据业务做功能拆分封装，组件则主要强调功能的复用  State在ReactNa">
+<meta name="keywords" content="ReactNative">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ReactNative State管理的粗见">
+<meta property="og:url" content="http://yoursite.com/2017/03/02/2017-03-02-RNState/index.html">
+<meta property="og:site_name" content="秋知轩">
+<meta property="og:description" content="React Native页面渲染主要依赖于state的变化，如何维护state保证页面逻辑性及可读性更强，我简单的说一下一般的逻辑和Redux的思想。  组件思想什么是组件思想，和模块化有什么共通和区别，我的解释是：  模块和组件一样封装了某些职责 模块暴露出来的接口可能较多也比较宽泛，而组件则指定有限的接口 模块主要根据业务做功能拆分封装，组件则主要强调功能的复用  State在ReactNa">
+<meta property="og:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/137.pic.jpg">
+<meta property="og:updated_time" content="2017-05-15T01:52:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ReactNative State管理的粗见">
+<meta name="twitter:description" content="React Native页面渲染主要依赖于state的变化，如何维护state保证页面逻辑性及可读性更强，我简单的说一下一般的逻辑和Redux的思想。  组件思想什么是组件思想，和模块化有什么共通和区别，我的解释是：  模块和组件一样封装了某些职责 模块暴露出来的接口可能较多也比较宽泛，而组件则指定有限的接口 模块主要根据业务做功能拆分封装，组件则主要强调功能的复用  State在ReactNa">
+<meta name="twitter:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/137.pic.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/03/02/2017-03-02-RNState/"/>
+
+
+
+
+
+  <title> ReactNative State管理的粗见 | 秋知轩 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">秋知轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">莫谈人间几寒暑，静观弯月荡秋风~</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/02/2017-03-02-RNState/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                ReactNative State管理的粗见
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-02T17:34:01+08:00">
+                2017-03-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p><strong>React Native</strong>页面渲染主要依赖于<em>state</em>的变化，如何维护<em>state</em>保证页面逻辑性及可读性更强，我简单的说一下一般的逻辑和<strong>Redux</strong>的思想。</p>
+</blockquote>
+<h2 id="组件思想"><a href="#组件思想" class="headerlink" title="组件思想"></a>组件思想</h2><p>什么是组件思想，和模块化有什么共通和区别，我的解释是：</p>
+<ul>
+<li>模块和组件一样封装了某些职责</li>
+<li>模块暴露出来的接口可能较多也比较宽泛，而组件则指定有限的接口</li>
+<li>模块主要根据业务做功能拆分封装，组件则主要强调功能的复用</li>
+</ul>
+<h2 id="State"><a href="#State" class="headerlink" title="State"></a>State</h2><p>在ReactNative中，组件的思想贯穿于整个设计，你可以把每一个页面看成一个组件，组件的布局和样式写好之后，通过props和state来控制这个页面的状态，其中props通常为父级传递过来的属性，state则用来指示本页面中各种状态的变化。</p>
+<p><strong>初始化state</strong></p>
+<p>state需要在ReactNative页面的初始构造函数中配置，具体写法如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">constructor(props) &#123;</div><div class="line">    super(props);</div><div class="line">    this.state = &#123;shouldDisplay:<span class="literal">true</span>&#125;;</div><div class="line">  &#125;</div></pre></td></tr></table></figure></p>
+<p><strong>读取和更改state</strong></p>
+<ul>
+<li><strong>读取state</strong>，ReactNative中读取state直接使用<em>this.state.shouldDisplay</em>即可</li>
+<li><strong>更改state</strong>，需要调用<em>this.setState({shouldDisplay:false})</em>，即可完成state的更改</li>
+</ul>
+<h2 id="State管理方式"><a href="#State管理方式" class="headerlink" title="State管理方式"></a>State管理方式</h2><p><strong>常规管理</strong></p>
+<p>能想到的目前可以进行state的管理方式</p>
+<ul>
+<li>不同页面之间直接传递</li>
+<li>将不同状态存储进数据库或者写文件，用的时候直接从数据库进行读取或者更改</li>
+<li>代码设置全局state并引用定义的js文件</li>
+</ul>
+<p>从这几种管理方式我们可以简单的看到state存储的局限主要提现以下几类情况。</p>
+<p><strong>state管理的局限</strong></p>
+<p> 我呈现几个场景简单的描述一下</p>
+<ul>
+<li><strong>局部状态反复传递：</strong><ul>
+<li>场景：类似商品详情到支付，当支付完成时候页面样式更改，当支付完成的时候需要将状态从待支付改成支付。此时支付状态的传递，需要从商品详情传递到支付完成，又从支付完成传递回商品详情</li>
+<li>痛点：不同页面之间反复传递属性，就会导致在页面很多处存在setState方法调用，导致state管理混乱</li>
+</ul>
+</li>
+<li><strong>全局状态控制：</strong><ul>
+<li>场景： 登陆状态的获取和维护，很多页面都需要实时获取并登陆的状态信息，那不可能在各个页面中做状态的传递</li>
+<li>痛点：需要一个地方来管理全局性状态，方便各页面直接存取和更改</li>
+</ul>
+</li>
+<li><strong>页面状态来源不统一：</strong><ul>
+<li>场景：个人信息页面，部分状态来源于上层界面传入，部分状态来源于网络请求获取，如果两种状态存在重叠，就会导致不同时刻的状态不明确 </li>
+<li>痛点：不要在页面到处调用setState，尤其在存在异步或者很多业务逻辑代码的时候，会导致页面不具有可读性和可维护性</li>
+</ul>
+</li>
+</ul>
+<h2 id="Redux来管理state"><a href="#Redux来管理state" class="headerlink" title="Redux来管理state"></a>Redux来管理state</h2><p><strong>Redux设计思想</strong></p>
+<p>针对上述提出的问题，redux方案提供了一个思路，它提供了一个store对象用来维护和管理所有页面的state</p>
+<p><strong>Redux实现流程</strong></p>
+<ul>
+<li>用户发出Action，Action是一个对象，类似于iOS里面的Notification</li>
+<li>用户增加MiddleWare用于做其他操作，比如打log等对状态和流程无侵入的操作</li>
+<li>Store自动调用Reducer，接收当前的State和Action，返回新的State</li>
+<li>State发生变化之后Store调用监听函数，触发重新渲染View<br><img src="http://7xsw5d.com1.z0.glb.clouddn.com/137.pic.jpg" alt=" |center | 200X200"></li>
+</ul>
+<p>整体来看，Redux解决了state反复传递和过于分散的问题，并且提供了一种很好的状态和组件分类的思路，middleWare思想灵活且内聚，但有先进性一定有潜在的问题，先说明我的几点考虑Redux的问题，思考一下~</p>
+<ol>
+<li>Redux提供单一store，其采用了单一状态树的结构来存储状态，如果业务特别大，特别是结构复杂的体系会不会有什么瓶颈或者问题（仅仅是考虑）</li>
+<li>对Redux框架的理解，包括Action和State的设计理解都会不同，对架构要求极高</li>
+<li>Redux属于函数式编程，与面向对象编程有较大不同，理解稍有难度</li>
+<li>对于简单应用，redux框架略重，需要引入redux，redux-thunk，react-redux，redux-promise等库或者Middleware，增大体量</li>
+</ol>
+<p>PS：最近在调研并基于ReactNative使用Redux，碰到了一个问题，工程中同时引用Redux和Realm存在冲突，以上是最近的一点浅知漏识，总结一下</p>
+<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ReactNative/" rel="tag"># ReactNative</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/01/2017-03-01-life/" rel="next" title="生活没那么多不期而至">
+                <i class="fa fa-chevron-left"></i> 生活没那么多不期而至
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/03/08/2017-03-08-热更新/" rel="prev" title="苹果禁止热更新之浅识">
+                苹果禁止热更新之浅识 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="Selector" />
+          <p class="site-author-name" itemprop="name">Selector</p>
+           
+              <p class="site-description motion-element" itemprop="description">莫谈人间几寒暑，静观弯月荡秋风~</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#组件思想"><span class="nav-number">1.</span> <span class="nav-text">组件思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#State"><span class="nav-number">2.</span> <span class="nav-text">State</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#State管理方式"><span class="nav-number">3.</span> <span class="nav-text">State管理方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redux来管理state"><span class="nav-number">4.</span> <span class="nav-text">Redux来管理state</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Selector</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

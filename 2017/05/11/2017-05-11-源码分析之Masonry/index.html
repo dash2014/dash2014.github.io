@@ -1,0 +1,765 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="源码，Masonry," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="源码分析之Masonry  Masonry，用于简化页面布局的第三方开源库，当前github上面14.7k个star，具体的地址为：https://github.com/SnapKit/Masonry。Masonry，主要采用链式编程的方式，简化了苹果原生AutoLayout大量的代码布局。下面逐步了解一下Masonry。 链式编程：什么是链式编程？简单的说就是通过点语法将某个流程的代码块一直写">
+<meta name="keywords" content="源码，Masonry">
+<meta property="og:type" content="article">
+<meta property="og:title" content="源码分析之Masonry">
+<meta property="og:url" content="http://yoursite.com/2017/05/11/2017-05-11-源码分析之Masonry/index.html">
+<meta property="og:site_name" content="秋知轩">
+<meta property="og:description" content="源码分析之Masonry  Masonry，用于简化页面布局的第三方开源库，当前github上面14.7k个star，具体的地址为：https://github.com/SnapKit/Masonry。Masonry，主要采用链式编程的方式，简化了苹果原生AutoLayout大量的代码布局。下面逐步了解一下Masonry。 链式编程：什么是链式编程？简单的说就是通过点语法将某个流程的代码块一直写">
+<meta property="og:updated_time" content="2017-05-15T01:55:41.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="源码分析之Masonry">
+<meta name="twitter:description" content="源码分析之Masonry  Masonry，用于简化页面布局的第三方开源库，当前github上面14.7k个star，具体的地址为：https://github.com/SnapKit/Masonry。Masonry，主要采用链式编程的方式，简化了苹果原生AutoLayout大量的代码布局。下面逐步了解一下Masonry。 链式编程：什么是链式编程？简单的说就是通过点语法将某个流程的代码块一直写">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/05/11/2017-05-11-源码分析之Masonry/"/>
+
+
+
+
+
+  <title> 源码分析之Masonry | 秋知轩 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">秋知轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">莫谈人间几寒暑，静观弯月荡秋风~</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/11/2017-05-11-源码分析之Masonry/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                源码分析之Masonry
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-11T11:50:01+08:00">
+                2017-05-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>源码分析之Masonry</p>
+</blockquote>
+<p>Masonry，用于简化页面布局的第三方开源库，当前github上面14.7k个star，具体的地址为：<a href="https://github.com/SnapKit/Masonry。Masonry，主要采用链式编程的方式，简化了苹果原生AutoLayout大量的代码布局。下面逐步了解一下Masonry。" target="_blank" rel="external">https://github.com/SnapKit/Masonry。Masonry，主要采用链式编程的方式，简化了苹果原生AutoLayout大量的代码布局。下面逐步了解一下Masonry。</a></p>
+<h2 id="链式编程："><a href="#链式编程：" class="headerlink" title="链式编程："></a>链式编程：</h2><p>什么是链式编程？简单的说就是通过点语法将某个流程的代码块一直写下去。具体到Objective-C中，则可以采用两种方式书写。</p>
+<ul>
+<li><p>需要处于链条上的方法必须返回一个block</p>
+</li>
+<li><p>block必须存在参数，及返回值，而这个返回值必须是对象本身。具体的定义方式类似这样：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">@interface People : NSObject   </div><div class="line">//- (People *(^)(NSString*))eat;  </div><div class="line">//- (People *(^)(NSString*))work;   </div><div class="line">@end  </div><div class="line">@implementation People  </div><div class="line">//- (People *(^)(NSString*))eat &#123;  </div><div class="line">    <span class="built_in">return</span> ^(NSString* food)&#123;  </div><div class="line">        []self eatFood:food];</div><div class="line">        <span class="built_in">return</span> self;  </div><div class="line">    &#125;;  </div><div class="line">&#125;  </div><div class="line">//- (People *(^)(NSString*))work &#123;  </div><div class="line">    <span class="built_in">return</span> ^(NSString* time)&#123;  </div><div class="line">        []self workTime:time];</div><div class="line">        <span class="built_in">return</span> self;  </div><div class="line">    &#125;;  </div><div class="line">&#125;  </div><div class="line">``` </div><div class="line"></div><div class="line">- 在需要用到的地方就可以通过点语法来进行调用。这样这一个流程就会按照顺序执行，看上去简单而清晰，类似这样。</div><div class="line">``` bash</div><div class="line">People *people = [People new];</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>那总结一下链式编程巧妙的利用了语法糖的概念，使得整个流程通过点语法巧妙的写在了一条语句上，看上去直观清晰，因此在一些将过程颗粒化之后重新进行组装的业务上面可以使用。</p>
+<h2 id="语法糖"><a href="#语法糖" class="headerlink" title="语法糖"></a>语法糖</h2><p>Syntactic sugar，通常泛指某些语法，让程序员更便捷的使用，来增加程序的可读性，对语言的功能没有什么影响。在OC中包括枚举值的绑定，字面量赋值取值，当然也包括上面提到的点语法，等等。</p>
+<h2 id="Masonry"><a href="#Masonry" class="headerlink" title="Masonry"></a>Masonry</h2><p>本篇幅均以添加约束为例进行拆分，移除及更新逻辑与此类似，不再赘述。具体的代码调用方式类似这样：</p>
+<pre><code class="bash">[view1 mas_makeConstraints:^(MASConstraintMaker *make) {
+ make.top.equalTo(superview.mas_top).with.offset(padding.top); //with is an optional semantic filler
+ make.left.equalTo(superview.mas_left).with.offset(padding.left);
+ make.bottom.equalTo(superview.mas_bottom).with.offset(-padding.bottom);
+ make.right.equalTo(superview.mas_right).with.offset(-padding.right);
+}];
+</code></pre>
+<ul>
+<li><p><strong>Categories:</strong>，UIView+MASAdditions &amp; ViewController+MASAdditions，里面封装了mas_makeConstraints的方法，该方法入参是一个block，返回一个数组，block的入参是一个<em>MASConstraintMaker</em>对象，返回void类型。这个方法主要做了以下几件事情：</p>
+<ul>
+<li><p>禁止将Autoresizing转成Autolayout的约束</p>
+</li>
+<li><p>创建一个constraintMaker， 并作为block的入参，供用户使用，类似上述代码的<strong>make</strong>变量。</p>
+</li>
+<li><p>调用constraintMaker的install方法，返回当前View的所有约束，当然是MASConstraint类型的。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>MASConstraintMaker：</strong>核心工厂类，其定义了一些MASConstraint类型的属性，当前的视图View，以及相应的attributes。该类在执行make.top或者其他属性的时候，均会先调用<em>addConstraintWithLayoutAttribute：</em>方法建立MASConstraint类型的约束，并将其放入数组中，之后执行<em>install</em>方法，<em>install</em>方法会调用MASConstraint的<em>install</em>方法添加约束。在MASConstraint中<em>install</em>是一个虚方法，需要其子类实现。</p>
+</li>
+<li><p><strong>MASConstraint：</strong>继承自NSLayoutConstraint，抽象了一些属性比如top等，以及一些方法，比如上述代码中的<em>equalTo</em>等，主要通过语法糖的方式来保证链式调用，其具体的方法由其子类实现。</p>
+</li>
+<li><p><strong>MASViewConstraint：</strong>MASConstraint的子类，根据约束的优先级，属性等，将约束添加到指定的位置。<em>install</em>方法的具体实现就在这里。</p>
+</li>
+<li><p><strong>MASCompositeConstraint：</strong>同样也是MASConstraint的子类，主要用于同时建立多个constraint。</p>
+</li>
+<li><p><strong>MASViewAttribute：</strong>某个view的某个attribute，其主要封装了一个UIView以及NSLayoutAttribute。</p>
+</li>
+</ul>
+<p>至此Masonry就已经拆解结束了，其作为iOS开发中标志性的采用链式语法进行方法调用的仓库之一，还是很值得学习和参考的，很好的简化了苹果原生的NSLayoutConstraint带来的冗长代码，当然苹果的IB布局玩转约束也是可以值得一试的。</p>
+<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/源码，Masonry/" rel="tag"># 源码，Masonry</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/09/2017-05-09-源码分析之SDWebImage/" rel="next" title="源码分析之SDWebImage">
+                <i class="fa fa-chevron-left"></i> 源码分析之SDWebImage
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="Selector" />
+          <p class="site-author-name" itemprop="name">Selector</p>
+           
+              <p class="site-description motion-element" itemprop="description">莫谈人间几寒暑，静观弯月荡秋风~</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#链式编程："><span class="nav-number">1.</span> <span class="nav-text">链式编程：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#语法糖"><span class="nav-number">2.</span> <span class="nav-text">语法糖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Masonry"><span class="nav-number">3.</span> <span class="nav-text">Masonry</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Selector</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
