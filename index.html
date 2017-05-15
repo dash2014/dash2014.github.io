@@ -370,15 +370,16 @@
         
           
             <p>Masonry，用于简化页面布局的第三方开源库，当前github上面14.7k个star，具体的地址为：<a href="https://github.com/SnapKit/Masonry" target="_blank" rel="external">Masonry</a>。Masonry，主要采用链式编程的方式，简化了苹果原生AutoLayout大量的代码布局。下面逐步了解一下Masonry。</p>
-<h2 id="链式编程："><a href="#链式编程：" class="headerlink" title="链式编程："></a>链式编程：</h2><p>什么是链式编程？简单的说就是通过点语法将某个流程的代码块一直写下去。具体到Objective-C中，则可以采用两种方式书写。</p>
+<h2 id="链式编程："><a href="#链式编程：" class="headerlink" title="链式编程："></a>链式编程：</h2><p>什么是链式编程？简单的说就是通过点语法将某个流程的代码块一直写下去。具体到Objective-C中，则可以采用这种方式书写。</p>
 <ul>
 <li><p>需要处于链条上的方法必须返回一个block</p>
 </li>
-<li><p>block必须存在参数，及返回值，而这个返回值必须是对象本身。具体的定义方式类似这样：</p>
+<li><p>block必须存在参数，及返回值，而这个返回值必须是对象本身。</p>
 </li>
-<li><p>在需要用到的地方就可以通过点语法来进行调用。这样这一个流程就会按照顺序执行，看上去简单而清晰，类似这样。</p>
+<li><p>在需要用到的地方就可以通过点语法来进行调用，这样这一个流程就会按照顺序执行。</p>
 </li>
 </ul>
+<p>整个书写方式类似下面这样：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">@interface People : NSObject   </div><div class="line">- (People *(^)(NSString*))eat;  </div><div class="line">- (People *(^)(NSString*))work;   </div><div class="line">@end  </div><div class="line">@implementation People  </div><div class="line">- (People *(^)(NSString*))eat &#123;  </div><div class="line">    <span class="built_in">return</span> ^(NSString* food)&#123;  </div><div class="line">        []self eatFood:food];</div><div class="line">        <span class="built_in">return</span> self;  </div><div class="line">    &#125;;  </div><div class="line">&#125;  </div><div class="line">- (People *(^)(NSString*))work &#123;  </div><div class="line">    <span class="built_in">return</span> ^(NSString* time)&#123;  </div><div class="line">        []self workTime:time];</div><div class="line">        <span class="built_in">return</span> self;  </div><div class="line">    &#125;;  </div><div class="line">&#125;  </div><div class="line">@end</div><div class="line">//调用方</div><div class="line">People *people = [People new];</div><div class="line">people.eat(@<span class="string">"sandwich"</span>).work(@<span class="string">"5 hours"</span>);</div></pre></td></tr></table></figure>
 <p>总结一下链式编程巧妙的利用了语法糖的概念，使得整个流程通过点语法巧妙的写在了一条语句上，看上去直观清晰，因此在一些将过程颗粒化之后重新进行组装的业务上面可以使用。</p>
 <h2 id="语法糖"><a href="#语法糖" class="headerlink" title="语法糖"></a>语法糖</h2><p>Syntactic sugar，通常泛指某些语法，让程序员更便捷的使用，来增加程序的可读性，对语言的功能没有什么影响。在OC中包括枚举值的绑定，字面量赋值取值，当然也包括上面提到的点语法，等等。</p>
