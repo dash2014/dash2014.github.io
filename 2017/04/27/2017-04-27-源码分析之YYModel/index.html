@@ -87,18 +87,18 @@
 
 
 
-<meta name="description" content="源码拆解之YYKit系列六（YYModel）  本篇幅来拆解YYModel，YYModel主要提供了一些模型转换的能力，包括model转换成JSON，以及JSON转换成model等，具体可以看下图：下面根据其提供的整个功能进行拆解：  json转字典：简单的利用OC的NSJSONSerialization进行转换。  json转model：调用上述方法，现将json转成字典，后调用下面将字典转成">
+<meta name="description" content="本篇幅来拆解YYModel，YYModel主要提供了一些模型转换的能力，包括model转换成JSON，以及JSON转换成model等，具体可以看下图：下面根据其提供的整个功能进行拆解：  json转字典：简单的利用OC的NSJSONSerialization进行转换。  json转model：调用上述方法，现将json转成字典，后调用下面将字典转成model。  字典转model：首先创建一个_Y">
 <meta name="keywords" content="源码，YYModel">
 <meta property="og:type" content="article">
 <meta property="og:title" content="源码拆解之YYKit系列六">
 <meta property="og:url" content="http://yoursite.com/2017/04/27/2017-04-27-源码分析之YYModel/index.html">
 <meta property="og:site_name" content="秋知轩">
-<meta property="og:description" content="源码拆解之YYKit系列六（YYModel）  本篇幅来拆解YYModel，YYModel主要提供了一些模型转换的能力，包括model转换成JSON，以及JSON转换成model等，具体可以看下图：下面根据其提供的整个功能进行拆解：  json转字典：简单的利用OC的NSJSONSerialization进行转换。  json转model：调用上述方法，现将json转成字典，后调用下面将字典转成">
+<meta property="og:description" content="本篇幅来拆解YYModel，YYModel主要提供了一些模型转换的能力，包括model转换成JSON，以及JSON转换成model等，具体可以看下图：下面根据其提供的整个功能进行拆解：  json转字典：简单的利用OC的NSJSONSerialization进行转换。  json转model：调用上述方法，现将json转成字典，后调用下面将字典转成model。  字典转model：首先创建一个_Y">
 <meta property="og:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/a.png">
-<meta property="og:updated_time" content="2017-05-15T01:52:13.000Z">
+<meta property="og:updated_time" content="2017-05-15T02:19:04.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="源码拆解之YYKit系列六">
-<meta name="twitter:description" content="源码拆解之YYKit系列六（YYModel）  本篇幅来拆解YYModel，YYModel主要提供了一些模型转换的能力，包括model转换成JSON，以及JSON转换成model等，具体可以看下图：下面根据其提供的整个功能进行拆解：  json转字典：简单的利用OC的NSJSONSerialization进行转换。  json转model：调用上述方法，现将json转成字典，后调用下面将字典转成">
+<meta name="twitter:description" content="本篇幅来拆解YYModel，YYModel主要提供了一些模型转换的能力，包括model转换成JSON，以及JSON转换成model等，具体可以看下图：下面根据其提供的整个功能进行拆解：  json转字典：简单的利用OC的NSJSONSerialization进行转换。  json转model：调用上述方法，现将json转成字典，后调用下面将字典转成model。  字典转model：首先创建一个_Y">
 <meta name="twitter:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/a.png">
 
 
@@ -366,10 +366,7 @@
       
 
       
-        <blockquote>
-<p>源码拆解之YYKit系列六（YYModel）</p>
-</blockquote>
-<p>本篇幅来拆解YYModel，YYModel主要提供了一些模型转换的能力，包括model转换成JSON，以及JSON转换成model等，具体可以看下图：<br><img src="http://7xsw5d.com1.z0.glb.clouddn.com/a.png" alt="Alt text"><br>下面根据其提供的整个功能进行拆解：</p>
+        <p>本篇幅来拆解YYModel，YYModel主要提供了一些模型转换的能力，包括model转换成JSON，以及JSON转换成model等，具体可以看下图：<br><img src="http://7xsw5d.com1.z0.glb.clouddn.com/a.png" alt="Alt text"><br>下面根据其提供的整个功能进行拆解：</p>
 <ul>
 <li><p><strong>json转字典：</strong>简单的利用OC的NSJSONSerialization进行转换。</p>
 </li>
@@ -401,7 +398,7 @@
 </ul>
 </li>
 </ul>
-<p>YYModel里面用了大量的runtime操作，一些具体的内容，包括方法，属性，变量的增删改查等之后有时间整理一下，作者对YYModel的性能做了实验和分析，具体可以参照他的博客<a href="http://blog.ibireme.com，个人觉得这个性能之所以好，应该主要从下面几个方面入手。" target="_blank" rel="external">http://blog.ibireme.com，个人觉得这个性能之所以好，应该主要从下面几个方面入手。</a></p>
+<p>YYModel里面用了大量的runtime操作，一些具体的内容，包括方法，属性，变量的增删改查等之后有时间整理一下，作者对YYModel的性能做了实验和分析，具体可以参照他的博客<a href="http://blog.ibireme.com" target="_blank" rel="external">YYKit</a>，个人觉得这个性能之所以好，应该主要从下面几个方面入手。</p>
 <ul>
 <li><p>大量的C方法调用</p>
 </li>

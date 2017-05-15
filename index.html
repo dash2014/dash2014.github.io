@@ -557,28 +557,25 @@
       
         
           
-            <blockquote>
-<p>源码分析之SDWebImage</p>
-</blockquote>
-<p><strong>SDWebImage</strong>，iOS开发者必然会接触到的一个关于图片的开源库，其github地址：<a href="https://github.com/rs/SDWebImage，目前有17k+个star，下面对这个库进行简单的拆解。后面简称为SD。" target="_blank" rel="external">https://github.com/rs/SDWebImage，目前有17k+个star，下面对这个库进行简单的拆解。后面简称为SD。</a></p>
+            <p><strong>SDWebImage</strong>，iOS开发者必然会接触到的一个关于图片的开源库，其github地址：<a href="https://github.com/rs/SDWebImage" target="_blank" rel="external">SDWebImage</a>，目前有17k+个star，下面对这个库进行简单的拆解。后面简称为SD。</p>
 <ul>
-<li><p>SD提供了一些UI的分类，用于简化组件上图片的配置。无论UIImageView，UIButton等最后都会统一调用<em>UIView+WebCache.m</em>这个类中的这个方法。</p>
-<pre><code class="bash">//- (void)sd_internalSetImageWithURL:(nullable NSURL *)url
-                placeholderImage:(nullable UIImage *)placeholder
-                         options:(SDWebImageOptions)options
-                    operationKey:(nullable NSString *)operationKey
-                   <span class="built_in">set</span>ImageBlock:(nullable SDSetImageBlock)<span class="built_in">set</span>ImageBlock
-                        progress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
-                       completed:(nullable SDExternalCompletionBlock)completedBlock;
-</code></pre>
+<li>SD提供了一些UI的分类，用于简化组件上图片的配置。无论UIImageView，UIButton等最后都会统一调用<em>UIView+WebCache.m</em>这个类中的这个方法。<br>``` bash</li>
+<li><p>(void)sd_internalSetImageWithURL:(nullable NSURL *)url</p>
+<pre><code>placeholderImage:(nullable UIImage *)placeholder
+         options:(SDWebImageOptions)options
+    operationKey:(nullable NSString *)operationKey
+   setImageBlock:(nullable SDSetImageBlock)setImageBlock
+        progress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
+       completed:(nullable SDExternalCompletionBlock)completedBlock;
+</code></pre><p>``` </p>
 </li>
-<li><p>上述方法内部会调用<em>SDWebImageManager</em>的loadImage方法，如下</p>
-<pre><code class="bash">//- (id &lt;SDWebImageOperation&gt;)loadImageWithURL:(nullable NSURL *)url
-                                   options:(SDWebImageOptions)options
-                                  progress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
-                                 completed:(nullable SDInternalCompletionBlock)completedBlock
-</code></pre>
-<p>该方法会返回一个遵循SDWebImageOperation的协议，之后会将该operation加入字典进行缓存。</p>
+<li><p>上述方法内部会调用<em>SDWebImageManager</em>的loadImage方法，如下<br>``` bash</p>
+</li>
+<li><p>(id <sdwebimageoperation>)loadImageWithURL:(nullable NSURL *)url</sdwebimageoperation></p>
+<pre><code>  options:(SDWebImageOptions)options
+ progress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
+completed:(nullable SDInternalCompletionBlock)completedBlock
+</code></pre><p>```<br>该方法会返回一个遵循SDWebImageOperation的协议，之后会将该operation加入字典进行缓存。</p>
 </li>
 <li><p>继续解析上述loadImage的方法，该方法会首先判断是否这个url是否包含在失败的url中，如果是则直接进行失败回调，反之，从imageCache中获取图片信息，如果不存在，则通过imageDownloader尝试去下载图片，下载成功，则将其缓存，下载失败，则将url存入失败的url列表中。方法代码略长，就不粘贴了。</p>
 </li>
@@ -735,10 +732,7 @@
       
         
           
-            <blockquote>
-<p>iOS多线程编程总结</p>
-</blockquote>
-<p>现有的项目开发过程中，为了追求效率与速度，都会使用多线程编程，什么任务放在主线程，什么任务放在后台，什么任务只能串行执行，什么任务可以并发执行，接下来本篇从一些基本概念出发，算是留一个案底给自己备份。</p>
+            <p>现有的项目开发过程中，为了追求效率与速度，都会使用多线程编程，什么任务放在主线程，什么任务放在后台，什么任务只能串行执行，什么任务可以并发执行，接下来本篇从一些基本概念出发，算是留一个案底给自己备份。</p>
 <h2 id="串行-amp-并发-amp-并行"><a href="#串行-amp-并发-amp-并行" class="headerlink" title="串行 &amp; 并发 &amp; 并行"></a>串行 &amp; 并发 &amp; 并行</h2><ul>
 <li><p><strong>串行：</strong>一次只执行一个任务，后续任务只能等待前一个任务执行完成。<strong>就比如你在写代码，突然产品经理来了一个需求，让他在那等着，等你写完了在处理他的需求</strong>。</p>
 </li>
@@ -923,10 +917,7 @@ pthread_detach(thread);//设置线程状态为detached
       
         
           
-            <blockquote>
-<p>源码拆解之YYKit系列六（YYModel）</p>
-</blockquote>
-<p>本篇幅来拆解YYModel，YYModel主要提供了一些模型转换的能力，包括model转换成JSON，以及JSON转换成model等，具体可以看下图：<br><img src="http://7xsw5d.com1.z0.glb.clouddn.com/a.png" alt="Alt text"><br>下面根据其提供的整个功能进行拆解：</p>
+            <p>本篇幅来拆解YYModel，YYModel主要提供了一些模型转换的能力，包括model转换成JSON，以及JSON转换成model等，具体可以看下图：<br><img src="http://7xsw5d.com1.z0.glb.clouddn.com/a.png" alt="Alt text"><br>下面根据其提供的整个功能进行拆解：</p>
 <ul>
 <li><p><strong>json转字典：</strong>简单的利用OC的NSJSONSerialization进行转换。</p>
 </li>
@@ -958,7 +949,7 @@ pthread_detach(thread);//设置线程状态为detached
 </ul>
 </li>
 </ul>
-<p>YYModel里面用了大量的runtime操作，一些具体的内容，包括方法，属性，变量的增删改查等之后有时间整理一下，作者对YYModel的性能做了实验和分析，具体可以参照他的博客<a href="http://blog.ibireme.com，个人觉得这个性能之所以好，应该主要从下面几个方面入手。" target="_blank" rel="external">http://blog.ibireme.com，个人觉得这个性能之所以好，应该主要从下面几个方面入手。</a></p>
+<p>YYModel里面用了大量的runtime操作，一些具体的内容，包括方法，属性，变量的增删改查等之后有时间整理一下，作者对YYModel的性能做了实验和分析，具体可以参照他的博客<a href="http://blog.ibireme.com" target="_blank" rel="external">YYKit</a>，个人觉得这个性能之所以好，应该主要从下面几个方面入手。</p>
 <ul>
 <li><p>大量的C方法调用</p>
 </li>
@@ -1131,11 +1122,11 @@ pthread_detach(thread);//设置线程状态为detached
 </ul>
 </li>
 <li><p><strong>_YYWebImageSetter：</strong>私有类，主要的作用就是通过信号量以及哨兵来控制operation的操作，确保在进行网络请求以及获取imageURL时的线程安全，其内部直接调用YYWebImageManager的方法生成operation，具体代码如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"> NSOperation *operation = [manager requestImageWithURL:imageURL options:options progress:progress transform:transform completion:completion];</div><div class="line">``` </div><div class="line"></div><div class="line">- **YYWebImageManager：**通过配置Http的各种参数生成request，后用request   等信息生成operation，同时将operation加入到operationQueue中，代码较少，核心代码很容易读懂，此处就不再贴了。</div><div class="line"></div><div class="line">- **YYWebImageOperation：**网络图片请求的核心类，继承自NSOperation类，重写了operation的各种方法，包括start，cancel等，在**_startOperation**中，先从内存缓存中读取图片信息，如果内存缓存中没有，则从磁盘缓存中读取图片信息，如果磁盘缓存中有，则将其设置到内存缓存中，如果磁盘缓存中没有，则执行网络请求，同时控制网络活跃数量。请求成功后完成回调及缓存设置等操作。</div><div class="line"></div><div class="line">- **YYImageCache：**引用了YYCache来进行图片的存储。</div><div class="line"></div><div class="line">**YYWebImageOperation**线程分析：这里面一共涉及两个线程操作，分别叫做_imageQueue和_networkThread，此处其在从内存缓存中获取采用了同步的方式，而从磁盘中获取的时候将其异步到_imageQueue去获取，而从磁盘获取到图片或者发送网络请求，图片处理统一在_imageQueue处理，而网络回调则统一在_networkThread中进行。具体代码如下：</div><div class="line">* **_startOperation内存缓存图片直接获取**</div><div class="line">``` bash</div><div class="line">UIImage *image = [_cache getImageForKey:_cacheKey withType:YYImageCacheTypeMemory];</div><div class="line">  <span class="keyword">if</span> (image) &#123;</div><div class="line">      [_lock lock];</div><div class="line">      <span class="keyword">if</span> (![self isCancelled]) &#123;</div><div class="line">          <span class="keyword">if</span> (_completion) _completion(image, _request.URL, YYWebImageFromMemoryCache, YYWebImageStageFinished, nil);</div><div class="line">      &#125;</div><div class="line">      [self _finish];</div><div class="line">      [_lock unlock];</div><div class="line">      <span class="built_in">return</span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">	NSOperation *operation = [manager requestImageWithURL:imageURL options:options progress:progress transform:transform completion:completion];</div><div class="line">	``` </div><div class="line"></div><div class="line">- **YYWebImageManager：**通过配置Http的各种参数生成request，后用request   等信息生成operation，同时将operation加入到operationQueue中，代码较少，核心代码很容易读懂，此处就不再贴了。</div><div class="line"></div><div class="line">- **YYWebImageOperation：**网络图片请求的核心类，继承自NSOperation类，重写了operation的各种方法，包括start，cancel等，在**_startOperation**中，先从内存缓存中读取图片信息，如果内存缓存中没有，则从磁盘缓存中读取图片信息，如果磁盘缓存中有，则将其设置到内存缓存中，如果磁盘缓存中没有，则执行网络请求，同时控制网络活跃数量。请求成功后完成回调及缓存设置等操作。</div><div class="line"></div><div class="line">- **YYImageCache：**引用了YYCache来进行图片的存储。</div><div class="line"></div><div class="line">**YYWebImageOperation**线程分析：这里面一共涉及两个线程操作，分别叫做_imageQueue和_networkThread，此处其在从内存缓存中获取采用了同步的方式，而从磁盘中获取的时候将其异步到_imageQueue去获取，而从磁盘获取到图片或者发送网络请求，图片处理统一在_imageQueue处理，而网络回调则统一在_networkThread中进行。具体代码如下：</div><div class="line">* **_startOperation内存缓存图片直接获取**</div><div class="line">	``` bash</div><div class="line">	UIImage *image = [_cache getImageForKey:_cacheKey withType:YYImageCacheTypeMemory];</div><div class="line">	  <span class="keyword">if</span> (image) &#123;</div><div class="line">	      [_lock lock];</div><div class="line">	      <span class="keyword">if</span> (![self isCancelled]) &#123;</div><div class="line">	          <span class="keyword">if</span> (_completion) _completion(image, _request.URL, YYWebImageFromMemoryCache, YYWebImageStageFinished, nil);</div><div class="line">	      &#125;</div><div class="line">	      [self _finish];</div><div class="line">	      [_lock unlock];</div><div class="line">	      <span class="built_in">return</span>;</div><div class="line">	  &#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
 </li>
 </ul>
 <ul>
-<li><strong>异步到imageQueue中获取图片，同时将图片回调处理放在_networkThread中进行</strong><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">dispatch_async([self.class _imageQueue], ^&#123;</div><div class="line">     __strong typeof(_self) self = _self;</div><div class="line">     <span class="keyword">if</span> (!self || [self isCancelled]) <span class="built_in">return</span>;</div><div class="line">     UIImage *image = [self.cache getImageForKey:self.cacheKey withType:YYImageCacheTypeDisk];</div><div class="line">     <span class="keyword">if</span> (image) &#123;</div><div class="line">         [self.cache <span class="built_in">set</span>Image:image imageData:nil <span class="keyword">for</span>Key:self.cacheKey withType:YYImageCacheTypeMemory];</div><div class="line">         [self performSelector:@selector(_didReceiveImageFromDiskCache:) onThread:[self.class _networkThread] withObject:image <span class="built_in">wait</span>UntilDone:NO];</div><div class="line">     &#125; <span class="keyword">else</span> &#123;</div><div class="line">         [self performSelector:@selector(_startRequest:) onThread:[self.class _networkThread] withObject:nil <span class="built_in">wait</span>UntilDone:NO];</div><div class="line">     &#125;</div><div class="line"> &#125;);</div><div class="line">``` </div><div class="line">* **收到网络请求完成回调，异步到imageQueue进行图片处理，同时异步到网络线程进行网络回调**</div><div class="line">``` bash</div><div class="line">(void)connectionDidFinishLoading:(NSURLConnection *)connection &#123;</div><div class="line">       dispatch_async([self.class _imageQueue], ^&#123;</div><div class="line">                      [self performSelector:@selector(_didReceiveImageFromWeb:) onThread:[self.class _networkThread] withObject:image <span class="built_in">wait</span>UntilDone:NO];</div><div class="line">       &#125;&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<li><strong>异步到imageQueue中获取图片，同时将图片回调处理放在_networkThread中进行</strong>  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">	dispatch_async([self.class _imageQueue], ^&#123;</div><div class="line">	     __strong typeof(_self) self = _self;</div><div class="line">	     <span class="keyword">if</span> (!self || [self isCancelled]) <span class="built_in">return</span>;</div><div class="line">	     UIImage *image = [self.cache getImageForKey:self.cacheKey withType:YYImageCacheTypeDisk];</div><div class="line">	     <span class="keyword">if</span> (image) &#123;</div><div class="line">	         [self.cache <span class="built_in">set</span>Image:image imageData:nil <span class="keyword">for</span>Key:self.cacheKey withType:YYImageCacheTypeMemory];</div><div class="line">	         [self performSelector:@selector(_didReceiveImageFromDiskCache:) onThread:[self.class _networkThread] withObject:image <span class="built_in">wait</span>UntilDone:NO];</div><div class="line">	     &#125; <span class="keyword">else</span> &#123;</div><div class="line">	         [self performSelector:@selector(_startRequest:) onThread:[self.class _networkThread] withObject:nil <span class="built_in">wait</span>UntilDone:NO];</div><div class="line">	     &#125;</div><div class="line">	 &#125;);</div><div class="line">	``` </div><div class="line">* **收到网络请求完成回调，异步到imageQueue进行图片处理，同时异步到网络线程进行网络回调**</div><div class="line">	``` bash</div><div class="line">	(void)connectionDidFinishLoading:(NSURLConnection *)connection &#123;</div><div class="line">	       dispatch_async([self.class _imageQueue], ^&#123;</div><div class="line">	                      [self performSelector:@selector(_didReceiveImageFromWeb:) onThread:[self.class _networkThread] withObject:image <span class="built_in">wait</span>UntilDone:NO];</div><div class="line">	       &#125;&#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
 </li>
 </ul>
 <p>本篇幅分析至此，其中涉及到的图片格式编解码没做具体展开，侧重点主要分析了作者对网络图片的处理，以及一些线程管理操作，强烈建议可以看下YYWebImageOperation，就是自己定制operation的典型案例。下一篇将继续分析YYKit的YYModel。</p>
