@@ -559,24 +559,26 @@
           
             <p><strong>SDWebImage</strong>，iOS开发者必然会接触到的一个关于图片的开源库，其github地址：<a href="https://github.com/rs/SDWebImage" target="_blank" rel="external">SDWebImage</a>，目前有17k+个star，下面对这个库进行简单的拆解。后面简称为SD。</p>
 <ul>
-<li>SD提供了一些UI的分类，用于简化组件上图片的配置。无论UIImageView，UIButton等最后都会统一调用<em>UIView+WebCache.m</em>这个类中的这个方法。<br>``` bash</li>
-<li><p>(void)sd_internalSetImageWithURL:(nullable NSURL *)url</p>
-<pre><code>placeholderImage:(nullable UIImage *)placeholder
-         options:(SDWebImageOptions)options
-    operationKey:(nullable NSString *)operationKey
-   setImageBlock:(nullable SDSetImageBlock)setImageBlock
-        progress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
-       completed:(nullable SDExternalCompletionBlock)completedBlock;
-</code></pre><p>``` </p>
-</li>
-<li><p>上述方法内部会调用<em>SDWebImageManager</em>的loadImage方法，如下<br>``` bash</p>
-</li>
-<li><p>(id <sdwebimageoperation>)loadImageWithURL:(nullable NSURL *)url</sdwebimageoperation></p>
-<pre><code>  options:(SDWebImageOptions)options
- progress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
-completed:(nullable SDInternalCompletionBlock)completedBlock
-</code></pre><p>```<br>该方法会返回一个遵循SDWebImageOperation的协议，之后会将该operation加入字典进行缓存。</p>
-</li>
+<li>SD提供了一些UI的分类，用于简化组件上图片的配置。无论UIImageView，UIButton等最后都会统一调用<em>UIView+WebCache.m</em>这个类中的这个方法。</li>
+</ul>
+<pre><code class="bash">- (void)sd_internalSetImageWithURL:(nullable NSURL *)url
+                  placeholderImage:(nullable UIImage *)placeholder
+                           options:(SDWebImageOptions)options
+                      operationKey:(nullable NSString *)operationKey
+                     <span class="built_in">set</span>ImageBlock:(nullable SDSetImageBlock)<span class="built_in">set</span>ImageBlock
+                          progress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
+                         completed:(nullable SDExternalCompletionBlock)completedBlock;
+</code></pre>
+<ul>
+<li>上述方法内部会调用<em>SDWebImageManager</em>的loadImage方法，如下</li>
+</ul>
+<pre><code class="bash">- (id &lt;SDWebImageOperation&gt;)loadImageWithURL:(nullable NSURL *)url
+                                     options:(SDWebImageOptions)options
+                                    progress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
+                                   completed:(nullable SDInternalCompletionBlock)completedBlock
+</code></pre>
+<p>该方法会返回一个遵循SDWebImageOperation的协议，之后会将该operation加入字典进行缓存。</p>
+<ul>
 <li><p>继续解析上述loadImage的方法，该方法会首先判断是否这个url是否包含在失败的url中，如果是则直接进行失败回调，反之，从imageCache中获取图片信息，如果不存在，则通过imageDownloader尝试去下载图片，下载成功，则将其缓存，下载失败，则将url存入失败的url列表中。方法代码略长，就不粘贴了。</p>
 </li>
 <li><p>此处作者会将operation加到一个runningOperation的列表中，目的是为了方便对正在进行的operation操作，主要是cancel操作。</p>
