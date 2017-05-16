@@ -1,0 +1,765 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="源码，runtime," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="runtime，iOS开发者需要了解的核心思想之一，网上有很多资料对其进行分析，具体可以看下runtime，作者runtime系列的几篇博文，详细的介绍了消息的转发流程，类与对象的设计，以及runtime的一些用法做了详细的介绍，做了这么久的iOS开发，还是有必要了解一下runtime的源码，从现在开始就先罗列一些篇幅，一边学习一边记录。下载runtime的源码，开始学习吧，就从NSObject.">
+<meta name="keywords" content="源码，runtime">
+<meta property="og:type" content="article">
+<meta property="og:title" content="源码分析之NSObject对象创建流程">
+<meta property="og:url" content="http://yoursite.com/2017/05/15/2017-05-16-源码分析之runtime(NSObject对象的创建)/index.html">
+<meta property="og:site_name" content="秋知轩">
+<meta property="og:description" content="runtime，iOS开发者需要了解的核心思想之一，网上有很多资料对其进行分析，具体可以看下runtime，作者runtime系列的几篇博文，详细的介绍了消息的转发流程，类与对象的设计，以及runtime的一些用法做了详细的介绍，做了这么久的iOS开发，还是有必要了解一下runtime的源码，从现在开始就先罗列一些篇幅，一边学习一边记录。下载runtime的源码，开始学习吧，就从NSObject.">
+<meta property="og:updated_time" content="2017-05-16T07:51:13.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="源码分析之NSObject对象创建流程">
+<meta name="twitter:description" content="runtime，iOS开发者需要了解的核心思想之一，网上有很多资料对其进行分析，具体可以看下runtime，作者runtime系列的几篇博文，详细的介绍了消息的转发流程，类与对象的设计，以及runtime的一些用法做了详细的介绍，做了这么久的iOS开发，还是有必要了解一下runtime的源码，从现在开始就先罗列一些篇幅，一边学习一边记录。下载runtime的源码，开始学习吧，就从NSObject.">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/05/15/2017-05-16-源码分析之runtime(NSObject对象的创建)/"/>
+
+
+
+
+
+  <title> 源码分析之NSObject对象创建流程 | 秋知轩 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">秋知轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">莫谈人间几寒暑，静观弯月荡秋风~</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/15/2017-05-16-源码分析之runtime(NSObject对象的创建)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                源码分析之NSObject对象创建流程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-15T09:52:13+08:00">
+                2017-05-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>runtime，iOS开发者需要了解的核心思想之一，网上有很多资料对其进行分析，具体可以看下<a href="http://blog.csdn.net/kesalin/article/details/6689226" target="_blank" rel="external">runtime</a>，作者runtime系列的几篇博文，详细的介绍了消息的转发流程，类与对象的设计，以及runtime的一些用法做了详细的介绍，做了这么久的iOS开发，还是有必要了解一下runtime的源码，从现在开始就先罗列一些篇幅，一边学习一边记录。下载runtime的源码，开始学习吧，就从NSObject.mm这个文件开始，本文就先来记录<strong>NSObject对象创建</strong>的流程，NSObject的创建主要有一下两种方式，alloc以及allocWithZone。</p>
+<ul>
+<li><p><strong>alloc</strong></p>
+<ul>
+<li><p>查看NSObject.mm的代码可以看到alloc方法直接调用了<code>_objc_rootAlloc</code>方法。具体代码如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">+ (id)alloc &#123;</div><div class="line">    <span class="built_in">return</span> _objc_rootAlloc(self);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>继续跟进<code>_objc_rootAlloc</code>直接调用<code>callAlloc</code>，三个参数分别为cls， false 和 true。具体代码如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">id _objc_rootAlloc(Class cls)</div><div class="line">&#123;</div><div class="line">	    <span class="built_in">return</span> callAlloc(cls, <span class="literal">false</span>/*checkNil*/, <span class="literal">true</span>/*allocWithZone*/);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<pre><code>- 跟进`callAlloc`方法，具体代码如下：
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">	static ALWAYS_INLINE id</div><div class="line">callAlloc(Class cls, bool checkNil, bool allocWithZone=<span class="literal">false</span>)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">if</span> (slowpath(checkNil &amp;&amp; !cls)) <span class="built_in">return</span> nil;</div><div class="line"><span class="keyword">if</span> __OBJC2__</div><div class="line">    <span class="keyword">if</span> (fastpath(!cls-&gt;ISA()-&gt;hasCustomAWZ())) &#123;</div><div class="line">        <span class="keyword">if</span> (fastpath(cls-&gt;canAllocFast())) &#123;</div><div class="line">            bool dtor = cls-&gt;hasCxxDtor();</div><div class="line">            id obj = (id)calloc(1, cls-&gt;bits.fastInstanceSize());</div><div class="line">            <span class="keyword">if</span> (slowpath(!obj)) <span class="built_in">return</span> callBadAllocHandler(cls);</div><div class="line">            obj-&gt;initInstanceIsa(cls, dtor);</div><div class="line">            <span class="built_in">return</span> obj;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">else</span> &#123;</div><div class="line">            id obj = class_createInstance(cls, 0);</div><div class="line">            <span class="keyword">if</span> (slowpath(!obj)) <span class="built_in">return</span> callBadAllocHandler(cls);</div><div class="line">            <span class="built_in">return</span> obj;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">endif</div><div class="line">    <span class="keyword">if</span> (allocWithZone) <span class="built_in">return</span> [cls allocWithZone:nil];</div><div class="line">    <span class="built_in">return</span> [cls alloc];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+    具体的拆分步骤如下：
+    1.  第一个if判断，根据上面传过来的参数，checknil为false，cls为self本身，故而这个分支是不会走的。这里有两个宏slowpath和fastpath，这两个宏的定义如下：
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">//<span class="comment">#define fastpath(x) (__builtin_expect(bool(x), 1))</span></div><div class="line"> //<span class="comment">#define slowpath(x) (__builtin_expect(bool(x), 0))</span></div></pre></td></tr></table></figure>
+
+        **`__builtin_expect`这个指令是gcc引入的，作用是&quot;允许程序员将最有可能执行的分支告诉编译器&quot;。从而避免跳转语句，提高CPU的执行效率。**
+
+    2.   此处会区别OBJC2和之前版本，如果是则会进入到3流程，否则进入到7流程
+    3.      检测cls的ISA是否有自定义的allocWithZone的方法，这里通常是不会自己定义的，所以一定会进入到这个分支。
+    4.     判断cls是否可以快速alloc，如果可以进入到5流程，反之进入到6流程。
+    5.     检测cls是否存在析构函数，之后快速创建obj对象，如果创建失败，则进行错误处理，反之就快速的初始化obj对象，并返回。
+    6.     调用`class_createInstance`方法快速创建obj对象，如果创建失败，则进行错误处理，反之就快速的初始化obj对象，并返回。
+    7.     由于allocWithZone，调用方传递的值为true所以会通过`allocWithZone`调用，反之则通过`alloc`方法调用。
+</code></pre><ul>
+<li><p><strong>allocWithZone</strong><br><code>allocWithZone</code>的方法比较简单，目前已经被alloc替代了，简单的说一下吧，上述alloc中调用<code>allocWithZone</code>的方法.</p>
+<ul>
+<li><p>调用到<code>_objc_rootAllocWithZone</code>这个方法，具体的代码如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">+ (id)allocWithZone:(struct _NSZone *)zone &#123;</div><div class="line">	   <span class="built_in">return</span> _objc_rootAllocWithZone(self, (malloc_zone_t *)zone);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<pre><code>- 跟进`_objc_rootAllocWithZone`方法，可以看到其具体代码如下：
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">	id</div><div class="line">_objc_rootAllocWithZone(Class cls, malloc_zone_t *zone)</div><div class="line">&#123;</div><div class="line">    id obj;</div><div class="line">	//<span class="comment">#if __OBJC2__</span></div><div class="line">    (void)zone;</div><div class="line">    obj = class_createInstance(cls, 0);</div><div class="line">  //<span class="comment">#else</span></div><div class="line">    <span class="keyword">if</span> (!zone) &#123;</div><div class="line">        obj = class_createInstance(cls, 0);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">else</span> &#123;</div><div class="line">        obj = class_createInstanceFromZone(cls, 0, zone);</div><div class="line">    &#125;</div><div class="line">//<span class="comment">#endif</span></div><div class="line">    <span class="keyword">if</span> (slowpath(!obj)) obj = callBadAllocHandler(cls);</div><div class="line">    <span class="built_in">return</span> obj;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+首先判断是不是objc2，如果是的话，则直接调用`class_createInstance`方法来创建object对象，不然，判断zone是否存在，如果不存在，则调用`class_createInstance`方法来创建实例，反之则调用`class_createInstanceFromZone`来创建实例。
+</code></pre><ul>
+<li><p>从上面的调用可以看到，除了canAllocFast单独alloc之外，其余的最后都会调用到<code>class_createInstance</code>以及<code>class_createInstanceFromZone</code>来创建实例，而<code>class_createInstance</code>也会调用到<code>class_createInstanceFromZone</code>，因此我们下面重点看一下<code>class_createInstanceFromZone</code>这个方法做了哪些事情。</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">	static __attribute__((always_inline)) </div><div class="line">id</div><div class="line">_class_createInstanceFromZone(Class cls, size_t extraBytes, void *zone, </div><div class="line">                              bool cxxConstruct = <span class="literal">true</span>, </div><div class="line">                              size_t *outAllocatedSize = nil)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">if</span> (!cls) <span class="built_in">return</span> nil;</div><div class="line"></div><div class="line">    assert(cls-&gt;isRealized());</div><div class="line"></div><div class="line">    // Read class<span class="string">'s info bits all at once for performance</span></div><div class="line">    bool hasCxxCtor = cls-&gt;hasCxxCtor();</div><div class="line">    bool hasCxxDtor = cls-&gt;hasCxxDtor();</div><div class="line">    bool fast = cls-&gt;canAllocNonpointer();</div><div class="line"></div><div class="line">    size_t size = cls-&gt;instanceSize(extraBytes);</div><div class="line">    if (outAllocatedSize) *outAllocatedSize = size;</div><div class="line"></div><div class="line">    id obj;</div><div class="line">    if (!zone  &amp;&amp;  fast) &#123;</div><div class="line">        obj = (id)calloc(1, size);</div><div class="line">        if (!obj) return nil;</div><div class="line">        obj-&gt;initInstanceIsa(cls, hasCxxDtor);</div><div class="line">    &#125; </div><div class="line">    else &#123;</div><div class="line">        if (zone) &#123;</div><div class="line">            obj = (id)malloc_zone_calloc ((malloc_zone_t *)zone, 1, size);</div><div class="line">        &#125; else &#123;</div><div class="line">            obj = (id)calloc(1, size);</div><div class="line">        &#125;</div><div class="line">        if (!obj) return nil;</div><div class="line"></div><div class="line">        // Use raw pointer isa on the assumption that they might be </div><div class="line">        // doing something weird with the zone or RR.</div><div class="line">        obj-&gt;initIsa(cls);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    if (cxxConstruct &amp;&amp; hasCxxCtor) &#123;</div><div class="line">        obj = _objc_constructOrFree(obj, cls);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    return obj;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>  仔细看下其流程代码，具体可以拆分一下几个步骤：</p>
+<ul>
+<li>是否存在构造函数</li>
+<li>是否存在析构函数</li>
+<li>是否需要raw isa</li>
+<li>读取实例所需要的size</li>
+<li>如果不需要zone，同时不需要raw isa，则调用<code>calloc</code>快速创建obj，之后调用<em>initInstanceIsa</em>初始化isa</li>
+<li>反之，如果zone存在，则调用<code>malloc_zone_calloc</code>创建obj，如果zone不存在，则调用<code>calloc</code>创建obj。之后调用<code>initIsa</code>来实例化isa</li>
+<li>最后如果存在构造函数，则调用<code>_objc_constructOrFree</code>来构造obj。</li>
+</ul>
+</li>
+</ul>
+<p>至此obj的创建就结束了，一直跟踪到object的一些方法，还是应该先整体梳理记录一下objc-object的内存分布，以及objc-class的设计，那下一篇就先整理一下object-object和objc-class之后再来描述NSObject的初始化工作。</p>
+<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/源码，runtime/" rel="tag"># 源码，runtime</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/11/2017-05-11-源码分析之Masonry/" rel="next" title="源码分析之Masonry">
+                <i class="fa fa-chevron-left"></i> 源码分析之Masonry
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="Selector" />
+          <p class="site-author-name" itemprop="name">Selector</p>
+           
+              <p class="site-description motion-element" itemprop="description">莫谈人间几寒暑，静观弯月荡秋风~</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/dash2014" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Selector</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
