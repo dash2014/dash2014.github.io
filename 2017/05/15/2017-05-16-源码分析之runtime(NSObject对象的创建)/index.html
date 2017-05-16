@@ -94,7 +94,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/05/15/2017-05-16-源码分析之runtime(NSObject对象的创建)/index.html">
 <meta property="og:site_name" content="秋知轩">
 <meta property="og:description" content="runtime，iOS开发者需要了解的核心思想之一，网上有很多资料对其进行分析，具体可以看下runtime，作者runtime系列的几篇博文，详细的介绍了消息的转发流程，类与对象的设计，以及runtime的一些用法做了详细的介绍，做了这么久的iOS开发，还是有必要了解一下runtime的源码，从现在开始就先罗列一些篇幅，一边学习一边记录。下载runtime的源码，开始学习吧，就从NSObject.">
-<meta property="og:updated_time" content="2017-05-16T08:34:30.000Z">
+<meta property="og:updated_time" content="2017-05-16T10:27:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="源码分析之NSObject对象创建流程">
 <meta name="twitter:description" content="runtime，iOS开发者需要了解的核心思想之一，网上有很多资料对其进行分析，具体可以看下runtime，作者runtime系列的几篇博文，详细的介绍了消息的转发流程，类与对象的设计，以及runtime的一些用法做了详细的介绍，做了这么久的iOS开发，还是有必要了解一下runtime的源码，从现在开始就先罗列一些篇幅，一边学习一边记录。下载runtime的源码，开始学习吧，就从NSObject.">
@@ -377,21 +377,15 @@
 <li><p>跟进<code>callAlloc</code>方法，具体代码如下:</p>
   <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">static ALWAYS_INLINE id callAlloc(Class cls, bool checkNil, bool allocWithZone=<span class="literal">false</span>)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">if</span> (slowpath(checkNil &amp;&amp; !cls)) <span class="built_in">return</span> nil;</div><div class="line">//<span class="comment">#if __OBJC2__</span></div><div class="line">    <span class="keyword">if</span> (fastpath(!cls-&gt;ISA()-&gt;hasCustomAWZ())) &#123;</div><div class="line">        <span class="keyword">if</span> (fastpath(cls-&gt;canAllocFast())) &#123;</div><div class="line">            bool dtor = cls-&gt;hasCxxDtor();</div><div class="line">            id obj = (id)calloc(1, cls-&gt;bits.fastInstanceSize());</div><div class="line">            <span class="keyword">if</span> (slowpath(!obj)) <span class="built_in">return</span> callBadAllocHandler(cls);</div><div class="line">            obj-&gt;initInstanceIsa(cls, dtor);</div><div class="line">            <span class="built_in">return</span> obj;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">else</span> &#123;</div><div class="line">            id obj = class_createInstance(cls, 0);</div><div class="line">            <span class="keyword">if</span> (slowpath(!obj)) <span class="built_in">return</span> callBadAllocHandler(cls);</div><div class="line">            <span class="built_in">return</span> obj;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">//<span class="comment">#endif</span></div><div class="line">    <span class="keyword">if</span> (allocWithZone) <span class="built_in">return</span> [cls allocWithZone:nil];</div><div class="line">    <span class="built_in">return</span> [cls alloc];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p> 具体的拆分步骤如下：</p>
-<ol>
-<li>第一个if判断，根据上面传过来的参数，checknil为false，cls为self本身，故而这个分支是不会走的。这里有两个宏slowpath和fastpath，这两个宏的定义如下：</li>
-</ol>
+<p>  1.第一个if判断，根据上面传过来的参数，checknil为false，cls为self本身，故而这个分支是不会走的。这里有两个宏slowpath和fastpath，这两个宏的定义如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">//<span class="comment">#define fastpath(x) (__builtin_expect(bool(x), 1))</span></div><div class="line">//<span class="comment">#define slowpath(x) (__builtin_expect(bool(x), 0))</span></div></pre></td></tr></table></figure>
 <p> <strong><code>__builtin_expect</code>这个指令是gcc引入的，作用是”允许程序员将最有可能执行的分支告诉编译器”。从而避免跳转语句，提高CPU的执行效率。</strong></p>
-<ol>
-<li>此处会区别OBJC2和之前版本，如果是则会进入到3流程，否则进入到7流程<ol>
-<li>检测cls的ISA是否有自定义的allocWithZone的方法，这里通常是不会自己定义的，所以一定会进入到这个分支。</li>
-<li>判断cls是否可以快速alloc，如果可以进入到5流程，反之进入到6流程。</li>
-<li>检测cls是否存在析构函数，之后快速创建obj对象，如果创建失败，则进行错误处理，反之就快速的初始化obj对象，并返回。</li>
-<li>调用<code>class_createInstance</code>方法快速创建obj对象，如果创建失败，则进行错误处理，反之就快速的初始化obj对象，并返回。</li>
-<li>由于allocWithZone，调用方传递的值为true所以会通过<code>allocWithZone</code>调用，反之则通过<code>alloc</code>方法调用。</li>
-</ol>
-</li>
-</ol>
+<p> 2.此处会区别OBJC2和之前版本，如果是则会进入到3流程，否则进入到7流程</p>
+<p> 3.检测cls的ISA是否有自定义的allocWithZone的方法，这里通常是不会自己定义的，所以一定会进入到这个分支。</p>
+<p> 4.判断cls是否可以快速alloc，如果可以进入到5流程，反之进入到6流程。</p>
+<p> 5.检测cls是否存在析构函数，之后快速创建obj对象，如果创建失败，则进行错误处理，反之就快速的初始化obj对象，并返回。</p>
+<p> 6.调用<code>class_createInstance</code>方法快速创建obj对象，如果创建失败，则进行错误处理，反之就快速的初始化obj对象，并返回。</p>
+<p> 7.由于allocWithZone，调用方传递的值为true所以会通过<code>allocWithZone</code>调用，反之则通过<code>alloc</code>方法调用。</p>
 </li>
 </ul>
 </li>
