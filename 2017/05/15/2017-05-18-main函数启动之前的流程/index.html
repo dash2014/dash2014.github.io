@@ -1,0 +1,745 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="源码，runtime," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="iOS中所有系统的framework都是采用动态链接库的形式进行链接的，动态链接和静态链接的区别如下：  静态链接是在编译之后就将代码加载进来，运行的时候直接执行二进制文件。 动态链接是在程序启动的时候才去将动态链接库加载进来。  因此在iOS中存在着一个 dynamic link editor，简称为dyld，动态链接器，当系统准备好启动程序的初始化工作之后，就把任务交给dyld，给一个开源地址">
+<meta name="keywords" content="源码，runtime">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从程序启动开始的旅程">
+<meta property="og:url" content="http://yoursite.com/2017/05/15/2017-05-18-main函数启动之前的流程/index.html">
+<meta property="og:site_name" content="秋知轩">
+<meta property="og:description" content="iOS中所有系统的framework都是采用动态链接库的形式进行链接的，动态链接和静态链接的区别如下：  静态链接是在编译之后就将代码加载进来，运行的时候直接执行二进制文件。 动态链接是在程序启动的时候才去将动态链接库加载进来。  因此在iOS中存在着一个 dynamic link editor，简称为dyld，动态链接器，当系统准备好启动程序的初始化工作之后，就把任务交给dyld，给一个开源地址">
+<meta property="og:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/WechatIMG24.jpeg">
+<meta property="og:updated_time" content="2017-05-18T10:24:08.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="从程序启动开始的旅程">
+<meta name="twitter:description" content="iOS中所有系统的framework都是采用动态链接库的形式进行链接的，动态链接和静态链接的区别如下：  静态链接是在编译之后就将代码加载进来，运行的时候直接执行二进制文件。 动态链接是在程序启动的时候才去将动态链接库加载进来。  因此在iOS中存在着一个 dynamic link editor，简称为dyld，动态链接器，当系统准备好启动程序的初始化工作之后，就把任务交给dyld，给一个开源地址">
+<meta name="twitter:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/WechatIMG24.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/05/15/2017-05-18-main函数启动之前的流程/"/>
+
+
+
+
+
+  <title> 从程序启动开始的旅程 | 秋知轩 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">秋知轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">莫谈人间几寒暑，静观弯月荡秋风~</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/15/2017-05-18-main函数启动之前的流程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                从程序启动开始的旅程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-15T09:52:13+08:00">
+                2017-05-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>iOS中所有系统的framework都是采用动态链接库的形式进行链接的，动态链接和静态链接的区别如下：</p>
+<ul>
+<li>静态链接是在编译之后就将代码加载进来，运行的时候直接执行二进制文件。</li>
+<li>动态链接是在程序启动的时候才去将动态链接库加载进来。</li>
+</ul>
+<p>因此在iOS中存在着一个 dynamic link editor，简称为dyld，动态链接器，当系统准备好启动程序的初始化工作之后，就把任务交给dyld，给一个开源地址<a href="https://github.com/opensource-apple/dyld" target="_blank" rel="external">dyld开源地址</a>，后续找时间可以看一下。</p>
+<p>我们都知道程序的main函数是程序启动的入口函数，因此我们在入口处添加断点，可以看到整个程序启动栈如下图所示。<br><img src="http://7xsw5d.com1.z0.glb.clouddn.com/WechatIMG24.jpeg" alt="app start stack"></p>
+<ul>
+<li>调用了<em>__dyld_start</em> 方法</li>
+<li><em>__dyld_start</em> 方法调用了<em>dyldbootstrap::start()</em></li>
+<li>之后又调用了<em>dyld::_main</em>，在这里进行了动态库的加载，主要就是将MACH-O中的所有类及方法等符号加载进内存。</li>
+<li>最后开始调用<em>_objc_init</em>方法，该方法主要是做一些启动的初始化工作，注册dyld的通知，这个方法的实现如下：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">void _objc_init(void)</div><div class="line">&#123;</div><div class="line">    static bool initialized = <span class="literal">false</span>;</div><div class="line">    <span class="keyword">if</span> (initialized) <span class="built_in">return</span>;</div><div class="line">    initialized = <span class="literal">true</span>;</div><div class="line">    environ_init();</div><div class="line">    tls_init();</div><div class="line">    static_init();</div><div class="line">    lock_init();</div><div class="line">    exception_init();</div><div class="line">_dyld_objc_notify_register(&amp;map_2_images, load_images, unmap_image);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到这个方法主要调用了一下几个方法：</p>
+<p><strong>environ_init()：</strong>该方法主要是读取，配置一些与runtime相关的环境变量，包括Malloc，NSZombiesEnabled等。</p>
+<p><strong>tls_init()：</strong>该方法主要用户初始化线程的局部存储，即tls。</p>
+<p><strong>static_init()：</strong>该方法主要是运行C++的静态构造方法。</p>
+<p><strong>lock_init()：</strong>该方法主要调用了<em>_pthread_qos_class_encode</em>这个方法，返回一个pthread_priority_t值，这个值用于保证QoS类及其相关的优先级可以依照他们结合之后的顺序。</p>
+<p><strong>exception_init()：</strong>该方法主要是描述异常操作的处理流程，如果是OC异常，调用注册的回调来处理，最后调用terminate handler。</p>
+<p><strong>_dyld_objc_notify_register：</strong>这个方法其实是runtime想dyld注册了一个回调，当dyld完成了加载之后，runtime会根据需要去调用<em>map_2_images</em>，<em>load_images</em>以及<em>unmap_image</em>方法。</p>
+<ul>
+<li><p>其中<em>map_2_images</em>方法主要调用<em>_read_images</em>方法，是从images里面读取类和方法，以及协议的符号，并做初始化操作，具体的代码我简化一下。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">_read_images(header_info **hList, uint32_t hCount, int totalClasses, int unoptimizedTotalClasses) &#123; </div><div class="line">  classref_t *classlist = _getObjc2ClassList(hi, &amp;count);</div><div class="line">  <span class="keyword">for</span> (i = 0; i &lt; count; i++) &#123;</div><div class="line">      Class cls = (Class)classlist[i];</div><div class="line">      Class newCls = <span class="built_in">read</span>Class(cls, headerIsBundle, headerIsPreoptimized);</div><div class="line">      <span class="keyword">if</span> (newCls != cls  &amp;&amp;  newCls) &#123;</div><div class="line">          // Class was moved but not deleted. Currently this occurs </div><div class="line">          // only when the new class resolved a future class.</div><div class="line">          // Non-lazily realize the class below.</div><div class="line">          resolvedFutureClasses = (Class *)</div><div class="line">              realloc(resolvedFutureClasses, </div><div class="line">                      (resolvedFutureClassCount+1) * sizeof(Class));</div><div class="line">          resolvedFutureClasses[resolvedFutureClassCount++] = newCls;</div><div class="line">      &#125;</div><div class="line">  &#125;</div><div class="line">  ts.log(<span class="string">"IMAGE TIMES: discover classes"</span>);</div><div class="line"></div><div class="line">  // Fix up remapped classes</div><div class="line">  // Class list and nonlazy class list remain unremapped.</div><div class="line">  // Class refs and super refs are remapped <span class="keyword">for</span> message dispatching.</div><div class="line">  </div><div class="line">  <span class="keyword">if</span> (!noClassesRemapped()) &#123;</div><div class="line">      <span class="keyword">for</span> (EACH_HEADER) &#123;</div><div class="line">          Class *classrefs = _getObjc2ClassRefs(hi, &amp;count);</div><div class="line">          <span class="keyword">for</span> (i = 0; i &lt; count; i++) &#123;</div><div class="line">              remapClassRef(&amp;classrefs[i]);</div><div class="line">          &#125;</div><div class="line">          // fixme why doesn<span class="string">'t test future1 catch the absence of this?</span></div><div class="line">          classrefs = _getObjc2SuperRefs(hi, &amp;count);</div><div class="line">          for (i = 0; i &lt; count; i++) &#123;</div><div class="line">              remapClassRef(&amp;classrefs[i]);</div><div class="line">          &#125;</div><div class="line">      &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  bool isBundle = hi-&gt;isBundle();</div><div class="line">  SEL *sels = _getObjc2SelectorRefs(hi, &amp;count);</div><div class="line">  UnfixedSelectors += count;</div><div class="line">  for (i = 0; i &lt; count; i++) &#123;</div><div class="line">      const char *name = sel_cname(sels[i]);</div><div class="line">      sels[i] = sel_registerNameNoLock(name, isBundle);</div><div class="line">  &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">  protocol_t **protolist = _getObjc2ProtocolList(hi, &amp;count);</div><div class="line">  for (i = 0; i &lt; count; i++) &#123;</div><div class="line">      readProtocol(protolist[i], cls, protocol_map, </div><div class="line">                   isPreoptimized, isBundle);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  for (EACH_HEADER) &#123;</div><div class="line">      protocol_t **protolist = _getObjc2ProtocolRefs(hi, &amp;count);</div><div class="line">      for (i = 0; i &lt; count; i++) &#123;</div><div class="line">          remapProtocolRef(&amp;protolist[i]);</div><div class="line">      &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  for (EACH_HEADER) &#123;</div><div class="line">      classref_t *classlist = </div><div class="line">          _getObjc2NonlazyClassList(hi, &amp;count);</div><div class="line">      for (i = 0; i &lt; count; i++) &#123;</div><div class="line">          Class cls = remapClass(classlist[i]);</div><div class="line">          if (!cls) continue;</div><div class="line">          realizeClass(cls);</div><div class="line">      &#125;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p><em>load_images： </em>该方法主要调用<em>prepare_load_methods</em>方法，进而去调用类的+load方法，先去读取objc2中的类的列表，之后递归执行<em>schedule_class_load</em>方法去完成类的load方法的调用，并把其加入到loadablelist中，之后读取category的列表，去realizeClass，relizeclass更改了一下class_rw_t中的信息，最后并把category加入到loadablelist中。<strong>此处就说明了category的load方法一定晚于类的load方法调用</strong>，具体代码如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">  </div><div class="line">  void prepare_load_methods(const headerType *mhdr)</div><div class="line">&#123;</div><div class="line">    size_t count, i;</div><div class="line"></div><div class="line">    runtimeLock.assertWriting();</div><div class="line"></div><div class="line">    classref_t *classlist = </div><div class="line">        _getObjc2NonlazyClassList(mhdr, &amp;count);</div><div class="line">    <span class="keyword">for</span> (i = 0; i &lt; count; i++) &#123;</div><div class="line">        schedule_class_load(remapClass(classlist[i]));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    category_t **categorylist = _getObjc2NonlazyCategoryList(mhdr, &amp;count);</div><div class="line">    <span class="keyword">for</span> (i = 0; i &lt; count; i++) &#123;</div><div class="line">        category_t *cat = categorylist[i];</div><div class="line">        Class cls = remapClass(cat-&gt;cls);</div><div class="line">        <span class="keyword">if</span> (!cls) <span class="built_in">continue</span>;  // category <span class="keyword">for</span> ignored weak-linked class</div><div class="line">        realizeClass(cls);</div><div class="line">        assert(cls-&gt;ISA()-&gt;isRealized());</div><div class="line">        add_category_to_loadable_list(cat);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p><em>unmap_images：</em>该方法主要用于移除一些不需要加载的分类和类，先调用分类的remove，之后再调用类的remove，具体代码如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div></pre></td><td class="code"><pre><div class="line"> void _unload_image(header_info *hi)</div><div class="line">&#123;</div><div class="line">    size_t count, i;</div><div class="line"></div><div class="line">    loadMethodLock.assertLocked();</div><div class="line">    runtimeLock.assertWriting();</div><div class="line"></div><div class="line">    // Unload unattached categories and categories waiting <span class="keyword">for</span> +load.</div><div class="line"></div><div class="line">    category_t **catlist = _getObjc2CategoryList(hi, &amp;count);</div><div class="line">    <span class="keyword">for</span> (i = 0; i &lt; count; i++) &#123;</div><div class="line">        category_t *cat = catlist[i];</div><div class="line">        <span class="keyword">if</span> (!cat) <span class="built_in">continue</span>;  // category <span class="keyword">for</span> ignored weak-linked class</div><div class="line">        Class cls = remapClass(cat-&gt;cls);</div><div class="line">        assert(cls);  // shouldn<span class="string">'t have live category for dead class</span></div><div class="line"></div><div class="line">        // fixme for MH_DYLIB cat's class may have been unloaded already</div><div class="line"></div><div class="line">        // unattached list</div><div class="line">        removeUnattachedCategoryForClass(cat, cls);</div><div class="line"></div><div class="line">        // +load queue</div><div class="line">        remove_category_from_loadable_list(cat);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // Unload classes.</div><div class="line"></div><div class="line">    // Gather classes from both __DATA,__objc_clslist </div><div class="line">    // and __DATA,__objc_nlclslist. arclite<span class="string">'s hack puts a class in the latter</span></div><div class="line">    // only, and we need to unload that class if we unload an arclite image.</div><div class="line"></div><div class="line">    NXHashTable *classes = NXCreateHashTable(NXPtrPrototype, 0, nil);</div><div class="line">    classref_t *classlist;</div><div class="line"></div><div class="line">    classlist = _getObjc2ClassList(hi, &amp;count);</div><div class="line">    for (i = 0; i &lt; count; i++) &#123;</div><div class="line">        Class cls = remapClass(classlist[i]);</div><div class="line">        if (cls) NXHashInsert(classes, cls);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    classlist = _getObjc2NonlazyClassList(hi, &amp;count);</div><div class="line">    for (i = 0; i &lt; count; i++) &#123;</div><div class="line">        Class cls = remapClass(classlist[i]);</div><div class="line">        if (cls) NXHashInsert(classes, cls);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // First detach classes from each other. Then free each class.</div><div class="line">    // This avoid bugs where this loop unloads a subclass before its superclass</div><div class="line"></div><div class="line">    NXHashState hs;</div><div class="line">    Class cls;</div><div class="line"></div><div class="line">    hs = NXInitHashState(classes);</div><div class="line">    while (NXNextHashState(classes, &amp;hs, (void**)&amp;cls)) &#123;</div><div class="line">        remove_class_from_loadable_list(cls);</div><div class="line">        detach_class(cls-&gt;ISA(), YES);</div><div class="line">        detach_class(cls, NO);</div><div class="line">    &#125;</div><div class="line">    hs = NXInitHashState(classes);</div><div class="line">    while (NXNextHashState(classes, &amp;hs, (void**)&amp;cls)) &#123;</div><div class="line">        free_class(cls-&gt;ISA());</div><div class="line">        free_class(cls);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    NXFreeHashTable(classes);</div><div class="line">    </div><div class="line">    // XXX FIXME -- Clean up protocols:</div><div class="line">    // &lt;rdar://problem/9033191&gt; Support unloading protocols at dylib/image unload time</div><div class="line"></div><div class="line">    // fixme DebugUnload</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>至此，main函数启动之前的操作就完成了，后面将进入到main函数来执行相关代码了，后面将以init的方法调用继续跟踪runtime相关代码。感觉欠了好多篇记录一样，慢慢补充吧。</p>
+<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/源码，runtime/" rel="tag"># 源码，runtime</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/15/2017-05-16-源码分析之runtime(NSObject对象的创建)/" rel="next" title="源码分析之NSObject对象创建流程">
+                <i class="fa fa-chevron-left"></i> 源码分析之NSObject对象创建流程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="Selector" />
+          <p class="site-author-name" itemprop="name">Selector</p>
+           
+              <p class="site-description motion-element" itemprop="description">莫谈人间几寒暑，静观弯月荡秋风~</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/dash2014" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Selector</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
