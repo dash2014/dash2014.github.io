@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="源码，YYKit," />
+  <meta name="keywords" content="锁," />
 
 
 
@@ -87,17 +87,17 @@
 
 
 
-<meta name="description" content="YYKit是国内开发者贡献的一个非常优秀的开源库，里面封装了很多category以及很多工具类，目前在github上一共有9.8k个star，github地址为：YYKit，鉴于其贡献的内容较多，这个库的拆解也会分几个部分来逐一拆解。 本篇文章就先简单的说一下YYKitMacro这个宏定义文件，包括里面的一些用法  YY_CLAMP：这个宏定义主要描述了某个值x在low和high范围之内的约束，个">
-<meta name="keywords" content="源码，YYKit">
+<meta name="description" content="前段时间立了好多个flag，欠记录的东西也好多，记得之前看过ibireme的不再安全的OSSpinLock一文，里面YY大神对现有的一些锁进行了一下性能比对，决定起一个系列专门来描述一下各种锁的使用和实现。 就从OSSpinLock开始吧，自旋锁，其现在被定义在OSSpinLockDeprecated.h中，由于优先级反转的问题，目前已经被苹果废弃，不建议使用。苹果对它的具体描述如下：  Thes">
+<meta name="keywords" content="锁">
 <meta property="og:type" content="article">
-<meta property="og:title" content="源码拆解之YYKit系列一">
-<meta property="og:url" content="http://yoursite.com/2017/04/20/2017-04-20-源码分析之YYKit宏定义/index.html">
+<meta property="og:title" content="iOS中开发中的锁系列-OSSpinLock">
+<meta property="og:url" content="http://yoursite.com/2017/05/22/iOS中开发中的锁系列-OSSpinLock/index.html">
 <meta property="og:site_name" content="秋知轩">
-<meta property="og:description" content="YYKit是国内开发者贡献的一个非常优秀的开源库，里面封装了很多category以及很多工具类，目前在github上一共有9.8k个star，github地址为：YYKit，鉴于其贡献的内容较多，这个库的拆解也会分几个部分来逐一拆解。 本篇文章就先简单的说一下YYKitMacro这个宏定义文件，包括里面的一些用法  YY_CLAMP：这个宏定义主要描述了某个值x在low和high范围之内的约束，个">
-<meta property="og:updated_time" content="2017-05-15T02:44:42.000Z">
+<meta property="og:description" content="前段时间立了好多个flag，欠记录的东西也好多，记得之前看过ibireme的不再安全的OSSpinLock一文，里面YY大神对现有的一些锁进行了一下性能比对，决定起一个系列专门来描述一下各种锁的使用和实现。 就从OSSpinLock开始吧，自旋锁，其现在被定义在OSSpinLockDeprecated.h中，由于优先级反转的问题，目前已经被苹果废弃，不建议使用。苹果对它的具体描述如下：  Thes">
+<meta property="og:updated_time" content="2017-05-22T07:42:26.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="源码拆解之YYKit系列一">
-<meta name="twitter:description" content="YYKit是国内开发者贡献的一个非常优秀的开源库，里面封装了很多category以及很多工具类，目前在github上一共有9.8k个star，github地址为：YYKit，鉴于其贡献的内容较多，这个库的拆解也会分几个部分来逐一拆解。 本篇文章就先简单的说一下YYKitMacro这个宏定义文件，包括里面的一些用法  YY_CLAMP：这个宏定义主要描述了某个值x在low和high范围之内的约束，个">
+<meta name="twitter:title" content="iOS中开发中的锁系列-OSSpinLock">
+<meta name="twitter:description" content="前段时间立了好多个flag，欠记录的东西也好多，记得之前看过ibireme的不再安全的OSSpinLock一文，里面YY大神对现有的一些锁进行了一下性能比对，决定起一个系列专门来描述一下各种锁的使用和实现。 就从OSSpinLock开始吧，自旋锁，其现在被定义在OSSpinLockDeprecated.h中，由于优先级反转的问题，目前已经被苹果废弃，不建议使用。苹果对它的具体描述如下：  Thes">
 
 
 
@@ -125,13 +125,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/04/20/2017-04-20-源码分析之YYKit宏定义/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/05/22/iOS中开发中的锁系列-OSSpinLock/"/>
 
 
 
 
 
-  <title> 源码拆解之YYKit系列一 | 秋知轩 </title>
+  <title> iOS中开发中的锁系列-OSSpinLock | 秋知轩 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -270,7 +270,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/20/2017-04-20-源码分析之YYKit宏定义/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/22/iOS中开发中的锁系列-OSSpinLock/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Selector">
@@ -291,7 +291,7 @@
             
             
               
-                源码拆解之YYKit系列一
+                iOS中开发中的锁系列-OSSpinLock
               
             
           </h1>
@@ -306,8 +306,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-20T20:54:01+08:00">
-                2017-04-20
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-22T15:40:47+08:00">
+                2017-05-22
               </time>
             
 
@@ -364,34 +364,35 @@
       
 
       
-        <p>YYKit是国内开发者贡献的一个非常优秀的开源库，里面封装了很多category以及很多工具类，目前在github上一共有9.8k个star，github地址为：<a href="https://github.com/ibireme/YYKit" target="_blank" rel="external">YYKit</a>，鉴于其贡献的内容较多，这个库的拆解也会分几个部分来逐一拆解。</p>
-<p>本篇文章就先简单的说一下YYKitMacro这个宏定义文件，包括里面的一些用法</p>
+        <p>前段时间立了好多个flag，欠记录的东西也好多，记得之前看过ibireme的<a href="ttp://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/" target="_blank" rel="external">不再安全的OSSpinLock</a>一文，里面YY大神对现有的一些锁进行了一下性能比对，决定起一个系列专门来描述一下各种锁的使用和实现。</p>
+<p>就从OSSpinLock开始吧，自旋锁，其现在被定义在OSSpinLockDeprecated.h中，由于优先级反转的问题，目前已经被苹果废弃，不建议使用。苹果对它的具体描述如下：</p>
+<blockquote>
+<p>These are deprecated legacy interfaces for userspace spinlocks.<br>These interfaces should no longer be used, particularily in situations where threads of differing priorities may contend on the same spinlock.<br>The interfaces in <os lock.h=""> should be used instead in cases where a very low-level lock primitive is required. In general however, using higher level synchronization primitives such as those provided by the pthread or dispatch<br> subsystems should be preferred.</os></p>
+</blockquote>
+<p>翻译过来呢，就是这些接口不再被使用了，特别是多个不同优先级的线程使用同一个自选锁，低级别的锁目前被<os lock.h=""> 中定义的os_unfair_lock所替代，较高级别的建议使用pthread或者GCD来代替。那么什么是自旋锁，os_unfair_lock又是怎么避免优先级反转的呢？</os></p>
+<h2 id="OSSpinLock的使用"><a href="#OSSpinLock的使用" class="headerlink" title="OSSpinLock的使用"></a>OSSpinLock的使用</h2><p>OSSpinLock主要提供了三个方法，Lock，unLock和tryLock，具体代码如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">OSSpinLock spinLock = OS_SPINLOCK_INIT;</div><div class="line">OSSpinLockLock(&amp;spinLock);</div><div class="line">// OSSpinLockTry(&amp;spinLock);</div><div class="line">OSSpinLockUnlock(&amp;SpinLock);</div></pre></td></tr></table></figure>
+<p>OSSpinLock的接口设计非常简单，首先进行自旋锁的初始化操作，之后选择调用Lock或者tryLock方法，进行加锁，之后调用unLock方法进行释放锁的操作。</p>
+<h2 id="自旋锁原理和场景"><a href="#自旋锁原理和场景" class="headerlink" title="自旋锁原理和场景"></a>自旋锁原理和场景</h2><p>设计锁的基本目的，就是在多线程同时进行资源访问的时候进行访问限制，保证数据的一致性。现在的系统基本上都采用时间片轮转的方式来管理线程，就是按照优先级进行时间片的分配，轮到了，则执行，反之，则进入等待状态，直到下一次时间片的分配。</p>
+<p>自旋锁是这样一种锁，如果当前锁已经被别的使用者保持，新的调用者就一直在那循环查看是否该自旋锁目前是已经被释放，但自旋锁持有者 的通常保持锁时间非常非常短，因此新的调用者在那一直等待，而不进入等待状态，就使得新的调用者避免了挂起等待新的时间片轮询所消耗的时间，从而提升效率。</p>
+<h2 id="自旋锁设计"><a href="#自旋锁设计" class="headerlink" title="自旋锁设计"></a>自旋锁设计</h2><p>由于自旋锁使用的是忙等机制，因此其设计中一定存在着一个循环，来完成其循环等待的状态。具体设计如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">bool lock = <span class="literal">false</span>;</div><div class="line"><span class="keyword">do</span> &#123;</div><div class="line">	<span class="keyword">while</span>(<span class="built_in">set</span>(&amp;lock)) &#123;</div><div class="line">		XXXX //共享资源访问</div><div class="line">		lock = <span class="literal">false</span>;//释放锁</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="优先级反转"><a href="#优先级反转" class="headerlink" title="优先级反转"></a>优先级反转</h2><p>ibireme的文章里解释说，<strong>如果一个低优先级的线程获得锁并访问共享资源，这时一个高优先级的线程也尝试获得这个锁，它会处于 spin lock 的忙等状态从而占用大量 CPU。此时低优先级线程无法与高优先级线程争夺 CPU 时间，从而导致任务迟迟完不成、无法释放 lock。</strong></p>
+<p>具体描述一下，大概可以这样理解，前提条件：有三个线程T1，T2，T3，线程优先级为A&gt;B&gt;C，优先级反转的流程如下：</p>
 <ul>
-<li><p><strong>YY_CLAMP：</strong>这个宏定义主要描述了某个值x在low和high范围之内的约束，个人觉得，其应该判断一下low和high的大小，不然传值反了，会得到错误的结果。</p>
-</li>
-<li><p><strong>YY_SWAP：</strong>这个宏定义主要是用来进行值交换，为了确保精度不丢失以及类型一致，作者采用了读取参数 <em>a</em> 的类型</p>
-</li>
-<li><p><strong>YYAssertNil系列：</strong>这个宏定义主要封装了系统的NSAssert以及NSCAssert，前者适用于OC，后者适用于C</p>
-</li>
-<li><p><strong>YYSYNTH_DUMMY_CLASS：</strong>这个文件中的小亮点之一，我们都知道在加载静态库的分类时候找不到分类中的方法，进而发生崩溃，解决的办法通常都是在info.plist配置-all_load或者-force_load，但作者采用了另一种解决办法，使得在加载这个库的时候对工程无侵入，具体如下：</p>
-</li>
+<li>T3正在访问共享资源S</li>
+<li>T1也要抢占共享资源S，由于T1的优先级高于T3，因此时间片被优先分配到T1</li>
+<li>T3无时间片分配，导致任务无法完成，Lock无法释放</li>
+<li>T1无法访问共享资源，一直处于忙等状态</li>
+<li>T2获取时间片，开始执行，直至执行完毕</li>
 </ul>
-<pre><code class="bash">ifndef YYSYNTH_DUMMY_CLASS
-define YYSYNTH_DUMMY_CLASS(_name_) 
-@interface YYSYNTH_DUMMY_CLASS_ <span class="comment">## _name_ : NSObject @end </span>
-@implementation YYSYNTH_DUMMY_CLASS_ <span class="comment">## _name_ @end</span>
-endif
-</code></pre>
-<p><strong>为什么这段代码可以避免这个问题？</strong>，OC的链接器只会为类建立一个符号表，而并不会为每个方法建立符号表，因此如果静态库中如果定义了已存在的一个类的分类的话，链接器并不能将分类的代码和核心代码合并，因此最后的可执行文件中就会缺少分类的代码，因此函数的调用就会失败，这段宏定义呢，会虚拟建一个与category相同的定义和空实现，这样在链接的时候就可以找到该方法了，具体的OC中category的底层实现和加载方式可以参考这篇文章<a href="http://ios.jobbole.com/84341/" target="_blank" rel="external">Category</a>，个人觉得写得不错。</p>
-<ul>
-<li><p><strong>YYSYNTH_DYNAMIC_PROPERTY_OBJECT：</strong>利用关联对象动态添加属性</p>
-</li>
-<li><p><strong>weakify，strongify：</strong>这是一个很亮眼的写法，我们都知道block与self导致的循环引用需要weak和strong来解决循环引用的问题，这里作者声明了两个宏weakify，strongify，其中debug模式下autoreleasepool{}和release模式下try@finally的作用仅仅是为了在weakify和strongify前面写上@符号，区别于普通的源码，nice。当然RAC中也有类似的写法。现有的工程均可以借鉴。</p>
-</li>
-<li><p><strong>static inline：</strong>采用内联函数的方式，在编译的时候，会把代码直接嵌入调用代码中，提高函数调用效率。</p>
-</li>
-</ul>
-<p>仔细分析YYKitMacro这个宏定义的文件，其中的亮点还是很值得学习和参考的，后面会继续拆解。</p>
+<p>这个流程可以明显看到优先级低的T2早于优先级高的T1先执行，这就是优先级反转。</p>
+<h2 id="os-unfair-lock如何避免优先级反转"><a href="#os-unfair-lock如何避免优先级反转" class="headerlink" title="os_unfair_lock如何避免优先级反转"></a>os_unfair_lock如何避免优先级反转</h2><p>由于无法看到os_unfair_lock的具体实现，看了下os_unfair_lock的说明，上面是这样写的：</p>
+<blockquote>
+<p> The values stored in the lock should be considered opaque and implementation defined, they contain thread ownership information that the system may use to attempt to resolve priority inversions.</p>
+</blockquote>
+<p>大致的意思就是锁里面存储了一些线程独有的信息，用于解决优先级反转的问题。再根据ibireme的文章可以看到libobjc目前应该是将线程ID保存到了锁的内部，锁的等待者会把自己的优先级让出来，从而避免优先级反转。</p>
+<p>先总结一篇，之后再整理一下其他锁相关的内容，欢迎斧正。</p>
 <p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
 
       
@@ -422,7 +423,7 @@ endif
       
         <div class="post-tags">
           
-            <a href="/tags/源码，YYKit/" rel="tag"># 源码，YYKit</a>
+            <a href="/tags/锁/" rel="tag"># 锁</a>
           
         </div>
       
@@ -435,8 +436,8 @@ endif
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/04/19/2017-04-19-源码分析之AFNetworking的线程管理/" rel="next" title="源码拆解之AFNetworking的线程管理">
-                <i class="fa fa-chevron-left"></i> 源码拆解之AFNetworking的线程管理
+              <a href="/2017/05/15/2017-05-16-源码分析之runtime(NSObject对象的创建)/" rel="next" title="源码分析之NSObject对象创建流程">
+                <i class="fa fa-chevron-left"></i> 源码分析之NSObject对象创建流程
               </a>
             
           </div>
@@ -444,10 +445,6 @@ endif
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/04/21/2017-04-21-源码分析之YYKit分类/" rel="prev" title="源码拆解之YYKit系列二">
-                源码拆解之YYKit系列二 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -494,8 +491,17 @@ endif
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.jpeg"
@@ -568,6 +574,22 @@ endif
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#OSSpinLock的使用"><span class="nav-number">1.</span> <span class="nav-text">OSSpinLock的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自旋锁原理和场景"><span class="nav-number">2.</span> <span class="nav-text">自旋锁原理和场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自旋锁设计"><span class="nav-number">3.</span> <span class="nav-text">自旋锁设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优先级反转"><span class="nav-number">4.</span> <span class="nav-text">优先级反转</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#os-unfair-lock如何避免优先级反转"><span class="nav-number">5.</span> <span class="nav-text">os_unfair_lock如何避免优先级反转</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
