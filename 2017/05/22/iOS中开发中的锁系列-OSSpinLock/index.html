@@ -94,7 +94,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/05/22/iOS中开发中的锁系列-OSSpinLock/index.html">
 <meta property="og:site_name" content="秋知轩">
 <meta property="og:description" content="前段时间立了好多个flag，欠记录的东西也好多，记得之前看过ibireme的不再安全的OSSpinLock一文，里面YY大神对现有的一些锁进行了一下性能比对，决定起一个系列专门来描述一下各种锁的使用和实现。 就从OSSpinLock开始吧，自旋锁，其现在被定义在OSSpinLockDeprecated.h中，由于优先级反转的问题，目前已经被苹果废弃，不建议使用。苹果对它的具体描述如下：  Thes">
-<meta property="og:updated_time" content="2017-05-22T07:42:26.000Z">
+<meta property="og:updated_time" content="2017-05-22T07:48:33.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS中开发中的锁系列-OSSpinLock">
 <meta name="twitter:description" content="前段时间立了好多个flag，欠记录的东西也好多，记得之前看过ibireme的不再安全的OSSpinLock一文，里面YY大神对现有的一些锁进行了一下性能比对，决定起一个系列专门来描述一下各种锁的使用和实现。 就从OSSpinLock开始吧，自旋锁，其现在被定义在OSSpinLockDeprecated.h中，由于优先级反转的问题，目前已经被苹果废弃，不建议使用。苹果对它的具体描述如下：  Thes">
@@ -367,15 +367,16 @@
         <p>前段时间立了好多个flag，欠记录的东西也好多，记得之前看过ibireme的<a href="ttp://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/" target="_blank" rel="external">不再安全的OSSpinLock</a>一文，里面YY大神对现有的一些锁进行了一下性能比对，决定起一个系列专门来描述一下各种锁的使用和实现。</p>
 <p>就从OSSpinLock开始吧，自旋锁，其现在被定义在OSSpinLockDeprecated.h中，由于优先级反转的问题，目前已经被苹果废弃，不建议使用。苹果对它的具体描述如下：</p>
 <blockquote>
-<p>These are deprecated legacy interfaces for userspace spinlocks.<br>These interfaces should no longer be used, particularily in situations where threads of differing priorities may contend on the same spinlock.<br>The interfaces in <os lock.h=""> should be used instead in cases where a very low-level lock primitive is required. In general however, using higher level synchronization primitives such as those provided by the pthread or dispatch<br> subsystems should be preferred.</os></p>
+<p>These are deprecated legacy interfaces for userspace spinlocks.<br>These interfaces should no longer be used, particularily in situations where threads of differing priorities may contend on the same spinlock.<br>The interfaces in <os lock.h=""> should be used instead in cases where a very low-level lock primitive is required. In general however, using higher level synchronization primitives such as those provided by the pthread or dispatch subsystems should be preferred.</os></p>
 </blockquote>
 <p>翻译过来呢，就是这些接口不再被使用了，特别是多个不同优先级的线程使用同一个自选锁，低级别的锁目前被<os lock.h=""> 中定义的os_unfair_lock所替代，较高级别的建议使用pthread或者GCD来代替。那么什么是自旋锁，os_unfair_lock又是怎么避免优先级反转的呢？</os></p>
 <h2 id="OSSpinLock的使用"><a href="#OSSpinLock的使用" class="headerlink" title="OSSpinLock的使用"></a>OSSpinLock的使用</h2><p>OSSpinLock主要提供了三个方法，Lock，unLock和tryLock，具体代码如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">OSSpinLock spinLock = OS_SPINLOCK_INIT;</div><div class="line">OSSpinLockLock(&amp;spinLock);</div><div class="line">// OSSpinLockTry(&amp;spinLock);</div><div class="line">OSSpinLockUnlock(&amp;SpinLock);</div></pre></td></tr></table></figure>
 <p>OSSpinLock的接口设计非常简单，首先进行自旋锁的初始化操作，之后选择调用Lock或者tryLock方法，进行加锁，之后调用unLock方法进行释放锁的操作。</p>
 <h2 id="自旋锁原理和场景"><a href="#自旋锁原理和场景" class="headerlink" title="自旋锁原理和场景"></a>自旋锁原理和场景</h2><p>设计锁的基本目的，就是在多线程同时进行资源访问的时候进行访问限制，保证数据的一致性。现在的系统基本上都采用时间片轮转的方式来管理线程，就是按照优先级进行时间片的分配，轮到了，则执行，反之，则进入等待状态，直到下一次时间片的分配。</p>
-<p>自旋锁是这样一种锁，如果当前锁已经被别的使用者保持，新的调用者就一直在那循环查看是否该自旋锁目前是已经被释放，但自旋锁持有者 的通常保持锁时间非常非常短，因此新的调用者在那一直等待，而不进入等待状态，就使得新的调用者避免了挂起等待新的时间片轮询所消耗的时间，从而提升效率。</p>
-<h2 id="自旋锁设计"><a href="#自旋锁设计" class="headerlink" title="自旋锁设计"></a>自旋锁设计</h2><p>由于自旋锁使用的是忙等机制，因此其设计中一定存在着一个循环，来完成其循环等待的状态。具体设计如下：</p>
+<p>自旋锁是这样一种锁，如果当前锁已经被别的使用者保持，新的调用者就一直在那循环查看是否该自旋锁目前是已经被释放，但自旋锁持有者 的通常保持锁时间非常非常短，因此新的调用者在那一直查询，而不进入等待状态，就使得新的调用者避免了挂起等待新的时间片轮询的时间消耗，从而提升效率。</p>
+<p>因此自旋锁适用于持有锁的时间非常短的操作，因为如果持有时间长的话，高优先级的线程就会反复的在那等待锁的释放，从而浪费大量的CPU资源。</p>
+<h2 id="自旋锁设计"><a href="#自旋锁设计" class="headerlink" title="自旋锁设计"></a>自旋锁设计</h2><p>由于自旋锁使用的是忙等机制，因此其设计中一定存在着一个循环，来完成其反复查询锁的状态的操作。具体设计如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">bool lock = <span class="literal">false</span>;</div><div class="line"><span class="keyword">do</span> &#123;</div><div class="line">	<span class="keyword">while</span>(<span class="built_in">set</span>(&amp;lock)) &#123;</div><div class="line">		XXXX //共享资源访问</div><div class="line">		lock = <span class="literal">false</span>;//释放锁</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <h2 id="优先级反转"><a href="#优先级反转" class="headerlink" title="优先级反转"></a>优先级反转</h2><p>ibireme的文章里解释说，<strong>如果一个低优先级的线程获得锁并访问共享资源，这时一个高优先级的线程也尝试获得这个锁，它会处于 spin lock 的忙等状态从而占用大量 CPU。此时低优先级线程无法与高优先级线程争夺 CPU 时间，从而导致任务迟迟完不成、无法释放 lock。</strong></p>
 <p>具体描述一下，大概可以这样理解，前提条件：有三个线程T1，T2，T3，线程优先级为A&gt;B&gt;C，优先级反转的流程如下：</p>
@@ -436,8 +437,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/05/15/2017-05-16-源码分析之runtime(NSObject对象的创建)/" rel="next" title="源码分析之NSObject对象创建流程">
-                <i class="fa fa-chevron-left"></i> 源码分析之NSObject对象创建流程
+              <a href="/2017/05/15/2017-05-18-main函数启动之前的流程/" rel="next" title="从程序启动开始的旅程">
+                <i class="fa fa-chevron-left"></i> 从程序启动开始的旅程
               </a>
             
           </div>
