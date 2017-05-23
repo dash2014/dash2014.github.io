@@ -94,7 +94,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/05/23/iOS中开发中的锁系列-@Synchonize/index.html">
 <meta property="og:site_name" content="秋知轩">
 <meta property="og:description" content="苹果提供了@synchronized来实现了锁的机制，它以闭包的形式，使得代码的可读性更高，而且同时避免了忘记写unlock的处境。那本篇幅就简单的了解一下@synchronized。 案例代码首先，我们简单的写一下@synchronized的用法，它的用法非常简单，如下： 1234NSString *res = [[NSString alloc] init];@synchronized (res">
-<meta property="og:updated_time" content="2017-05-23T06:38:27.000Z">
+<meta property="og:updated_time" content="2017-05-23T10:25:11.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS中开发中的锁系列-@synchronized">
 <meta name="twitter:description" content="苹果提供了@synchronized来实现了锁的机制，它以闭包的形式，使得代码的可读性更高，而且同时避免了忘记写unlock的处境。那本篇幅就简单的了解一下@synchronized。 案例代码首先，我们简单的写一下@synchronized的用法，它的用法非常简单，如下： 1234NSString *res = [[NSString alloc] init];@synchronized (res">
@@ -391,14 +391,14 @@
 <ul>
 <li>如果存在obj，则调用<strong>id2data</strong>，传入参数obj，RELEASE，找到data。</li>
 <li>如果data不存在，则直接将result设置成OBJC_SYNC_NOT_OWNING_THREAD_ERROR。</li>
-<li>如果data存Unlock()方法。</li>
+<li>如果data存在，则直接调用其tryUnlock()方法。</li>
 <li>如果不存在obj，则什么都不做。</li>
 </ul>
 <h3 id="id2data"><a href="#id2data" class="headerlink" title="id2data"></a>id2data</h3><p>看了下enter和exit的流程，每一次都会调用到id2data的方法，这个地方代码我就不粘贴了，有点长，谁感兴趣可以自己看一下，那这个方法做了什么? 具体流程拆解一下：</p>
 <ul>
 <li><p>根据传入的object，从哈希表中读取对应的syncData和lock。</p>
 </li>
-<li><p>看一下SUPPORT_DIRECT_THREAD_KEYS这个宏，如果设定为1，代表直接支持线程存储，那么直接从TLS中获取data，找到data的object与传入的object相同，从TLS中获取lockCount，调用enter的时候，则lockCount++，并将其设定到存储区域，如果调用的是exit，则执行lockCount–，将其设定到存储区之后判定lockCount是否为0，如果为0，则清空存储区之后，原子操作降低其所持有的线程数。返回result。</p>
+<li><p>看一下SUPPORT_DIRECT_THREAD_KEYS这个宏，如果设定为1，代表支持直接线程存储，那么直接从TLS中获取data，找到data的object与传入的object相同，从TLS中获取lockCount，调用enter的时候，则lockCount++，并将其设定到存储区域，如果调用的是exit，则执行lockCount–，将其设定到存储区之后判定lockCount是否为0，如果为0，则清空存储区之后，原子操作降低其所持有的线程数。返回result。</p>
 </li>
 <li><p>如果不支持SUPPORT_DIRECT_THREAD_KEYS，则从SyncCache中查找item中的data对象的object是否与传入的object一致，如果一致则执行类似上面的lockCount增减操作，返回result。</p>
 </li>
