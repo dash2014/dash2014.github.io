@@ -1,0 +1,780 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="锁," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="苹果提供了@synchronized来实现了锁的机制，它以闭包的形式，使得代码的可读性更高，而且同时避免了忘记写unlock的处境。那本篇幅就简单的了解一下@synchronized。 案例代码首先，我们简单的写一下@synchronized的用法，它的用法非常简单，如下： 1234NSString *res = [[NSString alloc] init];@synchronized (res">
+<meta name="keywords" content="锁">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS中开发中的锁系列-@synchronized">
+<meta property="og:url" content="http://yoursite.com/2017/05/22/iOS中开发中的锁系列-@Synchonize/index.html">
+<meta property="og:site_name" content="秋知轩">
+<meta property="og:description" content="苹果提供了@synchronized来实现了锁的机制，它以闭包的形式，使得代码的可读性更高，而且同时避免了忘记写unlock的处境。那本篇幅就简单的了解一下@synchronized。 案例代码首先，我们简单的写一下@synchronized的用法，它的用法非常简单，如下： 1234NSString *res = [[NSString alloc] init];@synchronized (res">
+<meta property="og:updated_time" content="2017-05-23T06:34:51.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS中开发中的锁系列-@synchronized">
+<meta name="twitter:description" content="苹果提供了@synchronized来实现了锁的机制，它以闭包的形式，使得代码的可读性更高，而且同时避免了忘记写unlock的处境。那本篇幅就简单的了解一下@synchronized。 案例代码首先，我们简单的写一下@synchronized的用法，它的用法非常简单，如下： 1234NSString *res = [[NSString alloc] init];@synchronized (res">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/05/22/iOS中开发中的锁系列-@Synchonize/"/>
+
+
+
+
+
+  <title> iOS中开发中的锁系列-@synchronized | 秋知轩 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">秋知轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">莫谈人间几寒暑，静观弯月荡秋风~</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/22/iOS中开发中的锁系列-@Synchonize/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                iOS中开发中的锁系列-@synchronized
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-22T15:40:47+08:00">
+                2017-05-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>苹果提供了@synchronized来实现了锁的机制，它以闭包的形式，使得代码的可读性更高，而且同时避免了忘记写unlock的处境。那本篇幅就简单的了解一下@synchronized。</p>
+<h2 id="案例代码"><a href="#案例代码" class="headerlink" title="案例代码"></a>案例代码</h2><p>首先，我们简单的写一下@synchronized的用法，它的用法非常简单，如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">NSString *res = [[NSString alloc] init];</div><div class="line">@synchronized (res) &#123;</div><div class="line">    NSLog(@<span class="string">"Hello, World!"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们通过clang将其编译输出，具体指令如下：</p>
+<blockquote>
+<p>clang -fobjc-arc -framework Foundation main.m -o aaa</p>
+</blockquote>
+<p>打开aaa，文件可以看到里面关于@synchronized的部分如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@_objc_sync_enter^@&lt;90&gt;^@r`^R@_objc_sync_exit</div></pre></td></tr></table></figure>
+<p>里面是一些乱码，我没做转义，但可以很明显的看到里面涉及到两个方法，分别是@_objc_sync_enter和@_objc_sync_exit。那这两个方法是做什么的？正好最近也在看runtime的源码，那就继续跟进一下。</p>
+<h2 id="SyncData"><a href="#SyncData" class="headerlink" title="SyncData"></a>SyncData</h2><p>继续上面提到的内容，跟进之后可以看到这两个方法被定义在objc-sync.h，实现在objc-sync.mm中，跟进这个文件。</p>
+<h3 id="objc-sync-enter"><a href="#objc-sync-enter" class="headerlink" title="objc_sync_enter"></a><strong>objc_sync_enter</strong></h3><p>可以看到这个方法的源码实现如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">int objc_sync_enter(id obj)</div><div class="line">&#123;</div><div class="line">    int result = OBJC_SYNC_SUCCESS;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (obj) &#123;</div><div class="line">        SyncData* data = id2data(obj, ACQUIRE);</div><div class="line">        assert(data);</div><div class="line">        data-&gt;mutex.lock();</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        // @synchronized(nil) does nothing</div><div class="line">        <span class="keyword">if</span> (DebugNilSync) &#123;</div><div class="line">            _objc_inform(<span class="string">"NIL SYNC DEBUG: @synchronized(nil); set a breakpoint on objc_sync_nil to debug"</span>);</div><div class="line">        &#125;</div><div class="line">        objc_sync_nil();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="built_in">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>分析这段代码，可以看到其流程如下：</p>
+<ul>
+<li>首先判断其是否携带入参，如果携带入参obj不为nil，则直接调用<strong>id2data</strong>方法，(这个方法我们后续再进行拆解)，传入的参数为obj和ACQUIRE，返回一个SyncData类型的data对象，之后调用data的递归锁执行加锁操作</li>
+<li>如果没有携带入参，则不做任何处理，对照情况为@synchronized(nil)。</li>
+</ul>
+<p>SyncData的定义如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">typedef struct SyncData &#123;</div><div class="line">    struct SyncData* nextData;</div><div class="line">    DisguisedPtr&lt;objc_object&gt; object;</div><div class="line">    int32_t threadCount;  // number of THREADS using this block</div><div class="line">    recursive_mutex_t mutex;</div><div class="line">&#125; SyncData</div></pre></td></tr></table></figure>
+<p>可以将每一个同步的对象理解为一个syncData，很多个同步对象组成了一个链表SyncList，其中nextData为指向下一个对象的指针，DisguisedPtr<objc_object> object，我们知道每一个objc对象其基类都是objc_object， 因此此处定义了一个object，用于存放传入的对象，threadCount代表了持有这个对象的线程数，mutex，一个递归锁。</objc_object></p>
+<h3 id="objc-sync-exit"><a href="#objc-sync-exit" class="headerlink" title="objc_sync_exit"></a>objc_sync_exit</h3><p>这个方法与objc_sync_enter总是成对出现，具体的实现代码如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">int objc_sync_exit(id obj)</div><div class="line">&#123;</div><div class="line">    int result = OBJC_SYNC_SUCCESS;</div><div class="line">    </div><div class="line">    <span class="keyword">if</span> (obj) &#123;</div><div class="line">        SyncData* data = id2data(obj, RELEASE); </div><div class="line">        <span class="keyword">if</span> (!data) &#123;</div><div class="line">            result = OBJC_SYNC_NOT_OWNING_THREAD_ERROR;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            bool okay = data-&gt;mutex.tryUnlock();</div><div class="line">            <span class="keyword">if</span> (!okay) &#123;</div><div class="line">                result = OBJC_SYNC_NOT_OWNING_THREAD_ERROR;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        // @synchronized(nil) does nothing</div><div class="line">    &#125;</div><div class="line">	</div><div class="line"></div><div class="line">    <span class="built_in">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>该方法的实现流程可以简单的拆解如下：</p>
+<ul>
+<li>如果存在obj，则调用<strong>id2data</strong>，传入参数obj，RELEASE，找到data。</li>
+<li>如果data不存在，则直接将result设置成OBJC_SYNC_NOT_OWNING_THREAD_ERROR。</li>
+<li>如果data存Unlock()方法。</li>
+<li>如果不存在obj，则什么都不做。</li>
+</ul>
+<h3 id="id2data"><a href="#id2data" class="headerlink" title="id2data"></a>id2data</h3><p>看了下enter和exit的流程，每一次都会调用到id2data的方法，这个地方代码我就不粘贴了，有点长，谁感兴趣可以自己看一下，那这个方法做了什么? 具体流程拆解一下：</p>
+<ul>
+<li><p>根据传入的object，从哈希表中读取对应的syncData和lock。</p>
+</li>
+<li><p>看一下SUPPORT_DIRECT_THREAD_KEYS这个宏，如果设定为1，代表直接支持线程存储，那么直接从TLS中获取data，找到data的object与传入的object相同，从TLS中获取lockCount，调用enter的时候，则lockCount++，并将其设定到存储区域，如果调用的是exit，则执行lockCount–，将其设定到存储区之后判定lockCount是否为0，如果为0，则清空存储区之后，原子操作降低其所持有的线程数。返回result。</p>
+</li>
+<li><p>如果不支持SUPPORT_DIRECT_THREAD_KEYS，则从SyncCache中查找item中的data对象的object是否与传入的object一致，如果一致则执行类似上面的lockCount增减操作，返回result。</p>
+</li>
+<li><p>如果cache里面没有object，则先上锁，之后找到第一个无用的节点，其中如果某个节点与传入的object相同，则将result赋值为这个节点，之后进入done流程，如果没有找到没有无用的节点，并且循环查找某个节点线程数为0，那么第一个无用的节点就指向该节点，代表该节点可以复用，最后将result赋值为该无用节点，result的object指向传入的object，线程数为1，进入done流程，如果流程是exit，直接进入done流程。</p>
+</li>
+<li><p>done流程里面，主要做了几个操作，如果支持SUPPORT_DIRECT_THREAD_KEYS，则线程存储result及数量，同时也将其存入syncCache。因此done流程只有第一次创建节点的时候需要处理，其余的都在缓存里面存在，无需处理。</p>
+</li>
+</ul>
+<p>总结一下，当调用objc_sync_enter(obj)的时候，它通过一个记录obj地址的哈希表来找到对应的SyncData，然后对其加锁。当调用objc_sync_exit的时候，它以同样的方式找到对应的SyncData并将其解锁。另外，@synchronized是一个性能较差的锁，如果对性能没有什么强烈的要求，可以选用。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="http://rykap.com/objective-c/2015/05/09/synchronized/" target="_blank" rel="external">http://rykap.com/objective-c/2015/05/09/synchronized/</a></p>
+<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/锁/" rel="tag"># 锁</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/15/2017-05-18-main函数启动之前的流程/" rel="next" title="从程序启动开始的旅程">
+                <i class="fa fa-chevron-left"></i> 从程序启动开始的旅程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/22/iOS中开发中的锁系列-OSSpinLock/" rel="prev" title="iOS中开发中的锁系列-OSSpinLock">
+                iOS中开发中的锁系列-OSSpinLock <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="Selector" />
+          <p class="site-author-name" itemprop="name">Selector</p>
+           
+              <p class="site-description motion-element" itemprop="description">莫谈人间几寒暑，静观弯月荡秋风~</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/dash2014" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#案例代码"><span class="nav-number">1.</span> <span class="nav-text">案例代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SyncData"><span class="nav-number">2.</span> <span class="nav-text">SyncData</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#objc-sync-enter"><span class="nav-number">2.1.</span> <span class="nav-text">objc_sync_enter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#objc-sync-exit"><span class="nav-number">2.2.</span> <span class="nav-text">objc_sync_exit</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#id2data"><span class="nav-number">2.3.</span> <span class="nav-text">id2data</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Selector</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
