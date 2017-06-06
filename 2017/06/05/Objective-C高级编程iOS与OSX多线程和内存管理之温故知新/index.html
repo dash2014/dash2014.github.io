@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="源码，YYKit," />
+  <meta name="keywords" content="温故知新," />
 
 
 
@@ -87,17 +87,17 @@
 
 
 
-<meta name="description" content="YYKit是国内开发者贡献的一个非常优秀的开源库，里面封装了很多category以及很多工具类，目前在github上一共有9.8k个star，github地址为：YYKit，鉴于其贡献的内容较多，这个库的拆解也会分几个部分来逐一拆解。 本篇文章就先简单的说一下YYKitMacro这个宏定义文件，包括里面的一些用法  YY_CLAMP：这个宏定义主要描述了某个值x在low和high范围之内的约束，个">
-<meta name="keywords" content="源码，YYKit">
+<meta name="description" content="内存管理的思考方式 自己生成的对象，自己所持有，包括alloc， new，copy，mutablecopy 非自己生成的对象，自己也能持有，比如id obj = [NSMutableArray array]，之后调用retain方法 自己持有的对象不再需要时释放，release 非自己持有的对象无法释放 __strong表示强引用，持有强引用的变量在超出其作用域时被废弃，随着强引用的失效，引用的对">
+<meta name="keywords" content="温故知新">
 <meta property="og:type" content="article">
-<meta property="og:title" content="源码拆解之YYKit系列一">
-<meta property="og:url" content="http://yoursite.com/2017/04/20/2017-04-20-源码分析之YYKit宏定义/index.html">
+<meta property="og:title" content="《Objective-C高级编程iOS与OSX多线程和内存管理》之温故知新">
+<meta property="og:url" content="http://yoursite.com/2017/06/05/Objective-C高级编程iOS与OSX多线程和内存管理之温故知新/index.html">
 <meta property="og:site_name" content="秋知轩">
-<meta property="og:description" content="YYKit是国内开发者贡献的一个非常优秀的开源库，里面封装了很多category以及很多工具类，目前在github上一共有9.8k个star，github地址为：YYKit，鉴于其贡献的内容较多，这个库的拆解也会分几个部分来逐一拆解。 本篇文章就先简单的说一下YYKitMacro这个宏定义文件，包括里面的一些用法  YY_CLAMP：这个宏定义主要描述了某个值x在low和high范围之内的约束，个">
-<meta property="og:updated_time" content="2017-05-15T02:44:42.000Z">
+<meta property="og:description" content="内存管理的思考方式 自己生成的对象，自己所持有，包括alloc， new，copy，mutablecopy 非自己生成的对象，自己也能持有，比如id obj = [NSMutableArray array]，之后调用retain方法 自己持有的对象不再需要时释放，release 非自己持有的对象无法释放 __strong表示强引用，持有强引用的变量在超出其作用域时被废弃，随着强引用的失效，引用的对">
+<meta property="og:updated_time" content="2017-06-06T00:37:02.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="源码拆解之YYKit系列一">
-<meta name="twitter:description" content="YYKit是国内开发者贡献的一个非常优秀的开源库，里面封装了很多category以及很多工具类，目前在github上一共有9.8k个star，github地址为：YYKit，鉴于其贡献的内容较多，这个库的拆解也会分几个部分来逐一拆解。 本篇文章就先简单的说一下YYKitMacro这个宏定义文件，包括里面的一些用法  YY_CLAMP：这个宏定义主要描述了某个值x在low和high范围之内的约束，个">
+<meta name="twitter:title" content="《Objective-C高级编程iOS与OSX多线程和内存管理》之温故知新">
+<meta name="twitter:description" content="内存管理的思考方式 自己生成的对象，自己所持有，包括alloc， new，copy，mutablecopy 非自己生成的对象，自己也能持有，比如id obj = [NSMutableArray array]，之后调用retain方法 自己持有的对象不再需要时释放，release 非自己持有的对象无法释放 __strong表示强引用，持有强引用的变量在超出其作用域时被废弃，随着强引用的失效，引用的对">
 
 
 
@@ -125,13 +125,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/04/20/2017-04-20-源码分析之YYKit宏定义/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/06/05/Objective-C高级编程iOS与OSX多线程和内存管理之温故知新/"/>
 
 
 
 
 
-  <title> 源码拆解之YYKit系列一 | 秋知轩 </title>
+  <title> 《Objective-C高级编程iOS与OSX多线程和内存管理》之温故知新 | 秋知轩 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -270,7 +270,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/20/2017-04-20-源码分析之YYKit宏定义/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/05/Objective-C高级编程iOS与OSX多线程和内存管理之温故知新/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Selector">
@@ -291,7 +291,7 @@
             
             
               
-                源码拆解之YYKit系列一
+                《Objective-C高级编程iOS与OSX多线程和内存管理》之温故知新
               
             
           </h1>
@@ -306,8 +306,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-20T20:54:01+08:00">
-                2017-04-20
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-05T18:31:48+08:00">
+                2017-06-05
               </time>
             
 
@@ -364,35 +364,47 @@
       
 
       
-        <p>YYKit是国内开发者贡献的一个非常优秀的开源库，里面封装了很多category以及很多工具类，目前在github上一共有9.8k个star，github地址为：<a href="https://github.com/ibireme/YYKit" target="_blank" rel="external">YYKit</a>，鉴于其贡献的内容较多，这个库的拆解也会分几个部分来逐一拆解。</p>
-<p>本篇文章就先简单的说一下YYKitMacro这个宏定义文件，包括里面的一些用法</p>
-<ul>
-<li><p><strong>YY_CLAMP：</strong>这个宏定义主要描述了某个值x在low和high范围之内的约束，个人觉得，其应该判断一下low和high的大小，不然传值反了，会得到错误的结果。</p>
+        <h2 id="内存管理的思考方式"><a href="#内存管理的思考方式" class="headerlink" title="内存管理的思考方式"></a>内存管理的思考方式</h2><ul>
+<li>自己生成的对象，自己所持有，包括alloc， new，copy，mutablecopy</li>
+<li>非自己生成的对象，自己也能持有，比如id obj = [NSMutableArray array]，之后调用retain方法</li>
+<li>自己持有的对象不再需要时释放，release</li>
+<li>非自己持有的对象无法释放</li>
+<li>__strong表示强引用，持有强引用的变量在超出其作用域时被废弃，随着强引用的失效，引用的对象会随之释放。</li>
+<li>__weak表示弱引用，不持有对象。主要为了解决循环引用。</li>
+<li>__unsafe_unretained，不安全的所有权修饰符，其修饰的变量不属于编译器的内存管理对象</li>
+<li>__autoreleasing，ARC中不能调用autorelease方法，也不能使用NSAutoreleasePool，其采用@autoreleasepool来代替NSAutoreleasePool类。</li>
+</ul>
+<h2 id="Block"><a href="#Block" class="headerlink" title="Block"></a>Block</h2><ul>
+<li>Block可以截获其所使用的自动变量的值，并保存其瞬间值，就算之后修改也无法改变。</li>
+<li>Block语法如果需要赋值给Block语法之外的变量，则需要增加__block说明符。</li>
+<li>截获OC对象，调用其变更方法不会产生编译错误，但向其赋值则会产生编译错误。此时需要增加__block说明符。</li>
+<li>在Block中，截获自动变量的方法并没有实现对C语言数组的截获，因此同样会产生编译错误。</li>
+<li>Block实质上也是Object-C的对象。</li>
+<li>Block语法表达式中没有使用的自动变量不会被追加，其自动变量截获只针对Block中使用的自动变量。</li>
+<li>因为在实现上不能改写被截获自动变量的值，所以当编译器在编译过程中检出给被截获自动变量赋值的操作时候，变产生编译错误。解决这个问题主要有两种方法：<ul>
+<li><strong>使用静态变量，静态全局变量，全局变量</strong>，其中静态全局变量和全局变量直接可以访问，静态变量则采用了指针操作，使用静态变量的指针进行传递。</li>
+<li><strong>使用block说明符</strong>，<strong>block实际上回被转换成</strong>Block_byref_val_0的结构体指针，指针内有一个变量存储初值。</li>
+</ul>
 </li>
-<li><p><strong>YY_SWAP：</strong>这个宏定义主要是用来进行值交换，为了确保精度不丢失以及类型一致，作者采用了读取参数 <em>a</em> 的类型</p>
+<li>ARC下会将block从站上copy到堆上，同时注册到autoreleasepool中。</li>
+<li>ARC中编译器会自动生成将Block从栈上copy到堆上的代码，但下面这种情况，不能判断，即向方法或函数参数中传递block，但以下方法不用手动复制。<ul>
+<li><strong>方法中复制了传递过来的block</strong></li>
+<li><strong>带有usingblock的Cocoa框架方法</strong></li>
+<li><strong>GCD的API</strong></li>
+</ul>
 </li>
-<li><p><strong>YYAssertNil系列：</strong>这个宏定义主要封装了系统的NSAssert以及NSCAssert，前者适用于OC，后者适用于C</p>
-</li>
-<li><p><strong>YYSYNTH_DUMMY_CLASS：</strong>这个文件中的小亮点之一，我们都知道在加载静态库的分类时候找不到分类中的方法，进而发生崩溃，解决的办法通常都是在info.plist配置-all_load或者-force_load，但作者采用了另一种解决办法，使得在加载这个库的时候对工程无侵入，具体如下：</p>
+<li>_NSConcreteStackBlock，调用copy的时候从栈复制到堆上，_NSConcreteGlobalBloc，存储在程序的数据段，什么也不做，_NSConcreteMallocBlock，增加引用计数。</li>
+<li>__block也会被复制到堆上，引用计数方式与普通对象没有区别</li>
+<li><strong>forwarding的值会从栈上指到目标堆上的</strong>block所在的结构体实例的地址。</li>
+<li>什么时候栈上的block会copy到堆上？<ul>
+<li>调用block的copy实例方法</li>
+<li>block作为函数值返回的时候</li>
+<li>将block赋值给__strong修饰符id类型的类或者Block类型成员变量</li>
+<li>使用usingBlock的cocoa方法或者GCD的block</li>
+</ul>
 </li>
 </ul>
-<pre><code class="bash">ifndef YYSYNTH_DUMMY_CLASS
-define YYSYNTH_DUMMY_CLASS(_name_) 
-@interface YYSYNTH_DUMMY_CLASS_ <span class="comment">## _name_ : NSObject @end </span>
-@implementation YYSYNTH_DUMMY_CLASS_ <span class="comment">## _name_ @end</span>
-endif
-</code></pre>
-<p><strong>为什么这段代码可以避免这个问题？</strong>，OC的链接器只会为类建立一个符号表，而并不会为每个方法建立符号表，因此如果静态库中如果定义了已存在的一个类的分类的话，链接器并不能将分类的代码和核心代码合并，因此最后的可执行文件中就会缺少分类的代码，因此函数的调用就会失败，这段宏定义呢，会虚拟建一个与category相同的定义和空实现，这样在链接的时候就可以找到该方法了，具体的OC中category的底层实现和加载方式可以参考这篇文章<a href="http://ios.jobbole.com/84341/" target="_blank" rel="external">Category</a>，个人觉得写得不错。</p>
-<ul>
-<li><p><strong>YYSYNTH_DYNAMIC_PROPERTY_OBJECT：</strong>利用关联对象动态添加属性</p>
-</li>
-<li><p><strong>weakify，strongify：</strong>这是一个很亮眼的写法，我们都知道block与self导致的循环引用需要weak和strong来解决循环引用的问题，这里作者声明了两个宏weakify，strongify，其中debug模式下autoreleasepool{}和release模式下try@finally的作用仅仅是为了在weakify和strongify前面写上@符号，区别于普通的源码，nice。当然RAC中也有类似的写法。现有的工程均可以借鉴。</p>
-</li>
-<li><p><strong>static inline：</strong>采用内联函数的方式，在编译的时候，会把代码直接嵌入调用代码中，提高函数调用效率。</p>
-</li>
-</ul>
-<p>仔细分析YYKitMacro这个宏定义的文件，其中的亮点还是很值得学习和参考的，后面会继续拆解。</p>
-<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
+<p>温故而知新，重新再看一遍这本《Objective-C高级编程iOS与OSX多线程和内存管理》既可以回顾一下iOS的一些底层实现，也可以基于这些实现重新思考一下iOS的相关内容，蛮好~</p>
 
       
     </div>
@@ -422,7 +434,7 @@ endif
       
         <div class="post-tags">
           
-            <a href="/tags/源码，YYKit/" rel="tag"># 源码，YYKit</a>
+            <a href="/tags/温故知新/" rel="tag"># 温故知新</a>
           
         </div>
       
@@ -435,8 +447,8 @@ endif
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/04/19/2017-04-19-源码分析之AFNetworking的线程管理/" rel="next" title="源码拆解之AFNetworking的线程管理">
-                <i class="fa fa-chevron-left"></i> 源码拆解之AFNetworking的线程管理
+              <a href="/2017/05/26/iOS中开发中的锁系列-pthread-mutex/" rel="next" title="iOS中开发中的锁系列-pthread_mutex">
+                <i class="fa fa-chevron-left"></i> iOS中开发中的锁系列-pthread_mutex
               </a>
             
           </div>
@@ -444,10 +456,6 @@ endif
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/04/21/2017-04-21-源码分析之YYKit分类/" rel="prev" title="源码拆解之YYKit系列二">
-                源码拆解之YYKit系列二 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -494,8 +502,17 @@ endif
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.jpeg"
@@ -568,6 +585,22 @@ endif
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#内存管理的思考方式"><span class="nav-number">1.</span> <span class="nav-text">内存管理的思考方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Block"><span class="nav-number">2.</span> <span class="nav-text">Block</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
