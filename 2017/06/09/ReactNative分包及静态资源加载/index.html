@@ -1,0 +1,792 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ReactNative," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="最近在做一个项目，里面涉及到了ReactNative静态资源包的加载，本篇幅采用的ReactNative版本为0.41.2，料想0.44.0应该和这个套路是一样的，并不会有多大不同。 分包众所周知，ReactNative可以通过下载JSBundle文件，动态的替换某些实现，这一度在苹果禁止JSPatch等热更新时，引起热烈讨论，ReactNative这种类似热更新的机制会不会被禁止，直到后来Rea">
+<meta name="keywords" content="ReactNative">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ReactNative分包及静态资源加载">
+<meta property="og:url" content="http://yoursite.com/2017/06/09/ReactNative分包及静态资源加载/index.html">
+<meta property="og:site_name" content="秋知轩">
+<meta property="og:description" content="最近在做一个项目，里面涉及到了ReactNative静态资源包的加载，本篇幅采用的ReactNative版本为0.41.2，料想0.44.0应该和这个套路是一样的，并不会有多大不同。 分包众所周知，ReactNative可以通过下载JSBundle文件，动态的替换某些实现，这一度在苹果禁止JSPatch等热更新时，引起热烈讨论，ReactNative这种类似热更新的机制会不会被禁止，直到后来Rea">
+<meta property="og:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/111.jpeg">
+<meta property="og:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/222.jpeg">
+<meta property="og:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/333.jpeg">
+<meta property="og:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/444.jpeg">
+<meta property="og:updated_time" content="2017-06-09T06:59:43.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ReactNative分包及静态资源加载">
+<meta name="twitter:description" content="最近在做一个项目，里面涉及到了ReactNative静态资源包的加载，本篇幅采用的ReactNative版本为0.41.2，料想0.44.0应该和这个套路是一样的，并不会有多大不同。 分包众所周知，ReactNative可以通过下载JSBundle文件，动态的替换某些实现，这一度在苹果禁止JSPatch等热更新时，引起热烈讨论，ReactNative这种类似热更新的机制会不会被禁止，直到后来Rea">
+<meta name="twitter:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/111.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/06/09/ReactNative分包及静态资源加载/"/>
+
+
+
+
+
+  <title> ReactNative分包及静态资源加载 | 秋知轩 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">秋知轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">莫谈人间几寒暑，静观弯月荡秋风~</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/09/ReactNative分包及静态资源加载/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                ReactNative分包及静态资源加载
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-09T14:54:46+08:00">
+                2017-06-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近在做一个项目，里面涉及到了ReactNative静态资源包的加载，本篇幅采用的ReactNative版本为0.41.2，料想0.44.0应该和这个套路是一样的，并不会有多大不同。</p>
+<h2 id="分包"><a href="#分包" class="headerlink" title="分包"></a>分包</h2><p>众所周知，ReactNative可以通过下载JSBundle文件，动态的替换某些实现，这一度在苹果禁止JSPatch等热更新时，引起热烈讨论，ReactNative这种类似热更新的机制会不会被禁止，直到后来ReactNative官方澄清。</p>
+<p>随着业务量体量的增大，功能越来越复杂，jsbundle就会越来越大，此时无论是app内部发布还是走http请求更新都很恐怖，因此分包势在必行，QQ音乐技术团队曾经发表了一篇文章来描述这个流程，具体请参考<a href="https://mp.weixin.qq.com/s?__biz=MzI1NjEwMTM4OA==&amp;mid=2651231742&amp;idx=1&amp;sn=1e5ab2536b97bd7c6776c2d215a9d8c6&amp;scene=1&amp;srcid=04240FnRrBh23Yz8a0Up0icS&amp;key=b28b03434249256b07cd915f657014dd9a3cd79fc6a1552f597ec69788da4c0efaefdc328dd2c52f10b704d75775a98b&amp;ascene=0&amp;uin=NTkyMjI3NQ==&amp;devicetype=iMac+MacBookPro12,1+OSX+OSX+10.11.4+build(15E65" target="_blank" rel="external">React-Native分包实践</a>&amp;version=11020201&amp;pass_ticket=Sf+RR+cLL+55loFUPeIAYKSS9+77CfOES+MBRqAotxg=)，在这篇文章中，其介绍了jsbundle是如何生成的，以及如何定制ReactView，依据这个就可以完成按需加载了，感兴趣的小伙伴可以参考。</p>
+<h3 id="HDiffPatch"><a href="#HDiffPatch" class="headerlink" title="HDiffPatch"></a>HDiffPatch</h3><p>在我们实践的方案中，我们采用了一个第三方库<a href="https://github.com/sisong/HDiffPatch" target="_blank" rel="external">HDiffPatch</a>，该第三方库主要目的有两个：</p>
+<ul>
+<li>针对原文件与新的文件做diff操作，生成二进制的差分文件</li>
+<li>针对原文件与差分文件patch生成新的文件</li>
+</ul>
+<p>我们把我们的<strong>main.jsbundle</strong>作为原文件，其只是简单的引用了ReactNative所需要引进的一些组件，比如AppRegistry，View等等。之后我们利用ReactNative提供的命令行生成完整的新的业务文件<strong>all.jsbundle</strong>，之后再利用HDiffPatch的diff操作生成要下发的<strong>diff.jsbundle</strong>文件，这样diff.jsbundle的体量就会大大降低。</p>
+<p>main.jsbundle可以内置到客户端，随版本更新，也可以动态下发，这样只需要第一次下载到即可，因此我们选择了动态下发，在请求加载一个业务的时候，服务端会返回给我们两个下载地址组成的json，json还包括一些其他版本控制等字段，我只抽取了其中下载这部分，类似这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	<span class="attr">mainJSBundle</span>:<span class="string">"http://xxx.xxx/main.jsbundle"</span></div><div class="line">	diffJSBundle:<span class="string">"http://xxx.xxx/diff.jsbundle"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们利用GCD的group等待两个bundle都下载完，或者如果缓存中都存在的话直接走缓存读取，按下不表，之后再利用HDiffPatch的patch操作，将两个文件合成一个patched.jsbundle即可。</p>
+<p>###ReactNativeView</p>
+<p>自定义ReactNativeView，实现<strong>RCTBridgeDelegate</strong>的代理方法，同时将ReactNativeView作为承载数据的rootView，将以下两处地方指向patched.jsbundle的本地路径即可，如下，我去除了本地调试的流程，只展示了远端加载的流程，简化了一下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge</div><div class="line">&#123;</div><div class="line"><span class="comment">//此处指向patched.jsbundle的本地路径</span></div><div class="line">        <span class="keyword">return</span> [[SLReactNativePatchedManager sharedInstance] patchedJSBundlePathWithBundleUrl:self.codeLocation.absoluteString];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (<span class="keyword">void</span>)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)onComplete</div><div class="line">&#123;</div><div class="line"><span class="comment">//此处读取patchedJSBundle的data，回调</span></div><div class="line"> NSFileManager *fileManager = [NSFileManager defaultManager];</div><div class="line">            <span class="keyword">if</span> ([fileManager fileExistsAtPath:path]) &#123;</div><div class="line">                NSData *source = [NSData dataWithContentsOfFile:path];</div><div class="line">                <span class="keyword">if</span> (source) &#123;</div><div class="line">                    onComplete(nil, source, source.length);</div><div class="line">                    &#125;</div><div class="line">          &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>再附加上缓存操作，即可完成分包的拆分和加载流程。</p>
+<h2 id="静态资源的加载"><a href="#静态资源的加载" class="headerlink" title="静态资源的加载"></a>静态资源的加载</h2><p>此处我就以图片资源为例，来描述一下我们趟过的旅程，众所周知，ReactNative有三种图片的加载方式，写法如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//加载本地Assets里面的图片</span></div><div class="line">&lt;Image source=&#123;&#123;<span class="attr">uri</span>: <span class="string">'app_icon'</span>&#125;&#125; style=&#123;&#123;<span class="attr">width</span>: <span class="number">40</span>, <span class="attr">height</span>: <span class="number">40</span>&#125;&#125; /&gt;</div><div class="line"><span class="comment">//加载网络图片</span></div><div class="line">&lt;Image source=&#123;&#123;<span class="attr">uri</span>: <span class="string">'https://facebook.github.io/react/img/logo_og.png'</span>&#125;&#125;</div><div class="line">       style=&#123;&#123;<span class="attr">width</span>: <span class="number">400</span>, <span class="attr">height</span>: <span class="number">400</span>&#125;&#125; /&gt;</div><div class="line"><span class="comment">//加载文件夹中的某个图片</span></div><div class="line">&lt;Image source=&#123;<span class="built_in">require</span>(<span class="string">'./my-icon.png'</span>)&#125; /&gt;</div></pre></td></tr></table></figure>
+<p>第一种情况，图片内置到App中，我们不做考虑，第二种情况，加载网络图片，直接加载即可，我们也不做考虑，我们只考虑第三种情况，需要将图片动态下发，这种写法会不会有什么问题？之后查看了一下源码，发现有几种方式，可以达到这种效果。</p>
+<h3 id="image-ios-js"><a href="#image-ios-js" class="headerlink" title="image.ios.js"></a>image.ios.js</h3><p>此处我只解析了iOS平台，image标签对应的是image.ios.js文件，其在render的时候，首先调用resolveAssetSource方法读取source，之后将其传递给RCTImageView，具体如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> source = resolveAssetSource(<span class="keyword">this</span>.props.source) || &#123; <span class="attr">uri</span>: <span class="literal">undefined</span>, <span class="attr">width</span>: <span class="literal">undefined</span>, <span class="attr">height</span>: <span class="literal">undefined</span> &#125;;</div><div class="line">...</div><div class="line">return (</div><div class="line">      &lt;RCTImageView</div><div class="line">        &#123;...this.props&#125;</div><div class="line">        style=&#123;style&#125;</div><div class="line">        resizeMode=&#123;resizeMode&#125;</div><div class="line">        tintColor=&#123;tintColor&#125;</div><div class="line">        source=&#123;sources&#125;</div><div class="line">      /&gt;</div><div class="line">    );</div></pre></td></tr></table></figure>
+<p>跟进resolveAssetSource方法，可以看到其具体实现如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">resolveAssetSource</span>(<span class="params">source: any</span>): ?<span class="title">ResolvedAssetSource</span> </span>&#123;</div><div class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> source === <span class="string">'object'</span>) &#123;</div><div class="line">    <span class="keyword">return</span> source;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">var</span> asset = AssetRegistry.getAssetByID(source);</div><div class="line">  <span class="keyword">if</span> (!asset) &#123;</div><div class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">const</span> resolver = <span class="keyword">new</span> AssetSourceResolver(getDevServerURL(), getBundleSourcePath(), asset);</div><div class="line">  <span class="keyword">if</span> (_customSourceTransformer) &#123;</div><div class="line">    <span class="keyword">return</span> _customSourceTransformer(resolver);</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> resolver.defaultAsset();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>第一个if流程很容易理解，就是本地的图片与网络的图片加载都会走到这里，直接return出去即可，此处我们不做考虑，加载文件夹中的某个图片的时候会走下面的流程，可以看到其先通过resolver初始化，升成一个resolver，之后看是否有自定义的transformer，如果存在则走自定义的，不然就会走resolver的defaultAsset()方法生成一个resource出来，resource的定义很简单，主要包括uri以及width，height，scale等，可以看到此处有一个可以自定义的流程，<strong>因此此处如果自定义一个transformer，可以通过根据传进来的resolver生成一个source，指定自己需要加载的url即可</strong>。</p>
+<h3 id="RCTImageView"><a href="#RCTImageView" class="headerlink" title="RCTImageView"></a>RCTImageView</h3><p>在Image进行渲染的时候，都会走到RCTImageView的reloadImage方法，在其completionBlock中会调用到imageLoaderLoadedImage:error:forImageSource:partial:这个方法，<strong>在这个方法中我们可以进行流程补充，将我们想要加载的图片地址替换</strong>，但比较不建议这种方式，因为其形成了对RN源码的侵入，随着ReactNative的升级可能会引起不必要的问题。</p>
+<p>###什么都不动？<br>我们只好查看源码追溯source的由来，再重新梳理以下，注意，我只关注之前描述的第三种情况，其余的我都会忽略掉，我大致会走以下的流程：</p>
+<ul>
+<li>首先image.ios.js内部会调用resolveAssetSource()方法将传递过来的source props进行处理。</li>
+<li>resolveAssetSource()方法会根据getDevServerURL()，getBundleSourcePath()方法生成resolver。</li>
+<li>getDevServerURL()方法，就是区分本地加载和网络加载给出不同的server地址</li>
+<li>getBundleSourcePath()，根据sourceCode找到所在的bundle地址</li>
+<li>resolver的defaultAsset() 会根据上面getDevServerURL()及getBundleSourcePath()加上asset的type，scale拼接成一个完整的图片地址，这个地址一直会透传到Native层，图片的加载就是找的这个地址。</li>
+</ul>
+<p>OK，拿到了这个图片地址，我终于可以完整的利用一个简单的Demo来描述这个事情了。</p>
+<p><strong>建立最简单的Demo</strong></p>
+<p>创建一个js，文件里面引用Image标签，require一个与当前js统计目录的图片a.png，具体代码类似下图。<br><img src="http://7xsw5d.com1.z0.glb.clouddn.com/111.jpeg" alt="objc_object"></p>
+<p>具体层级目录类似下图，非常简单的测试。<br><img src="http://7xsw5d.com1.z0.glb.clouddn.com/222.jpeg" alt="objc_object"></p>
+<p><strong>bundle及Assets目录生成</strong></p>
+<p>打包命令生成bundle及assets目录，其中bundle是一个完整的可以独立运行的包，我们可以根据上述的HDiffPatch做差分，生成diff.bundle这样的一个二进制文件，assets目录，会将你所引用的所有图片均按照层及目录包含进来，如果没有引用的则不会包含，类似这样，其中all.jsbundle就是我们要上传的二进制文件，assets就是其所引用的图片目录，类似下图的结构：<br><img src="http://7xsw5d.com1.z0.glb.clouddn.com/333.jpeg" alt="objc_object"></p>
+<p><strong>打包成Zip上传</strong></p>
+<p>将这两个文件放在一个目录下比如test，之后将test打成zip包上传即可</p>
+<p><strong>下载mainBundle及diffBundle，合成patchedBundle</strong></p>
+<p>根据之前描述的方案，根据mainBundleUrl和diffBundleUrl分别下载mainBundle和diffBundle，下载完成之后进行patch操作，合成一个patched.jsbundle，不再赘述</p>
+<p><strong>加载jsbundle</strong></p>
+<p>根据文件所存在路径及moduleName，加载patched.jsbundle，会发现其里面所引用的图片路径类似这样，我们可以在RCTConvert中截获js传过来的resouce字段，截图如下：</p>
+<p><img src="http://7xsw5d.com1.z0.glb.clouddn.com/444.jpeg" alt="objc_object"></p>
+<p>我们可以看到红框中的地址，其实就是js想要加载的本地地址，而这个地址中assets之前的路径，其实就是合成之后的patched.jsbundle所在的地址，因此，结论来了，<strong>我们只需要将zip解压之后的assets目录与合成之后的patched.jsbundle放在同一级目录下即可完成图片的加载</strong>，当然，需要在下载的时候做一些目录的操作，形成类似打包时候的目录层级结构。</p>
+<p>至此，我们在不需要修改ReactNative源码的情况下完成了静态和差分包的下载，组合，以及加载。</p>
+<p><strong>总结一下：</strong></p>
+<ul>
+<li><p>差分包极大的降低了我们的网络流量，也更符合基本的业务增量需求，避免一次过大加载导致的失败等</p>
+</li>
+<li><p>静态资源的加载，可以让我们动态的去做一些图片的更新，替换等，当然也需要进行下载，虽然网络图片也有很多缓存机制可以只需要下载一次，但这种动态资源的加载毕竟提供了另一种解决方案</p>
+</li>
+<li><p>ReactNative在打包的时候会遍历所引用到的所有图片资源，未引用的不会放入assets文件夹，assets文件夹的层级与引用时候的层级一致</p>
+</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ReactNative/" rel="tag"># ReactNative</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/06/05/Objective-C高级编程iOS与OSX多线程和内存管理之温故知新/" rel="next" title="《Objective-C高级编程iOS与OSX多线程和内存管理》之温故知新">
+                <i class="fa fa-chevron-left"></i> 《Objective-C高级编程iOS与OSX多线程和内存管理》之温故知新
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="Selector" />
+          <p class="site-author-name" itemprop="name">Selector</p>
+           
+              <p class="site-description motion-element" itemprop="description">莫谈人间几寒暑，静观弯月荡秋风~</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/dash2014" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#分包"><span class="nav-number">1.</span> <span class="nav-text">分包</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HDiffPatch"><span class="nav-number">1.1.</span> <span class="nav-text">HDiffPatch</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#静态资源的加载"><span class="nav-number">2.</span> <span class="nav-text">静态资源的加载</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#image-ios-js"><span class="nav-number">2.1.</span> <span class="nav-text">image.ios.js</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RCTImageView"><span class="nav-number">2.2.</span> <span class="nav-text">RCTImageView</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Selector</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
