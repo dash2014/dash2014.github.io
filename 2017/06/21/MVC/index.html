@@ -1,0 +1,846 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="MVC,MVP,MVVM," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="什么样的框架更适合什么样的程序，一万个人心中有一万个哈姆雷特，之前有一段时间看了一些篇文章，抽象出来的框架无外乎MVC，MVP以及MVVM，今天正好抽空写一下我对这几种框架的感觉，有错误的地方欢迎指出。 在框架设计中，需要考虑的事情通常都只有这样几件，如何平衡决定了框架设计者的能力：  程序的复杂度，包括可理解程度、代码量以及可维护的程度 程序的可复用程度，是否足够解耦，其颗粒化是否可以达到较好的">
+<meta name="keywords" content="MVC,MVP,MVVM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MVC&amp;MVP&amp;MVVM">
+<meta property="og:url" content="http://yoursite.com/2017/06/21/MVC/index.html">
+<meta property="og:site_name" content="秋知轩">
+<meta property="og:description" content="什么样的框架更适合什么样的程序，一万个人心中有一万个哈姆雷特，之前有一段时间看了一些篇文章，抽象出来的框架无外乎MVC，MVP以及MVVM，今天正好抽空写一下我对这几种框架的感觉，有错误的地方欢迎指出。 在框架设计中，需要考虑的事情通常都只有这样几件，如何平衡决定了框架设计者的能力：  程序的复杂度，包括可理解程度、代码量以及可维护的程度 程序的可复用程度，是否足够解耦，其颗粒化是否可以达到较好的">
+<meta property="og:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/993906-20160814212709203-2004832279.png">
+<meta property="og:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/1148179-c9ff8bbdf04891ac.png">
+<meta property="og:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/1148179-0ee7870e02cc072b.png">
+<meta property="og:updated_time" content="2017-06-21T08:17:21.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MVC&amp;MVP&amp;MVVM">
+<meta name="twitter:description" content="什么样的框架更适合什么样的程序，一万个人心中有一万个哈姆雷特，之前有一段时间看了一些篇文章，抽象出来的框架无外乎MVC，MVP以及MVVM，今天正好抽空写一下我对这几种框架的感觉，有错误的地方欢迎指出。 在框架设计中，需要考虑的事情通常都只有这样几件，如何平衡决定了框架设计者的能力：  程序的复杂度，包括可理解程度、代码量以及可维护的程度 程序的可复用程度，是否足够解耦，其颗粒化是否可以达到较好的">
+<meta name="twitter:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/993906-20160814212709203-2004832279.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/06/21/MVC/"/>
+
+
+
+
+
+  <title> MVC&MVP&MVVM | 秋知轩 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">秋知轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">莫谈人间几寒暑，静观弯月荡秋风~</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/21/MVC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                MVC&MVP&MVVM
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-21T16:13:51+08:00">
+                2017-06-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>什么样的框架更适合什么样的程序，一万个人心中有一万个哈姆雷特，之前有一段时间看了一些篇文章，抽象出来的框架无外乎MVC，MVP以及MVVM，今天正好抽空写一下我对这几种框架的感觉，有错误的地方欢迎指出。</p>
+<p>在框架设计中，需要考虑的事情通常都只有这样几件，如何平衡决定了框架设计者的能力：</p>
+<ul>
+<li>程序的复杂度，包括可理解程度、代码量以及可维护的程度</li>
+<li>程序的可复用程度，是否足够解耦，其颗粒化是否可以达到较好的复用</li>
+<li>模块间通信，通信是否足够简单，方便</li>
+<li>可扩展性，是否拥有足够的扩展空间，以最小化的力度接受后续产品及业务的变更</li>
+</ul>
+<h2 id="MVC"><a href="#MVC" class="headerlink" title="MVC"></a>MVC</h2><p>MVC在iOS开发中应用之广，其中Modal， View， Controller很好的将数据与视图进行分离，好吧，上苹果开发者一定见过的一张神图：</p>
+<p><img src="http://7xsw5d.com1.z0.glb.clouddn.com/993906-20160814212709203-2004832279.png" alt="objc_object"></p>
+<p>这张图中，苹果给我们规范了MVC的标志写法</p>
+<ul>
+<li>Model通过Notification和KVO的方式与Controller交互，Controller直接访问Model</li>
+<li>Controller与View通过delegate的方式交互，Controller为View提供数据源，View向Controller提供事件发生</li>
+<li>Model与View不能相互通信</li>
+</ul>
+<p>现实情况，远比理想中的模型复杂的多，这套MVC存在着很多必然的问题：</p>
+<ul>
+<li>过于庞大的Controller，其除了负责View和Model的交互，还要响应各种代理事件，完成各种业务逻辑，甚至包括很多Model的组装和拼接，View的各种生命周期等等</li>
+<li>过于轻量的Model，除了定义的几个属性，别无其他</li>
+<li>网络层置于何地，Model层嘛？但是Model只是纯粹的数据定义，Controller层？OMG~放过这个可怜的Controller吧，但事实是网络层大部分都写在了Controller中</li>
+</ul>
+<p>另外，更现实的情况是，你会通常用Model去初始化View，例如cell的配置，因此MVC只是理论上的。</p>
+<p>结合我之前总结的框架设计者需要考虑的几件事情，MVC模式的特征大概是这样的：</p>
+<ul>
+<li><strong>View和Model复杂度低，Controller复杂度极高</strong></li>
+<li><strong>View和Model复用度高，Controller无法复用</strong></li>
+<li><strong>模块间通信理解简单，View与Controller交互，Model与Controller交互</strong></li>
+<li><strong>可扩展性，Controller的扩展性极低，里面业务量巨大</strong></li>
+</ul>
+<h2 id="MVP"><a href="#MVP" class="headerlink" title="MVP"></a>MVP</h2><p>MVP，MV都没变化，P代表Presenter，可以理解为一个表示层吧，话不多说，上图：</p>
+<p><img src="http://7xsw5d.com1.z0.glb.clouddn.com/1148179-c9ff8bbdf04891ac.png" alt="objc_object"></p>
+<p>这张图简要的介绍了MVP的基本结构，我大致描述一下：</p>
+<ul>
+<li>View层只负责数据展示，和从前没什么变化</li>
+<li>View和Controller之所以统一作为PassiveView，是因为Controller负责View的布局和管理</li>
+<li>抽象出一个Presenter层，其通过Controller以及Model来进行初始化，同时提供更新接口，更新Controller中的View的数据，以及更新Model数据</li>
+<li>Model仍旧仅仅负责数据</li>
+</ul>
+<p>OK，那MVP有什么问题存在呢？</p>
+<ul>
+<li>依旧是过于轻量级的Model</li>
+<li>Presenter层用来协调View的状态更改和Model的状态更改，以及Model和View展示的数据适配，Presenter层的代码量会比较大</li>
+<li>网络层依然存放在Controller中</li>
+</ul>
+<p>因此总结一下MVP的特征大概如下：</p>
+<ul>
+<li><strong>View和Model复杂度低，Controller复杂度降低，但代码量并没有减少太多，因为Presenter层更新仍旧需要调用Controller中的updateView的方法来更新View的状态</strong></li>
+<li><strong>View和Model复用度高，Controller可以适度复用，Presenter层无法复用，但业务更改更集中在Presenter层，实现了业务和展示分离</strong></li>
+<li><strong>模块间通信理解略复杂，View与Controller交互，Controller与Presenter层交互，Presenter层与Model交互</strong></li>
+<li><strong>可扩展性，Controller的扩展性较高，Presenter层业务量增大，但扩展性尚可</strong></li>
+</ul>
+<p>PS: 看见很多人介绍了一个变种，说Presenter层可以协调View和Model做绑定，个人觉得这样会导致View和Model的可复用性极度降低，比如A中更改了Model的数据，之后又在B中更改了同一个Model的数据，维护起来太难了，不推荐。</p>
+<h2 id="MVVM"><a href="#MVVM" class="headerlink" title="MVVM"></a>MVVM</h2><p>不得不吐槽一下MVVM的概念简直被玩坏了，随便增加个model做个绑定就是MVVM了。。。好吧，VM其实就是ViewModel的简写，话不多说，继续上图。</p>
+<p><img src="http://7xsw5d.com1.z0.glb.clouddn.com/1148179-0ee7870e02cc072b.png" alt="hh"></p>
+<p>这张图简单的展示了MVVM的概念，看着和MVP很像是吧，那么简单的说一下MVVM吧</p>
+<ul>
+<li>View层只负责数据展示，和从前没什么变化</li>
+<li>View和Controller之所以统一作为View，同样是因为Controller负责View的布局和管理</li>
+<li>抽象出一个VM层，其通过Controller以及Model来进行初始化，其用来更新Model的数据，同时将VM与View进行绑定，当VM发生变更的时候自动变更View的状态，<strong>注意哦，不是绑定Model，而是VM~</strong></li>
+<li>Model仍旧仅仅负责数据</li>
+</ul>
+<p>OK，那MVVM有什么问题存在呢？</p>
+<ul>
+<li>依旧是过于轻量级的Model</li>
+<li>VM和Presenter层并没有什么特别大的改进，依然具有大量的代码</li>
+<li>网络层依然存放在Controller中</li>
+</ul>
+<p>因此总结一下MVVM与的特征大概如下，其于MVP的特征大致相似：</p>
+<ul>
+<li><strong>View和Model复杂度低，Controller复杂度降低</strong></li>
+<li><strong>View和Model复用度高，Controller可以适度复用，VM层无法复用，但业务更改更集中在VM层，实现了业务和展示分离</strong></li>
+<li><strong>模块间通信理解略复杂，View与Controller交互，Controller与VM层交互，VM层与Model交互</strong></li>
+<li><strong>可扩展性，Controller的扩展性较高，VM层业务量增大，但扩展性尚可</strong></li>
+<li><strong>实现了自动绑定，Controller可以不用操心View的数据变化</strong></li>
+</ul>
+<h2 id="框架总结"><a href="#框架总结" class="headerlink" title="框架总结"></a>框架总结</h2><ul>
+<li>业务简单，MVC足矣</li>
+<li>业务略复杂，数据通讯及交互不多，可适度采用MVP</li>
+<li>业务复杂，数据通讯多，可考虑MVVM</li>
+<li>任何一种框架都只是能够有限的解决某一时刻的某种问题，不要为架构而架构</li>
+<li>任何一种框架在解决一种问题的时候，通常会带来另一种问题，这就好比锁，可以保证你的数据安全，但频繁加锁又会影响性能一个道理。</li>
+</ul>
+<h2 id="我们工程中的框架分层"><a href="#我们工程中的框架分层" class="headerlink" title="我们工程中的框架分层"></a>我们工程中的框架分层</h2><p>上述只是简单的介绍了一下MVC、MVP以及MVVP的描述，并没有涉及到更多复杂的情况，比如网络层，缓存层，数据处理等</p>
+<p>一直认为一个比较好的框架结构，原谅我并没有绘制图~</p>
+<ul>
+<li>Controller负责初始化Manager层，同时布局各种View</li>
+<li>View层仍旧只负责展示数据</li>
+<li>Manager层负责从网络或者缓存中读取，以及生成AdaptModel，并将其提供给Controller层</li>
+<li>AdaptModel层负责根据Manger的网络回调或者缓存读取到的BaseModel进行数据整理和拼接等，可以将其看作BaseModel的表示层</li>
+<li>BaseModel就是数据持久化的Model</li>
+</ul>
+<p>当然这样做的好处就是展示数据，原始数据，网络，视图分离的比较开，颗粒化比较好，当然这样也是存在很多问题的，但是在实际工程中应用起来确实还算适应，那么它的问题是什么？</p>
+<ul>
+<li>Model层简化</li>
+<li>如果业务量很小，直接用Model就可以标识，AdaptModel无用，增加了很多额外的代码量</li>
+</ul>
+<p>仍旧是那句老话，任何框架都有其局限性，具体还要根据实际情况进行选择~</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MVC/" rel="tag"># MVC</a>
+          
+            <a href="/tags/MVP/" rel="tag"># MVP</a>
+          
+            <a href="/tags/MVVM/" rel="tag"># MVVM</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/06/09/ReactNative分包及静态资源加载/" rel="next" title="ReactNative分包及静态资源加载">
+                <i class="fa fa-chevron-left"></i> ReactNative分包及静态资源加载
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="uyan_frame"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="Selector" />
+          <p class="site-author-name" itemprop="name">Selector</p>
+           
+              <p class="site-description motion-element" itemprop="description">莫谈人间几寒暑，静观弯月荡秋风~</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/dash2014" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#MVC"><span class="nav-number">1.</span> <span class="nav-text">MVC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MVP"><span class="nav-number">2.</span> <span class="nav-text">MVP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MVVM"><span class="nav-number">3.</span> <span class="nav-text">MVVM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#框架总结"><span class="nav-number">4.</span> <span class="nav-text">框架总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#我们工程中的框架分层"><span class="nav-number">5.</span> <span class="nav-text">我们工程中的框架分层</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Selector</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    
+
+    
+      <!-- UY BEGIN -->
+        <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2136908"></script>
+      <!-- UY END -->
+    
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
