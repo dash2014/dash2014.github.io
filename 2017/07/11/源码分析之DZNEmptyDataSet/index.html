@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="源码，SDWebImage," />
+  <meta name="keywords" content="源码," />
 
 
 
@@ -87,17 +87,17 @@
 
 
 
-<meta name="description" content="SDWebImage，iOS开发者必然会接触到的一个关于图片的开源库，其github地址：SDWebImage，目前有17k+个star，下面对这个库进行简单的拆解。后面简称为SD。  SD提供了一些UI的分类，用于简化组件上图片的配置。无论UIImageView，UIButton等最后都会统一调用UIView+WebCache.m这个类中的这个方法。  - (void)sd_internalSe">
-<meta name="keywords" content="源码，SDWebImage">
+<meta name="description" content="DZNEmptyDataSet，目前在Github地址，目前也获得了8.8k颗Star，下面就这个库的源码机型一下解析。 UIView(DZNConstraintBasedLayoutExtensions)作者为UIView写了一个分类，这个分类只包含一个方法，该方法主要封装了苹果的NSLayoutConstraint的方法，用于生成view之间的约束。 DZNWeakObjectContaine">
+<meta name="keywords" content="源码">
 <meta property="og:type" content="article">
-<meta property="og:title" content="源码分析之SDWebImage">
-<meta property="og:url" content="http://yoursite.com/2017/05/09/2017-05-09-源码分析之SDWebImage/index.html">
+<meta property="og:title" content="源码分析之DZNEmptyDataSet">
+<meta property="og:url" content="http://yoursite.com/2017/07/11/源码分析之DZNEmptyDataSet/index.html">
 <meta property="og:site_name" content="秋知轩">
-<meta property="og:description" content="SDWebImage，iOS开发者必然会接触到的一个关于图片的开源库，其github地址：SDWebImage，目前有17k+个star，下面对这个库进行简单的拆解。后面简称为SD。  SD提供了一些UI的分类，用于简化组件上图片的配置。无论UIImageView，UIButton等最后都会统一调用UIView+WebCache.m这个类中的这个方法。  - (void)sd_internalSe">
-<meta property="og:updated_time" content="2017-05-15T02:32:18.000Z">
+<meta property="og:description" content="DZNEmptyDataSet，目前在Github地址，目前也获得了8.8k颗Star，下面就这个库的源码机型一下解析。 UIView(DZNConstraintBasedLayoutExtensions)作者为UIView写了一个分类，这个分类只包含一个方法，该方法主要封装了苹果的NSLayoutConstraint的方法，用于生成view之间的约束。 DZNWeakObjectContaine">
+<meta property="og:updated_time" content="2017-07-11T08:02:12.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="源码分析之SDWebImage">
-<meta name="twitter:description" content="SDWebImage，iOS开发者必然会接触到的一个关于图片的开源库，其github地址：SDWebImage，目前有17k+个star，下面对这个库进行简单的拆解。后面简称为SD。  SD提供了一些UI的分类，用于简化组件上图片的配置。无论UIImageView，UIButton等最后都会统一调用UIView+WebCache.m这个类中的这个方法。  - (void)sd_internalSe">
+<meta name="twitter:title" content="源码分析之DZNEmptyDataSet">
+<meta name="twitter:description" content="DZNEmptyDataSet，目前在Github地址，目前也获得了8.8k颗Star，下面就这个库的源码机型一下解析。 UIView(DZNConstraintBasedLayoutExtensions)作者为UIView写了一个分类，这个分类只包含一个方法，该方法主要封装了苹果的NSLayoutConstraint的方法，用于生成view之间的约束。 DZNWeakObjectContaine">
 
 
 
@@ -125,13 +125,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/05/09/2017-05-09-源码分析之SDWebImage/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/07/11/源码分析之DZNEmptyDataSet/"/>
 
 
 
 
 
-  <title> 源码分析之SDWebImage | 秋知轩 </title>
+  <title> 源码分析之DZNEmptyDataSet | 秋知轩 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -270,7 +270,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/09/2017-05-09-源码分析之SDWebImage/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/11/源码分析之DZNEmptyDataSet/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Selector">
@@ -291,7 +291,7 @@
             
             
               
-                源码分析之SDWebImage
+                源码分析之DZNEmptyDataSet
               
             
           </h1>
@@ -306,8 +306,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-09T12:50:01+08:00">
-                2017-05-09
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-11T13:56:18+08:00">
+                2017-07-11
               </time>
             
 
@@ -364,41 +364,34 @@
       
 
       
-        <p><strong>SDWebImage</strong>，iOS开发者必然会接触到的一个关于图片的开源库，其github地址：<a href="https://github.com/rs/SDWebImage" target="_blank" rel="external">SDWebImage</a>，目前有17k+个star，下面对这个库进行简单的拆解。后面简称为SD。</p>
+        <p>DZNEmptyDataSet，目前在<a href="https://github.com/dzenbot/DZNEmptyDataSet" target="_blank" rel="external">Github地址</a>，目前也获得了8.8k颗Star，下面就这个库的源码机型一下解析。</p>
+<h2 id="UIView-DZNConstraintBasedLayoutExtensions"><a href="#UIView-DZNConstraintBasedLayoutExtensions" class="headerlink" title="UIView(DZNConstraintBasedLayoutExtensions)"></a>UIView(DZNConstraintBasedLayoutExtensions)</h2><p>作者为UIView写了一个分类，这个分类只包含一个方法，该方法主要封装了苹果的NSLayoutConstraint的方法，用于生成view之间的约束。</p>
+<h2 id="DZNWeakObjectContainer"><a href="#DZNWeakObjectContainer" class="headerlink" title="DZNWeakObjectContainer"></a>DZNWeakObjectContainer</h2><p>看类名字已经很清晰了，该类主要是用于存储weakObject，比如delegate和dataSource，当然作者的作用就在于此。</p>
+<h2 id="DZNEmptyDataSetView"><a href="#DZNEmptyDataSetView" class="headerlink" title="DZNEmptyDataSetView"></a>DZNEmptyDataSetView</h2><p>这个类就是作者用于承载空文案或者图片的View，通过懒加载的方式选择性的加载需要加载的组件，并为其添加合适的约束及手势，当然也可以选择自定义的view。</p>
+<h2 id="UIScrollView-DZNEmptyDataSet"><a href="#UIScrollView-DZNEmptyDataSet" class="headerlink" title="UIScrollView(DZNEmptyDataSet)"></a>UIScrollView(DZNEmptyDataSet)</h2><p>UIScrollView的分类，通过关联对象的形式配置好EmptyData的Source和Delegate。这里面的核心方法<strong>dzn_reloadEmptyDataSet</strong>，仔细的讲解一下这个方法的步骤：</p>
 <ul>
-<li>SD提供了一些UI的分类，用于简化组件上图片的配置。无论UIImageView，UIButton等最后都会统一调用<em>UIView+WebCache.m</em>这个类中的这个方法。</li>
-</ul>
-<pre><code class="bash">- (void)sd_internalSetImageWithURL:(nullable NSURL *)url
-                  placeholderImage:(nullable UIImage *)placeholder
-                           options:(SDWebImageOptions)options
-                      operationKey:(nullable NSString *)operationKey
-                     <span class="built_in">set</span>ImageBlock:(nullable SDSetImageBlock)<span class="built_in">set</span>ImageBlock
-                          progress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
-                         completed:(nullable SDExternalCompletionBlock)completedBlock;
-</code></pre>
+<li><p>调用<strong>dzn_canDisplay</strong>方法，如果有配置了emptyDataSetSource，并且emptyDataSetSource还要遵守DZNEmptyDataSetSource协议，并且self需要是UITableView、UIScrollView、UICollectionView中的一种才返回YES，反之返回NO。</p>
+</li>
+<li><p>调用<strong>dzn_shouldDisplay</strong>方法，主要就是看其delegate是否响应了对应的方法，同时需要满足<strong>dzn_itemsCount</strong>返回来的count为0，即没有数据，或者<strong>dzn_shouldBeForcedToDisplay</strong>强制显示空白页面。在这里说一下几乎所有的以dzn_开头的内部方法均在内部调用了其delegate或者dataSource的方法，不再解释。</p>
+</li>
+<li><p>按照固定的步骤添加逐步添加View，如果有自定义的view则选用自己定义的view，反之选择性的加载需要显示的样式的view。</p>
+</li>
+<li><p>方法替换，作者用了一个略显复杂的方式完成了一次方法替换</p>
 <ul>
-<li>上述方法内部会调用<em>SDWebImageManager</em>的loadImage方法，如下</li>
-</ul>
-<pre><code class="bash">- (id &lt;SDWebImageOperation&gt;)loadImageWithURL:(nullable NSURL *)url
-                                     options:(SDWebImageOptions)options
-                                    progress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
-                                   completed:(nullable SDInternalCompletionBlock)completedBlock
-</code></pre>
-<p>该方法会返回一个遵循SDWebImageOperation的协议，之后会将该operation加入字典进行缓存。</p>
-<ul>
-<li><p>继续解析上述loadImage的方法，该方法会首先判断是否这个url是否包含在失败的url中，如果是则直接进行失败回调，反之，从imageCache中获取图片信息，如果不存在，则通过imageDownloader尝试去下载图片，下载成功，则将其缓存，下载失败，则将url存入失败的url列表中。方法代码略长，就不粘贴了。</p>
+<li><p>首先判断self是否可以相应selector，如果不能直接return</p>
 </li>
-<li><p>此处作者会将operation加到一个runningOperation的列表中，目的是为了方便对正在进行的operation操作，主要是cancel操作。</p>
+<li><p>创建了一个impLookUpTable用于存取class，selector的对应关系</p>
 </li>
-<li><p>在对图片进行处理的时候都会异步到后台线程进行操作，避免阻塞主线程。</p>
+<li><p>读取baseClass，key，以及impValue，将dzn_original_impletation替换原有的实现，返回原有的实现dzn_newImplementation。</p>
 </li>
-<li><p><strong>SDWebImageDownloader：</strong>这个类主要执行图片的下载，建立一个SDWebImageDownloaderOperation，将其加入operationQueue中，同时也通过operation的依赖关系完成LIFO操作。</p>
+<li><p>_impLookupTable存储交换的信息</p>
 </li>
-<li><p><strong>SDWebImageDownloaderOperation：</strong>自定义的operation，用于完成网络请求及之后的图片处理，同时通过barrierQueue来确保多线程操作时候的执行顺序，通过GCD将通知都异步到主线程进行发送，确保监听者可以直接在主线程进行操作。</p>
+<li><p>如此即完成方法替换，在调用方法A的时候先调用dzn_original_impletation，同时其内部读取_impLookupTable即可找到A的原始实现，继而完成调用。</p>
 </li>
 </ul>
-<p>SDWebImage的拆解就这样，其具体的使用方式或者一些支持的额外的功能，比如Gif等均可参考其说明文档即可。</p>
-<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
+</li>
+</ul>
+<p>这就是这个库的拆解，受欢迎的程度还蛮不错的，很大的一个原因是很多人饱受错误页面的配置，增加了这样一套东西，可以使得很多人的工程瞬间简化很多，<strong>比如在BaseViewController中定义好所有的错误页面，即可完成整个工程的配置，代码瞬间精简好多</strong>，👍~，代码虽然拆分虽然很容易看清晰路线，但是其设计的dataSource以及delegate还是考虑了蛮多情况的~</p>
 
       
     </div>
@@ -428,7 +421,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/源码，SDWebImage/" rel="tag"># 源码，SDWebImage</a>
+            <a href="/tags/源码/" rel="tag"># 源码</a>
           
         </div>
       
@@ -441,8 +434,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/05/05/2017-05-05-iOS多线程编程总结/" rel="next" title="iOS多线程编程总结">
-                <i class="fa fa-chevron-left"></i> iOS多线程编程总结
+              <a href="/2017/07/02/runtime好文推荐/" rel="next" title="runtime好文推荐">
+                <i class="fa fa-chevron-left"></i> runtime好文推荐
               </a>
             
           </div>
@@ -450,10 +443,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/05/11/2017-05-11-源码分析之Masonry/" rel="prev" title="源码分析之Masonry">
-                源码分析之Masonry <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -502,8 +491,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.jpeg"
@@ -576,6 +574,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#UIView-DZNConstraintBasedLayoutExtensions"><span class="nav-number">1.</span> <span class="nav-text">UIView(DZNConstraintBasedLayoutExtensions)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DZNWeakObjectContainer"><span class="nav-number">2.</span> <span class="nav-text">DZNWeakObjectContainer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DZNEmptyDataSetView"><span class="nav-number">3.</span> <span class="nav-text">DZNEmptyDataSetView</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UIScrollView-DZNEmptyDataSet"><span class="nav-number">4.</span> <span class="nav-text">UIScrollView(DZNEmptyDataSet)</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
