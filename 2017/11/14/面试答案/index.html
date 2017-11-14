@@ -1,0 +1,1011 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="answer," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="题目全部来自http://blog.sunnyxx.com/2015/07/04/ios-interview/。 @property @property后面可以跟哪些修饰符？  线程安全的角度，主要包括nonatomic和atomic 控制访问权限的角度，主要包括readonly和readwrite 内存管理的角度，strong，weak，assign，copy，retain 自定义setter和">
+<meta name="keywords" content="answer">
+<meta property="og:type" content="article">
+<meta property="og:title" content="答案">
+<meta property="og:url" content="http://yoursite.com/2017/11/14/面试答案/index.html">
+<meta property="og:site_name" content="秋知轩">
+<meta property="og:description" content="题目全部来自http://blog.sunnyxx.com/2015/07/04/ios-interview/。 @property @property后面可以跟哪些修饰符？  线程安全的角度，主要包括nonatomic和atomic 控制访问权限的角度，主要包括readonly和readwrite 内存管理的角度，strong，weak，assign，copy，retain 自定义setter和">
+<meta property="og:updated_time" content="2017-11-14T07:43:55.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="答案">
+<meta name="twitter:description" content="题目全部来自http://blog.sunnyxx.com/2015/07/04/ios-interview/。 @property @property后面可以跟哪些修饰符？  线程安全的角度，主要包括nonatomic和atomic 控制访问权限的角度，主要包括readonly和readwrite 内存管理的角度，strong，weak，assign，copy，retain 自定义setter和">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/11/14/面试答案/"/>
+
+
+
+
+
+  <title> 答案 | 秋知轩 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">秋知轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">莫谈人间几寒暑，静观弯月荡秋风~</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/14/面试答案/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Selector">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋知轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                答案
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-14T15:50:34+08:00">
+                2017-11-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tech/" itemprop="url" rel="index">
+                    <span itemprop="name">tech</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>题目全部来自<a href="http://blog.sunnyxx.com/2015/07/04/ios-interview/。" target="_blank" rel="external">http://blog.sunnyxx.com/2015/07/04/ios-interview/。</a></p>
+<h2 id="property"><a href="#property" class="headerlink" title="@property"></a>@property</h2><ul>
+<li><p><strong>@property后面可以跟哪些修饰符？</strong></p>
+<ul>
+<li>线程安全的角度，主要包括nonatomic和atomic</li>
+<li>控制访问权限的角度，主要包括readonly和readwrite</li>
+<li>内存管理的角度，strong，weak，assign，copy，retain</li>
+<li>自定义setter和getter：setter和getter</li>
+</ul>
+</li>
+<li><p><strong>什么情况使用 weak 关键字，相比 assign 有什么不同？</strong></p>
+<ul>
+<li>weak的主要作用是在ARC下解决循环引用的问题，weak不需要手动设置为nil，而assgin需要手动设置为nil，不然就会造成野指针，另外assgin可以修饰基本类型，而weak只能修饰OC对象</li>
+</ul>
+</li>
+<li><p><strong>怎么用 copy 关键字？</strong></p>
+<ul>
+<li>copy关键字主要是本身指向一个不可变的对象副本，这样在原有对象修改的时候不会影响自身的改变。</li>
+</ul>
+</li>
+<li><p><strong>如何让自己的类用 copy 修饰符？</strong></p>
+<ul>
+<li>支持NSCopying或者NSMutableCopying协议，实现该协议中的copyWithZone方法。</li>
+</ul>
+</li>
+<li><p><strong>@property的本质是什么，ivar，getter和setter如何生成并添加到类中？</strong></p>
+<ul>
+<li>@property包括了ivar和存取方法，ivar和getter和setter是编译器通过@synthesize关键字指定自动合成的，编译器已经默认为我们添加了@synthesize，所以不需要显式指定@synthesize关键字。</li>
+</ul>
+</li>
+<li><p><strong>@protocol 和 category 中如何使用 @property？</strong></p>
+<ul>
+<li>protocol和category中都只会生成getter和setter的方法声明，在protocol中支持该协议的对象需要实现该属性，而在category中则采用关联对象的方式增加属性。</li>
+</ul>
+</li>
+<li><p><strong>runtime 如何实现 weak 属性</strong></p>
+<ul>
+<li>runtime会将weak对象放入hash表中，然后以weak对象指向的地址作为key，当对象调用dealloc的时候，通过key寻找到weak对象，将其设置为nil。</li>
+</ul>
+</li>
+<li><p><strong>weak需要在dealloc中设置为nil么</strong></p>
+<ul>
+<li>weak不需要在dealloc中设置为nil，当weak对象释放的时候，系统会自动将其标记为nil。</li>
+</ul>
+</li>
+<li><p><strong>ARC下，不显示指定任何关键字，默认的关键字有哪些？</strong></p>
+<ul>
+<li>atomic， readwrite， strong， assgin</li>
+</ul>
+</li>
+<li><p><strong>用@property声明的NSString（或NSArray，NSDictionary）经常使用copy关键字，为什么？如果改用strong关键字，可能造成什么问题？</strong></p>
+<ul>
+<li>用copy相当于重新开辟了一块内存空间，新对象指向新开辟的内存空间，原对象值更改并不会对新对象造成影响，strong仍旧指向原有的对象地址，一旦原有的对象值发生改变，新对象的值也同样发生改变。</li>
+</ul>
+</li>
+<li><p><strong>@synthesize合成实例变量的规则是什么？假如property名为foo，存在一个名为_foo的实例变量，那么还会自动合成新变量么？</strong></p>
+<ul>
+<li>如果指定了成员变量的名称，则会生成一个指定名称的成员变量</li>
+<li>如果成员变量已经存在，则不会生成</li>
+<li>如果没有指定成员变量的名称，会自动生成一个与属性名同名的成员变量</li>
+</ul>
+</li>
+<li><p><strong>在有了自动合成属性实例变量之后，@synthesize还有哪些使用场景？</strong></p>
+<ul>
+<li>自定义getter，setter</li>
+<li>readonly自定义getter</li>
+<li>@dynamic</li>
+<li>protocol中定义的属性</li>
+<li>category中声明的属性（利用关联对象）</li>
+<li>重写属性</li>
+</ul>
+</li>
+</ul>
+<h2 id="runtime"><a href="#runtime" class="headerlink" title="runtime"></a>runtime</h2><ul>
+<li><p><strong>objc中向一个nil对象发送消息将会发生什么？</strong></p>
+<ul>
+<li>什么也不发生。objc在向一个对象发送消息时，runtime库会根据对象的isa指针找到该对象实际所属的类，然后在该类中的方法列表以及其父类方法列表中寻找方法运行，然后在发送消息的时候，objc_msgSend方法不会返回值，所谓的返回内容都是具体调用时执行的。那么，如果向一个nil对象发送消息，首先在寻找对象的isa指针时就是0地址返回了，所以不会出现任何错误。</li>
+</ul>
+</li>
+<li><p><strong>objc中向一个对象发送消息[obj foo]和objc_msgSend()函数之间有什么关系？</strong></p>
+<ul>
+<li>当向对象发送消息的时候，runtime    会将[obj foo]转成objc_msgSend(obj, foo)，之后去obj对应的类中去寻找foo方法，首先先从cache中寻找，如果不存在则去methodList中寻找，如果仍然不存在去其父类的methodList中去寻找，如果仍然不存在查看其是否实现了resolveInstanceMethod或者resolveClassMethod，如果仍旧没有则执行forwardingTargetForSelector，最后执行forwardInvocation。</li>
+</ul>
+</li>
+<li><p><strong>什么时候会报unrecognized selector的异常？</strong></p>
+<ul>
+<li>参考上题，通过runtime去查找方法实现，如果没有方法实现尝试着去做resolve，如果还没有的话进行方法转发，如果仍旧没有实现转发，那么就会报出该异常。</li>
+</ul>
+</li>
+<li><p><strong>一个objc对象如何进行内存布局？（考虑有父类的情况）</strong><br>经典的图，实例对象的isa指向其类对象，类对象的is<br>a指向元类，元类的isa指向根元类，根元类的isa指向自身，类对象的super指向其父类，一直到NSObject，NSObject的super指向nil，元类的super也指向其父类，一直到根元类，根元类的super指向NSObject。</p>
+</li>
+<li><p><strong>一个objc对象的isa的指针指向什么？有什么作用？</strong></p>
+<ul>
+<li>一个objc对象的isa指针指向该对象所属的类，类的isa指向元类，元类的isa指向元类的根类，根元类的isa指针指向自身，isa可以帮助对象找到该方法。</li>
+</ul>
+</li>
+<li><p><strong>runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）</strong></p>
+<ul>
+<li>在OC的内存分布中，每一个类对象都有方法列表，里面存在着方法名称和方法实现等，实例方法从类对象的方法列表里寻找，而类方法从元类对象的方法列表里寻找，当然前提都是先查缓存。</li>
+</ul>
+</li>
+<li><p><strong>使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？</strong></p>
+<ul>
+<li>使用关联对象的方式，在主对象进行dealloc的时候不需要手动进行释放。</li>
+</ul>
+</li>
+<li><p><strong>objc中的类方法和实例方法有什么本质区别和联系？</strong></p>
+<ul>
+<li>类方法主要针对类对象，其内部不可以调用实例方法，实例方法主要针对实例对象，其可以通过类名调用类方法。</li>
+</ul>
+</li>
+<li><p><strong>_objc_msgForward函数是做什么的，直接调用它将会发生什么？</strong></p>
+<ul>
+<li>做方法转发的时候，runtime会调用_objc_msgForward，直接调用将会直接触发转发操作。</li>
+</ul>
+</li>
+<li><p><strong>runtime如何实现weak变量的自动置nil？</strong></p>
+<ul>
+<li>runtime将会以weak变量的地址作为key，将weak对象放入一个hash表中，当对象引用计数为0的时候就会以该变量地址为key，在hash表中以该key为键搜索对象，将其设置为nil。</li>
+</ul>
+</li>
+<li><p><strong>能否向编译后得到的类中增加实例变量？能否向运行时创建的类中添加实例变量？为什么？</strong></p>
+<ul>
+<li>不可以向编译后的类中增加实例变量，可以向运行时创建的类中增加实例变量，编译后的类，其内存布局已经确定，运行时创建的类中，可以添加变量。</li>
+</ul>
+</li>
+</ul>
+<p>##runloop</p>
+<ul>
+<li><p><strong>runloop和线程有什么关系？</strong></p>
+<ul>
+<li>每一个线程都有一个runloop，runloop的主要作用就是用来管理线程的，有了runloop，线程执行完任务后，就可以一直处于休眠等待状态，而不用退出。这样做的好处就是不需要反复创建线程，减少创建开销。</li>
+</ul>
+</li>
+<li><p><strong>runloop的mode作用是什么？</strong></p>
+<ul>
+<li>mode公开的Mode有两种，NSDefaultRunLoopMode和NSRunLoopCommonMode，主要是设定事件执行的优先级。</li>
+</ul>
+</li>
+<li><p><strong>以+ scheduledTimerWithTimeInterval…的方式触发的timer，在滑动页面上的列表时，timer会暂定回调，为什么？如何解决？</strong></p>
+<ul>
+<li>在调用该方法触发timer的时候，timer被加载NSDefaultRunLoopMode上，当列表滑动的时候，runloop被切换到UITrackingRunLoopMode来确保列表滑动的流畅性，因此会导致timer不会被调用，因此我们可以将timer添加到NSRunLoopCommonMode来解决。</li>
+</ul>
+</li>
+<li><p><strong>猜想RunLoop内部是如何实现的？</strong></p>
+<ul>
+<li>内部应该就是一个do-while循环，里面不断处理各种事件，每个线程和RunLoop对象唯一对应，另外每个RunLoop在启动的时候只能指定其中一个Mode，每个Mode中包含Source，Timer以及Observer，主线程的RunLoop默认启动，其他需要手动启动。</li>
+</ul>
+</li>
+</ul>
+<p>##内存管理</p>
+<ul>
+<li><p><strong>objc使用什么机制管理对象内存？</strong></p>
+<ul>
+<li>objc主要使用引用计数的方式管理对象的内存。</li>
+</ul>
+</li>
+<li><p><strong>ARC通过什么方式帮助开发者管理内存？</strong></p>
+<ul>
+<li>ARC使开发者不用关心内存管理，它主要采用自动引用计数的方式，自动为开发者添加release，autoRelease等</li>
+</ul>
+</li>
+<li><p><strong>不手动指定autoreleasepool的前提下，一个autorealese对象在什么时刻释放？（比如在一个vc的viewDidLoad中创建）</strong></p>
+<ul>
+<li>所有的autorelease对象在出了作用域会被添加到最近的autoreleasepool中，之后当前runloop结束时候会进行释放。</li>
+</ul>
+</li>
+<li><p><strong>BAD_ACCESS在什么情况下出现？</strong></p>
+<ul>
+<li>当前对象已被释放，程序仍去访问</li>
+</ul>
+</li>
+<li><p><strong>苹果是如何实现autoreleasepool的？</strong></p>
+<ul>
+<li>每一个线程的 autoreleasepool 其实就是一个指针的堆栈</li>
+<li>每一个指针代表一个需要 release 的对象或者 POOL_SENTINEL（哨兵对象，代表一个 autoreleasepool 的边界）</li>
+<li>这个堆栈被划分成了一个以 page 为结点的双向链表。pages 会在必要的时候动态地增加或删除</li>
+<li>Thread-local storage（线程局部存储）指向 hot page ，即最新添加的 autoreleased 对象所在的那个 page </li>
+</ul>
+</li>
+</ul>
+<h2 id="Block"><a href="#Block" class="headerlink" title="Block"></a>Block</h2><ul>
+<li><p><strong>使用block时什么情况会发生引用循环，如何解决？</strong></p>
+<ul>
+<li>当对象强引用了block，block内部又强引用了该对象，通过<strong>weak或者</strong>block修饰符来解决。</li>
+</ul>
+</li>
+<li><p><strong>在block内如何修改block外部变量？</strong></p>
+<ul>
+<li>使用__block来继续修饰变量，使得该变量为block所持有。</li>
+</ul>
+</li>
+<li><p><strong>使用系统的某些block api（如UIView的block版本写动画时），是否也考虑引用循环问题？</strong></p>
+<ul>
+<li>系统的block api基本无需考虑循环引用的问题，但额外的GCD引用self，而其他参数均为自身属性，仍然需要考虑循环引用。</li>
+</ul>
+</li>
+</ul>
+<h2 id="GCD"><a href="#GCD" class="headerlink" title="GCD"></a>GCD</h2><ul>
+<li><p><strong>GCD的队列（dispatch_queue_t）分哪两种类型？</strong></p>
+<ul>
+<li>GCD的队列主要分为单队列Serial Queue和并发队列ConCurrent Queue。</li>
+</ul>
+</li>
+<li><p><strong>如何用GCD同步若干个异步调用？</strong></p>
+<ul>
+<li>可以通过GCD group来同步若干个异步调用。</li>
+</ul>
+</li>
+<li><p><strong>dispatch_barrier_async的作用是什么？</strong></p>
+<ul>
+<li>dispatch_barrier_async主要的应用场景主要为，等待一些任务执行完成之后，再执行barrier追加的处理，之后该并发队列才会恢复之前的操作，目的是为了避免数据竞争。</li>
+</ul>
+</li>
+<li><p><strong>苹果为什么要废弃dispatch_get_current_queue？</strong></p>
+<ul>
+<li>这个应该是在iOS7之后就废弃了，废弃他最主要的原因就是容易造成死锁。</li>
+</ul>
+</li>
+</ul>
+<h2 id="KVO-amp-KVC"><a href="#KVO-amp-KVC" class="headerlink" title="KVO &amp; KVC"></a>KVO &amp; KVC</h2><ul>
+<li><p><strong>addObserver:forKeyPath:options:context:各个参数的作用分别是什么，observer中需要实现哪个方法才能获得KVO回调？</strong></p>
+<ul>
+<li>观察者，观察的属性，观察的选项，上下文，observer需要实现- (void)observeValueForKeyPath:(NSString <em>)keyPath ofObject:(id)object change:(NSDictionary </em>)change context:(void *)context;才能获取KVO的回调。</li>
+</ul>
+</li>
+<li><p><strong>如何手动触发一个value的KVO</strong></p>
+<ul>
+<li>手动触发需要用到NSObject的方法：willChangeValueForKey，和didChangeValueForKey。</li>
+</ul>
+</li>
+<li><p><strong>若一个类有实例变量NSString *_foo，调用setValue:forKey:时，可以以foo还是_foo作为key？</strong></p>
+<ul>
+<li>都可以</li>
+</ul>
+</li>
+<li><p><strong>KVC的keyPath中的集合运算符如何使用？</strong></p>
+<ul>
+<li>类似valueForKeyPath:@”sum.a”</li>
+</ul>
+</li>
+<li><p><strong>KVC和KVO的keyPath一定是属性么？</strong></p>
+<ul>
+<li>不一定</li>
+</ul>
+</li>
+<li><p><strong>如何关闭默认的KVO的默认实现，并进入自定义的KVO实现？</strong></p>
+<ul>
+<li>实现类方法, +(BOOL)automaticallyNotifiesObserversForKey:(NSString *)key, 根据需要返回NO, 然后实现<br>-(void)willChangeValueForKey:(NSString )key和<br>-(void)didChangeValueForKey:(NSString )key</li>
+</ul>
+</li>
+<li><p><strong>apple用什么方式实现对一个对象的KVO？</strong><br>  runtime创建了一个新类继承自原来的类，之后重写观察属性的setter方法，最后将这个对象的isa指针指向新创建的子类实例。</p>
+</li>
+<li><p><strong>如何调试BAD_ACCESS错误</strong></p>
+<ul>
+<li>全局断点</li>
+<li>僵尸对象</li>
+<li>重写object的respondsToSelector方法，现实出现EXEC_BAD_ACCESS前访问的最后一个object</li>
+</ul>
+</li>
+<li><p><strong>lldb（gdb）常用的调试命令？</strong></p>
+<ul>
+<li>po</li>
+<li>bt</li>
+<li>print</li>
+<li>br</li>
+<li>p</li>
+<li>expr</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/answer/" rel="tag"># answer</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/19/iOS开发性能调优之UI篇/" rel="next" title="iOS开发性能调优之UI篇">
+                <i class="fa fa-chevron-left"></i> iOS开发性能调优之UI篇
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="uyan_frame"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="Selector" />
+          <p class="site-author-name" itemprop="name">Selector</p>
+           
+              <p class="site-description motion-element" itemprop="description">莫谈人间几寒暑，静观弯月荡秋风~</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">29</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">22</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/dash2014" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#property"><span class="nav-number">1.</span> <span class="nav-text">@property</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#runtime"><span class="nav-number">2.</span> <span class="nav-text">runtime</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Block"><span class="nav-number">3.</span> <span class="nav-text">Block</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GCD"><span class="nav-number">4.</span> <span class="nav-text">GCD</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KVO-amp-KVC"><span class="nav-number">5.</span> <span class="nav-text">KVO & KVC</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Selector</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    
+
+    
+      <!-- UY BEGIN -->
+        <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2136908"></script>
+      <!-- UY END -->
+    
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
