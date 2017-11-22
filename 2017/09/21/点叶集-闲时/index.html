@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="温故知新," />
+  <meta name="keywords" content="点叶集," />
 
 
 
@@ -87,17 +87,17 @@
 
 
 
-<meta name="description" content="内存管理的思考方式 自己生成的对象，自己所持有，包括alloc， new，copy，mutablecopy 非自己生成的对象，自己也能持有，比如id obj = [NSMutableArray array]，之后调用retain方法 自己持有的对象不再需要时释放，release 非自己持有的对象无法释放 __strong表示强引用，持有强引用的变量在超出其作用域时被废弃，随着强引用的失效，引用的对">
-<meta name="keywords" content="温故知新">
+<meta name="description" content="清风拂竹尘，暖阳醉花魂。偷得半日闲，扮个逍遥人。">
+<meta name="keywords" content="点叶集">
 <meta property="og:type" content="article">
-<meta property="og:title" content="《Objective-C高级编程iOS与OSX多线程和内存管理》之温故知新">
-<meta property="og:url" content="http://yoursite.com/2017/06/05/Objective-C高级编程iOS与OSX多线程和内存管理之温故知新/index.html">
+<meta property="og:title" content="闲时">
+<meta property="og:url" content="http://yoursite.com/2017/09/21/点叶集-闲时/index.html">
 <meta property="og:site_name" content="秋知轩">
-<meta property="og:description" content="内存管理的思考方式 自己生成的对象，自己所持有，包括alloc， new，copy，mutablecopy 非自己生成的对象，自己也能持有，比如id obj = [NSMutableArray array]，之后调用retain方法 自己持有的对象不再需要时释放，release 非自己持有的对象无法释放 __strong表示强引用，持有强引用的变量在超出其作用域时被废弃，随着强引用的失效，引用的对">
-<meta property="og:updated_time" content="2017-06-06T00:37:02.000Z">
+<meta property="og:description" content="清风拂竹尘，暖阳醉花魂。偷得半日闲，扮个逍遥人。">
+<meta property="og:updated_time" content="2017-11-22T06:28:55.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="《Objective-C高级编程iOS与OSX多线程和内存管理》之温故知新">
-<meta name="twitter:description" content="内存管理的思考方式 自己生成的对象，自己所持有，包括alloc， new，copy，mutablecopy 非自己生成的对象，自己也能持有，比如id obj = [NSMutableArray array]，之后调用retain方法 自己持有的对象不再需要时释放，release 非自己持有的对象无法释放 __strong表示强引用，持有强引用的变量在超出其作用域时被废弃，随着强引用的失效，引用的对">
+<meta name="twitter:title" content="闲时">
+<meta name="twitter:description" content="清风拂竹尘，暖阳醉花魂。偷得半日闲，扮个逍遥人。">
 
 
 
@@ -125,13 +125,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/06/05/Objective-C高级编程iOS与OSX多线程和内存管理之温故知新/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/09/21/点叶集-闲时/"/>
 
 
 
 
 
-  <title> 《Objective-C高级编程iOS与OSX多线程和内存管理》之温故知新 | 秋知轩 </title>
+  <title> 闲时 | 秋知轩 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -270,7 +270,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/05/Objective-C高级编程iOS与OSX多线程和内存管理之温故知新/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/21/点叶集-闲时/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Selector">
@@ -291,7 +291,7 @@
             
             
               
-                《Objective-C高级编程iOS与OSX多线程和内存管理》之温故知新
+                闲时
               
             
           </h1>
@@ -306,8 +306,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-05T18:31:48+08:00">
-                2017-06-05
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-21T16:13:51+08:00">
+                2017-09-21
               </time>
             
 
@@ -329,8 +329,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/tech/" itemprop="url" rel="index">
-                    <span itemprop="name">tech</span>
+                  <a href="/categories/life/" itemprop="url" rel="index">
+                    <span itemprop="name">life</span>
                   </a>
                 </span>
 
@@ -364,47 +364,7 @@
       
 
       
-        <h2 id="内存管理的思考方式"><a href="#内存管理的思考方式" class="headerlink" title="内存管理的思考方式"></a>内存管理的思考方式</h2><ul>
-<li>自己生成的对象，自己所持有，包括alloc， new，copy，mutablecopy</li>
-<li>非自己生成的对象，自己也能持有，比如id obj = [NSMutableArray array]，之后调用retain方法</li>
-<li>自己持有的对象不再需要时释放，release</li>
-<li>非自己持有的对象无法释放</li>
-<li>__strong表示强引用，持有强引用的变量在超出其作用域时被废弃，随着强引用的失效，引用的对象会随之释放。</li>
-<li>__weak表示弱引用，不持有对象。主要为了解决循环引用。</li>
-<li>__unsafe_unretained，不安全的所有权修饰符，其修饰的变量不属于编译器的内存管理对象</li>
-<li>__autoreleasing，ARC中不能调用autorelease方法，也不能使用NSAutoreleasePool，其采用@autoreleasepool来代替NSAutoreleasePool类。</li>
-</ul>
-<h2 id="Block"><a href="#Block" class="headerlink" title="Block"></a>Block</h2><ul>
-<li>Block可以截获其所使用的自动变量的值，并保存其瞬间值，就算之后修改也无法改变。</li>
-<li>Block语法如果需要赋值给Block语法之外的变量，则需要增加__block说明符。</li>
-<li>截获OC对象，调用其变更方法不会产生编译错误，但向其赋值则会产生编译错误。此时需要增加__block说明符。</li>
-<li>在Block中，截获自动变量的方法并没有实现对C语言数组的截获，因此同样会产生编译错误。</li>
-<li>Block实质上也是Object-C的对象。</li>
-<li>Block语法表达式中没有使用的自动变量不会被追加，其自动变量截获只针对Block中使用的自动变量。</li>
-<li>因为在实现上不能改写被截获自动变量的值，所以当编译器在编译过程中检出给被截获自动变量赋值的操作时候，变产生编译错误。解决这个问题主要有两种方法：<ul>
-<li><strong>使用静态变量，静态全局变量，全局变量</strong>，其中静态全局变量和全局变量直接可以访问，静态变量则采用了指针操作，使用静态变量的指针进行传递。</li>
-<li><strong>使用block说明符</strong>，<strong>block实际上回被转换成</strong>Block_byref_val_0的结构体指针，指针内有一个变量存储初值。</li>
-</ul>
-</li>
-<li>ARC下会将block从站上copy到堆上，同时注册到autoreleasepool中。</li>
-<li>ARC中编译器会自动生成将Block从栈上copy到堆上的代码，但下面这种情况，不能判断，即向方法或函数参数中传递block，但以下方法不用手动复制。<ul>
-<li><strong>方法中复制了传递过来的block</strong></li>
-<li><strong>带有usingblock的Cocoa框架方法</strong></li>
-<li><strong>GCD的API</strong></li>
-</ul>
-</li>
-<li>_NSConcreteStackBlock，调用copy的时候从栈复制到堆上，_NSConcreteGlobalBloc，存储在程序的数据段，什么也不做，_NSConcreteMallocBlock，增加引用计数。</li>
-<li>__block也会被复制到堆上，引用计数方式与普通对象没有区别</li>
-<li><strong>forwarding的值会从栈上指到目标堆上的</strong>block所在的结构体实例的地址。</li>
-<li>什么时候栈上的block会copy到堆上？<ul>
-<li>调用block的copy实例方法</li>
-<li>block作为函数值返回的时候</li>
-<li>将block赋值给__strong修饰符id类型的类或者Block类型成员变量</li>
-<li>使用usingBlock的cocoa方法或者GCD的block</li>
-</ul>
-</li>
-</ul>
-<p>温故而知新，重新再看一遍这本《Objective-C高级编程iOS与OSX多线程和内存管理》既可以回顾一下iOS的一些底层实现，也可以基于这些实现重新思考一下iOS的相关内容，蛮好~</p>
+        <p>清风拂竹尘，<br>暖阳醉花魂。<br>偷得半日闲，<br>扮个逍遥人。</p>
 
       
     </div>
@@ -434,7 +394,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/温故知新/" rel="tag"># 温故知新</a>
+            <a href="/tags/点叶集/" rel="tag"># 点叶集</a>
           
         </div>
       
@@ -447,8 +407,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/05/26/iOS中开发中的锁系列-pthread-mutex/" rel="next" title="iOS中开发中的锁系列-pthread_mutex">
-                <i class="fa fa-chevron-left"></i> iOS中开发中的锁系列-pthread_mutex
+              <a href="/2017/07/19/iOS开发性能调优之UI篇/" rel="next" title="iOS开发性能调优之UI篇">
+                <i class="fa fa-chevron-left"></i> iOS开发性能调优之UI篇
               </a>
             
           </div>
@@ -457,8 +417,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/06/09/ReactNative分包及静态资源加载/" rel="prev" title="ReactNative分包及静态资源加载">
-                ReactNative分包及静态资源加载 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/11/14/面试答案/" rel="prev" title="答案">
+                答案 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -508,17 +468,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview sidebar-panel">
+      <section class="site-overview sidebar-panel sidebar-panel-active">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.jpeg"
@@ -591,22 +542,6 @@
 
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#内存管理的思考方式"><span class="nav-number">1.</span> <span class="nav-text">内存管理的思考方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Block"><span class="nav-number">2.</span> <span class="nav-text">Block</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
