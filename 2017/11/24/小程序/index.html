@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="源码，YYKit," />
+  <meta name="keywords" content="微信小程序," />
 
 
 
@@ -87,17 +87,17 @@
 
 
 
-<meta name="description" content="接前文，继续分析YYKit，YYKit提供了大量的工具类，整体存放在Utility目录下，本篇幅继续拆解一下这些工具类的写法。  YYReachablity：用于检测网络状态的一个工具，创建一个后台线程，用于可以用来检测网络是否可达，也可以实时检测网络状态，也采用notifyBlock进行回调。  YYGestureRecognizer：继承自UIGesture，主要目的是可以通过block来实时">
-<meta name="keywords" content="源码，YYKit">
+<meta name="description" content="大概半个多月前，微信公众平台推送了小程序支持了新的开放能力支持web-view，即小程序支持内嵌网页了，可以把你开发的h5网页直接拿过来使用了，使用的方法也非常简单，只需要在小程序管理配置后台增加支持的业务域名，之后在你的wxml页面上增加web-view标签，将url地址配置给src即可，其默认支持全屏展开，那开放了内嵌网页的能力到底意味着什么？说一说我对小程序的粗见吧。茶余饭后，简单想想，并不">
+<meta name="keywords" content="微信小程序">
 <meta property="og:type" content="article">
-<meta property="og:title" content="源码拆解之YYKit系列四">
-<meta property="og:url" content="http://yoursite.com/2017/04/23/2017-04-23-源码分析之YYKit工具类/index.html">
+<meta property="og:title" content="微信小程序之粗见">
+<meta property="og:url" content="http://yoursite.com/2017/11/24/小程序/index.html">
 <meta property="og:site_name" content="秋知轩">
-<meta property="og:description" content="接前文，继续分析YYKit，YYKit提供了大量的工具类，整体存放在Utility目录下，本篇幅继续拆解一下这些工具类的写法。  YYReachablity：用于检测网络状态的一个工具，创建一个后台线程，用于可以用来检测网络是否可达，也可以实时检测网络状态，也采用notifyBlock进行回调。  YYGestureRecognizer：继承自UIGesture，主要目的是可以通过block来实时">
-<meta property="og:updated_time" content="2017-05-15T02:42:15.000Z">
+<meta property="og:description" content="大概半个多月前，微信公众平台推送了小程序支持了新的开放能力支持web-view，即小程序支持内嵌网页了，可以把你开发的h5网页直接拿过来使用了，使用的方法也非常简单，只需要在小程序管理配置后台增加支持的业务域名，之后在你的wxml页面上增加web-view标签，将url地址配置给src即可，其默认支持全屏展开，那开放了内嵌网页的能力到底意味着什么？说一说我对小程序的粗见吧。茶余饭后，简单想想，并不">
+<meta property="og:updated_time" content="2017-11-24T06:49:34.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="源码拆解之YYKit系列四">
-<meta name="twitter:description" content="接前文，继续分析YYKit，YYKit提供了大量的工具类，整体存放在Utility目录下，本篇幅继续拆解一下这些工具类的写法。  YYReachablity：用于检测网络状态的一个工具，创建一个后台线程，用于可以用来检测网络是否可达，也可以实时检测网络状态，也采用notifyBlock进行回调。  YYGestureRecognizer：继承自UIGesture，主要目的是可以通过block来实时">
+<meta name="twitter:title" content="微信小程序之粗见">
+<meta name="twitter:description" content="大概半个多月前，微信公众平台推送了小程序支持了新的开放能力支持web-view，即小程序支持内嵌网页了，可以把你开发的h5网页直接拿过来使用了，使用的方法也非常简单，只需要在小程序管理配置后台增加支持的业务域名，之后在你的wxml页面上增加web-view标签，将url地址配置给src即可，其默认支持全屏展开，那开放了内嵌网页的能力到底意味着什么？说一说我对小程序的粗见吧。茶余饭后，简单想想，并不">
 
 
 
@@ -125,13 +125,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/04/23/2017-04-23-源码分析之YYKit工具类/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/11/24/小程序/"/>
 
 
 
 
 
-  <title> 源码拆解之YYKit系列四 | 秋知轩 </title>
+  <title> 微信小程序之粗见 | 秋知轩 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -270,7 +270,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/23/2017-04-23-源码分析之YYKit工具类/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/24/小程序/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Selector">
@@ -291,7 +291,7 @@
             
             
               
-                源码拆解之YYKit系列四
+                微信小程序之粗见
               
             
           </h1>
@@ -306,8 +306,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-23T11:54:01+08:00">
-                2017-04-23
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-24T18:13:51+08:00">
+                2017-11-24
               </time>
             
 
@@ -364,33 +364,47 @@
       
 
       
-        <p>接前文，继续分析YYKit，YYKit提供了大量的工具类，整体存放在Utility目录下，本篇幅继续拆解一下这些工具类的写法。</p>
+        <p>大概半个多月前，微信公众平台推送了小程序支持了新的开放能力支持web-view，即小程序支持内嵌网页了，可以把你开发的h5网页直接拿过来使用了，使用的方法也非常简单，只需要在小程序管理配置后台增加支持的业务域名，之后在你的wxml页面上增加web-view标签，将url地址配置给src即可，其默认支持全屏展开，那开放了内嵌网页的能力到底意味着什么？说一说我对小程序的粗见吧。茶余饭后，简单想想，并不深入，记录感触而已。</p>
+<h2 id="为什么要开发小程序"><a href="#为什么要开发小程序" class="headerlink" title="为什么要开发小程序"></a>为什么要开发小程序</h2><p>小程序发布伊始，无数公司趋之若鹜，使用小程序的原因很多，随便列举几个：</p>
 <ul>
-<li><p><strong>YYReachablity：</strong>用于检测网络状态的一个工具，创建一个后台线程，用于可以用来检测网络是否可达，也可以实时检测网络状态，也采用notifyBlock进行回调。</p>
+<li><p><strong>微信强大的资源入口</strong>，微信的顶级流量众所周知，一众开发者、商家都想通过微信的品牌为自己的产品打call，以此来实现自己的流量增长。</p>
 </li>
-<li><p><strong>YYGestureRecognizer：</strong>继承自UIGesture，主要目的是可以通过block来实时获取任意时刻的移动的point。</p>
+<li><p><strong>微信技术号召力</strong>，在国内的一众互联网公司中，BAT的技术积累以及号召力无出其右，加上张小龙亲自背书，一时间小程序风生水起。</p>
 </li>
-<li><p><strong>YYFileHash：</strong>列举了大量的文件hash算法，同时采用一些c方法来加快处理速度。</p>
+<li><p><strong>开发者需要技术储备</strong>，任何一个公司都会对新技术做一定量的调研和技术储备，以此来应对即将可能到来的变化。</p>
 </li>
-<li><p><strong>YYKeyChain：</strong>封装了一个Item用来处理数据，同时封装了YYKeyChain暴露增删改查的接口。</p>
+<li><p><strong>write once，run anywhere</strong>，小程序出来的时机正是移动端跨平台风风火火的一段时间，大家都打着write once，run anywhere的标语，而小程序甚至也可看作一次跨平台尝试，特别是其类h5的写法，当然它是基于微信平台，这就为很多个人开发者以及初创公司打开了一扇门。</p>
 </li>
-<li><p><strong>YYWeakProxy：</strong>持有weak对象，防止循环引用，继承自NSProxy，通过将target设置成weak，来达到破坏循环引用的目的，比如NSTimer与self。</p>
+<li><p><strong>上手简单</strong>，针对独立开发者和业务方向不明朗的初创型公司，需要实现一个相对简单的功能，不需要额外的移动端开发者，节省开发成本，可以反复试错。</p>
 </li>
-<li><p><strong>YYTimer：</strong>利用Dispatch Source Timer封装成类似NSTimer的接口，更加高效和接近系统使用方式。</p>
-</li>
-<li><p><strong>YYTransaction：</strong>创建一个Transaction对象，并在主线程休眠或者退出之前，使其target执行对应的selector方法。</p>
-</li>
-<li><p><strong>YYAsyncLayer：</strong>将图形的绘制放在后台线程操作，在绘制完成之后将其异步会主线程显示，通过设定willDisplay，display，didDisplay三个block来完成特定步骤的回调设置。</p>
-</li>
-<li><p><strong>YYSentinel：</strong>通过原子操作，保证数据的线程安全。</p>
-</li>
-<li><p><strong>YYDispatchQueuePool：</strong>，在iOS8.0之后，GCD提供了可以通过根据不同的QOS，配置不同的queue_attr，进而生成不同状态的queue，作者通过配置不同的QOS，生成不同的queue，并将其提供出去。</p>
-</li>
-<li><p><strong>YYThreadSafeArray，YYThreadSafeDictionary：</strong>利用GCD对资源进行上锁操作，以达到线程安全的效果。</p>
+<li><p><strong>及时更新上线</strong>，这条就应该是针对苹果的审核了，苹果的审核规则复杂，审核周期略长，虽然已有所改进。但小程序不需要经过苹果审核，自然也免去了这个周期。</p>
 </li>
 </ul>
-<p>本篇幅简要的分析了作者提供的开源工具类，在质量和数量上都相当可观，其中很多工具都已经在工程项目中使用，很多值得借鉴、参考和学习的地方。</p>
-<p><strong>任何技术有其优点必有其局限，保持观望，保持学习</strong></p>
+<p>等等。。。</p>
+<h2 id="为什么不想使用小程序"><a href="#为什么不想使用小程序" class="headerlink" title="为什么不想使用小程序"></a>为什么不想使用小程序</h2><ul>
+<li><p><strong>微信入口隐藏</strong>，很明显张小龙并不想因为小程序而影响对于微信的正常使用，然而又需要利用微信的流量优势，故而造了一个势，吸引各路开发者前来，却将小程序的入口隐藏。</p>
+</li>
+<li><p><strong>开发者之殇</strong>，优秀的小程序并没有被大力推广，甚至你仍然需要搜索才能够找到，这除了给微信增加了很多流量之外，自己并没有得到太多的优势。</p>
+</li>
+<li><p><strong>复杂业务</strong>，小程序开放能力不足，并不足以应对复杂的业务流，公司发展到一定程度，其业务复杂性可想而知，小程序并不足以支撑这种业务的扩张。</p>
+</li>
+<li><p><strong>公司的品牌</strong>，任何一个公司都需要有自己的核心产品，并坚持为它打call，比如美团，比如点评，微信，支付宝等等，这个核心产品才是撑起公司战略和公司发展的基石，小程序应该是锦上添花之举。</p>
+</li>
+<li><p><strong>使用效果</strong>，大家也知道，小程序并不如native的使用效果更好，即使其开发周期短，但当今的用户在追求优秀的产品idea同时，也更加注重产品性能，使用便捷等因素，或者简单的称之为手感。</p>
+</li>
+</ul>
+<p>等等。。。</p>
+<h2 id="小程序的未来"><a href="#小程序的未来" class="headerlink" title="小程序的未来"></a>小程序的未来</h2><p>小程序的未来在哪？虽然我对张小龙，及微信团队怀着很大的敬仰，但我仍旧认为其失败了，特别是web-view的开放，这真的是对h5的一种妥协。</p>
+<ul>
+<li><p>其类h5的语法虽说与h5的开发很神似，但仍旧需要额外的工作来适配，这不得不说是一种麻烦。</p>
+</li>
+<li><p>适配了h5，我为什么不选择直接使用h5开发做分享传播？而选择入口极深的小程序嵌入h5？</p>
+</li>
+<li><p>虽说倡导开源代码，但开源的更多是工具代码，真心把业务代码交付给另一个平台，这无论如何都不如公司自己持有代码来的更符合逻辑吧。</p>
+</li>
+</ul>
+<p>可能还有很多更深层次的原因吧，饭后闲想，对于我个人来说，简单的尝试写一写，了解一下其实现的做法，实现个简单的小业务，仅此。而如果小程序后续真的出现了颠覆性的革命性的事件，再继续跟进吧。</p>
+<p><strong>native终将变的更好，我也相信web终将也会变的更好。</strong></p>
 
       
     </div>
@@ -420,7 +434,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/源码，YYKit/" rel="tag"># 源码，YYKit</a>
+            <a href="/tags/微信小程序/" rel="tag"># 微信小程序</a>
           
         </div>
       
@@ -433,8 +447,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/04/21/2017-04-21-源码分析之YYCache/" rel="next" title="源码拆解之YYKit系列三">
-                <i class="fa fa-chevron-left"></i> 源码拆解之YYKit系列三
+              <a href="/2017/11/21/点叶集-念乡/" rel="next" title="念乡">
+                <i class="fa fa-chevron-left"></i> 念乡
               </a>
             
           </div>
@@ -442,10 +456,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/04/25/2017-04-25-源码分析之YYImage/" rel="prev" title="源码拆解之YYKit系列五">
-                源码拆解之YYKit系列五 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -494,8 +504,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.jpeg"
@@ -568,6 +587,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么要开发小程序"><span class="nav-number">1.</span> <span class="nav-text">为什么要开发小程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么不想使用小程序"><span class="nav-number">2.</span> <span class="nav-text">为什么不想使用小程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小程序的未来"><span class="nav-number">3.</span> <span class="nav-text">小程序的未来</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
