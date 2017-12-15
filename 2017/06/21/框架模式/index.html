@@ -97,7 +97,7 @@
 <meta property="og:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/993906-20160814212709203-2004832279.png">
 <meta property="og:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/1148179-c9ff8bbdf04891ac.png">
 <meta property="og:image" content="http://7xsw5d.com1.z0.glb.clouddn.com/1148179-0ee7870e02cc072b.png">
-<meta property="og:updated_time" content="2017-06-21T08:18:47.000Z">
+<meta property="og:updated_time" content="2017-12-15T07:33:05.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MVC、MVP、MVVM">
 <meta name="twitter:description" content="什么样的框架更适合什么样的程序，一万个人心中有一万个哈姆雷特，之前有一段时间看了一些篇文章，抽象出来的框架无外乎MVC，MVP以及MVVM，今天正好抽空写一下我对这几种框架的感觉，有错误的地方欢迎指出。 在框架设计中，需要考虑的事情通常都只有这样几件，如何平衡决定了框架设计者的能力：  程序的复杂度，包括可理解程度、代码量以及可维护的程度 程序的可复用程度，是否足够解耦，其颗粒化是否可以达到较好的">
@@ -388,7 +388,7 @@
 <ul>
 <li>过于庞大的Controller，其除了负责View和Model的交互，还要响应各种代理事件，完成各种业务逻辑，甚至包括很多Model的组装和拼接，View的各种生命周期等等</li>
 <li>过于轻量的Model，除了定义的几个属性，别无其他</li>
-<li>网络层置于何地，Model层嘛？但是Model只是纯粹的数据定义，Controller层？OMG~放过这个可怜的Controller吧，但事实是网络层大部分都写在了Controller中</li>
+<li>网络层置于何地，Model层嘛？形成胖model？但是我更喜欢Model只是纯粹的数据定义，Controller层？放过这个可怜的Controller吧，但事实是网络层大部分都写在了Controller中</li>
 </ul>
 <p>另外，更现实的情况是，你会通常用Model去初始化View，例如cell的配置，因此MVC只是理论上的。</p>
 <p>结合我之前总结的框架设计者需要考虑的几件事情，MVC模式的特征大概是这样的：</p>
@@ -405,13 +405,12 @@
 <li>View层只负责数据展示，和从前没什么变化</li>
 <li>View和Controller之所以统一作为PassiveView，是因为Controller负责View的布局和管理</li>
 <li>抽象出一个Presenter层，其通过Controller以及Model来进行初始化，同时提供更新接口，更新Controller中的View的数据，以及更新Model数据</li>
-<li>Model仍旧仅仅负责数据</li>
 </ul>
 <p>OK，那MVP有什么问题存在呢？</p>
 <ul>
 <li>依旧是过于轻量级的Model</li>
 <li>Presenter层用来协调View的状态更改和Model的状态更改，以及Model和View展示的数据适配，Presenter层的代码量会比较大</li>
-<li>网络层依然存放在Controller中</li>
+<li>网络层依然存放在Controller中，形成过重的controller，放在model层形成胖model</li>
 </ul>
 <p>因此总结一下MVP的特征大概如下：</p>
 <ul>
@@ -421,7 +420,7 @@
 <li><strong>可扩展性，Controller的扩展性较高，Presenter层业务量增大，但扩展性尚可</strong></li>
 </ul>
 <p>PS: 看见很多人介绍了一个变种，说Presenter层可以协调View和Model做绑定，个人觉得这样会导致View和Model的可复用性极度降低，比如A中更改了Model的数据，之后又在B中更改了同一个Model的数据，维护起来太难了，不推荐。</p>
-<h2 id="MVVM"><a href="#MVVM" class="headerlink" title="MVVM"></a>MVVM</h2><p>不得不吐槽一下MVVM的概念简直被玩坏了，随便增加个model做个绑定就是MVVM了。。。好吧，VM其实就是ViewModel的简写，话不多说，继续上图。</p>
+<h2 id="MVVM"><a href="#MVVM" class="headerlink" title="MVVM"></a>MVVM</h2><p>不得不吐槽一下MVVM的概念简直被玩坏了，随便增加个model做个绑定就是MVVM了。。。VM其实就是ViewModel的简写，继续上图。</p>
 <p><img src="http://7xsw5d.com1.z0.glb.clouddn.com/1148179-0ee7870e02cc072b.png" alt="hh"></p>
 <p>这张图简单的展示了MVVM的概念，看着和MVP很像是吧，那么简单的说一下MVVM吧</p>
 <ul>
@@ -451,7 +450,7 @@
 <li>任何一种框架都只是能够有限的解决某一时刻的某种问题，不要为架构而架构</li>
 <li>任何一种框架在解决一种问题的时候，通常会带来另一种问题，这就好比锁，可以保证你的数据安全，但频繁加锁又会影响性能一个道理。</li>
 </ul>
-<h2 id="我们工程中的框架分层"><a href="#我们工程中的框架分层" class="headerlink" title="我们工程中的框架分层"></a>我们工程中的框架分层</h2><p>上述只是简单的介绍了一下MVC、MVP以及MVVP的描述，并没有涉及到更多复杂的情况，比如网络层，缓存层，数据处理等</p>
+<h2 id="我们工程中的框架分层"><a href="#我们工程中的框架分层" class="headerlink" title="我们工程中的框架分层"></a>我们工程中的框架分层</h2><p>上述只是简单的介绍了一下MVC、MVP以及MVVM的描述，并没有涉及到更多复杂的情况，比如网络层，缓存层，数据处理等</p>
 <p>一直认为一个比较好的框架结构，原谅我并没有绘制图~</p>
 <ul>
 <li>Controller负责初始化Manager层，同时布局各种View</li>
